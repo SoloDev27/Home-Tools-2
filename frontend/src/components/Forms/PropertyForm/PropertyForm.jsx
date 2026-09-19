@@ -35,7 +35,6 @@ export default function PropertyForm({id}) {
         const property = properties.data.find(p => p.id === id);
 
         if(!property) {
-            console.log("No properties found with id:", id)
             return;
         };
 
@@ -69,15 +68,6 @@ export default function PropertyForm({id}) {
     }, [id]);
 
     useEffect(()=> {
-        console.log("ACTIVE", active.current);
-    }, [active.current]);
-
-    useEffect(()=> {
-        console.log("SUGGESTIONS", suggestions);
-    }, [suggestions]);
-
-
-    useEffect(()=> {
         if(!searchAddress) {
             setSuggestionsActive(false);
             setSuggestions([]);
@@ -102,7 +92,6 @@ export default function PropertyForm({id}) {
     const handleSetAddress = (e, addrObj) => {
         e.preventDefault();
         setSuggestionsActive(false);
-        console.log("ADDR OBJECT", addrObj);
 
         setAddress(addrObj.address ? addrObj.address : null);
         setCity(addrObj.city ? addrObj.city : null);
@@ -142,19 +131,14 @@ export default function PropertyForm({id}) {
                 // prop["pinned"] = pinned;
                 // Group logic later
             }
-            console.log("BEFORE RETURN", prop);
 
             const res = id
                 ? await dispatch(thunkEditProperty(id, prop))
                 : await dispatch(thunkCreateProperty(prop));
-
-            console.log("AFTER RETURN", res);
             
             if(res.success) {
                 closeModal();
-                console.log("Success", res)
             } else {
-                console.log("FAILED", res);
                 setErr({server: res.detail})
             }
             

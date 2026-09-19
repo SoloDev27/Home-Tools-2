@@ -40,7 +40,6 @@ export const thunkGetPoints = (mapId) => async(dispatch) => {
 
 // Create Point
 export const thunkCreatePoint = (pointObj) => async(dispatch) => {
-    console.log("API CREATE POINT POINT OBJ:", pointObj)
     const res = await fetch("/api/points", {
         method: "POST",
         headers: {"Content-Type": "application/json"},

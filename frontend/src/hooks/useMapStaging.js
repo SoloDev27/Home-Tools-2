@@ -279,7 +279,7 @@ export default function useCanvasStaging(propertyStore, pointStore, dispatch, ex
             delete obj.endLat;
         }
 
-        if (["home", "apartment", "unit", "marker", "icon"].includes(obj.type)) {
+        if (["home", "apartment", "unit", "structure", "marker", "icon", "valve", "flora", "inspection", "fixture", "callout"].includes(obj.type)) {
             if (isCurrentlyRadius || isCurrentlyLine) {
                 delete obj.radius;
                 delete obj.endLng;
@@ -288,12 +288,12 @@ export default function useCanvasStaging(propertyStore, pointStore, dispatch, ex
         }
 
         if (isNumeric || isTemp || (["point", "prop"].includes(oldPrefix))) {
-            const isProp = ["home", "apartment", "unit"].includes(obj.type);
-            const wasProp = ["home", "apartment", "unit"].includes(subType || oldPrefix);
+            const isProp = ["home", "apartment", "unit", "structure"].includes(obj.type);
+            const wasProp = ["home", "apartment", "unit", "structure"].includes(subType || oldPrefix);
 
             if (wasProp && !isProp && !obj.icon) {
                 const typeKey = (subType || oldPrefix).toLowerCase();
-                obj.icon = typeKey === "home" ? "/icons/home-point.svg" :
+                obj.icon = typeKey === "home" || typeKey === "structure" ? "/icons/home-point.svg" :
                            typeKey === "apartment" ? "/icons/building-point.svg" :
                            typeKey === "unit" ? "/icons/unit-point.svg" : null;
             }
@@ -446,6 +446,12 @@ export default function useCanvasStaging(propertyStore, pointStore, dispatch, ex
         switch (point.type) {
             case "marker":
             case "icon":
+            case "structure":
+            case "valve":
+            case "flora":
+            case "inspection":
+            case "fixture":
+            case "callout":
                 return pointObj;
             case "home":
             case "apartment":
@@ -469,9 +475,26 @@ export default function useCanvasStaging(propertyStore, pointStore, dispatch, ex
                 pointObj.end_lng = point.end_lng || point.endLng;
                 pointObj.end_lat = point.end_lat || point.endLat;
                 return pointObj;
+            case "polygon":
+            case "rectangle":
+            case "measure":
+            case "setback":
+            case "utility":
+            case "curve":
+            case "material":
+                pointObj.extra_info = {
+                    ...(pointObj.extra_info || {}),
+                    coordinates: point.coordinates,
+                    area: point.area,
+                    perimeter: point.perimeter,
+                    distance: point.distance,
+                    color: point.color,
+                    utilityType: point.utilityType,
+                    materialType: point.materialType
+                };
+                return pointObj;
             default:
-                console.error("Unknown point type", point.type);
-                return false;
+                return pointObj;
         }
     }
 
@@ -494,28 +517,18 @@ export default function useCanvasStaging(propertyStore, pointStore, dispatch, ex
             Object.values(currentCanvas).forEach(obj => {
                 const idStr = String(obj.id);
                 const isNumeric = !isNaN(idStr) && !idStr.includes("-");
-                const isProperty = ["home", "apartment", "unit"].includes(obj.type);
+                const isProperty = ["home", "apartment", "unit", "structure"].includes(obj.type);
+                const isNew = idStr.startsWith("temp-") || obj.source === "canvas" || (!obj.propertyId && !obj.pointId && !isNumeric);
 
-                if (idStr.startsWith("temp-")) {
+                if (isNew) {
                     if (isProperty) propCreates.push(obj);
                     else pointCreates.push(obj);
-                } else if (idStr.startsWith("prop-")) {
-                    const numIdStr = idStr.split("-")[1];
-                    if (numIdStr.length >= 12) {
-                        propCreates.push(obj);
-                    } else {
-                        propUpdates.push({ id: Number(numIdStr), data: obj });
+                } else {
+                    const existingId = Number(obj.propertyId || obj.pointId || (isNumeric ? idStr : idStr.split("-").pop()));
+                    if (!isNaN(existingId)) {
+                        if (isProperty) propUpdates.push({ id: existingId, data: obj });
+                        else pointUpdates.push({ id: existingId, data: obj });
                     }
-                } else if (idStr.startsWith("point-")) {
-                    const numIdStr = idStr.split("-")[1];
-                    if (numIdStr.length >= 12) {
-                        pointCreates.push(obj);
-                    } else {
-                        pointUpdates.push({ id: Number(numIdStr), data: obj });
-                    }
-                } else if (isNumeric) {
-                    if (isProperty) propUpdates.push({ id: Number(idStr), data: obj });
-                    else pointUpdates.push({ id: Number(idStr), data: obj });
                 }
             });
 

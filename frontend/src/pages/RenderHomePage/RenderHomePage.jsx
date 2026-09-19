@@ -31,23 +31,6 @@ export default function RenderHomePage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // TESTING
-    useEffect(()=> {
-        console.log("VIEW CHANGED", view)
-    }, [view]);
-
-    useEffect(()=> {
-        console.log("PROJECTIES CHANGED", properties)
-    }, [properties]);
-
-    useEffect(()=> {
-        console.log("PROJECTS CHANGED", projects)
-    }, [projects]);
-
-    useEffect(()=> {
-        if(search < 2) return;
-    }, [search]);
-
     useEffect(()=> {
         const initialData = async () => {
             await dispatch(thunkGetAllProperties());
@@ -58,14 +41,12 @@ export default function RenderHomePage() {
     }, [reload]);
 
     useEffect(()=> {
-        console.log("INITIALISED REACHED INIT:", initialized,"DATA:", propertyStore)
         if(!initialized) return;
 
         if(!propertyStore.data.length > 0) {
             setLoaded(true);
             return;
         }
-        console.log("INITIALISED REACHED, DATA:", propertyStore)
 
         const allProperties = [];
         propertyStore.data.forEach(prev => {
@@ -91,8 +72,8 @@ export default function RenderHomePage() {
                         {search?.length < 2 ? (
                             <p>Searching after 3 characters...</p>
                         ) : searchResults?.length > 0 ? (
-                            searchResults.map(res => (
-                                <div className="render-search-res">{res}</div>
+                            searchResults.map((res, idx) => (
+                                <div key={idx} className="render-search-res">{res}</div>
                             ))
                         ) : (
                             <p className="render-search-res">Loading search results...</p>
@@ -143,8 +124,8 @@ export default function RenderHomePage() {
                     {(view === "projects" || view === "both") && (
                         <div className="render-main-opt-container">
                             <div className="render-main-opt-title">Projects</div>
-                            {projects?.length > 0 ? projects.map(p => (
-                                <div className="render-main-opts">{p}</div>
+                            {projects?.length > 0 ? projects.map((p, idx) => (
+                                <div key={p?.id ?? idx} className="render-main-opts">{p}</div>
                             )) : (
                                 <div className="render-main-opts">No projects made.</div>
                             )}
@@ -154,8 +135,9 @@ export default function RenderHomePage() {
                     {(view === "properties" || view === "both") && (
                         <div className="render-main-opt-container">
                             <div className="render-main-opt-title">Properties</div>
-                            {properties?.length > 0 ? properties.map(p => (
-                                <button 
+                            {properties?.length > 0 ? properties.map((p, idx) => (
+                                <button
+                                    key={p?.id ?? idx}
                                     className="render-main-opts"
                                     onClick={()=> navigate(`/render/${p.id}`)}
                                 >{p?.name}</button>

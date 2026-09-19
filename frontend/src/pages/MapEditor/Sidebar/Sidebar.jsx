@@ -2,7 +2,7 @@ import DataTab from "./DataTab/DataTab";
 import DrawTab from "./Draw/Draw";
 import SettingsPanel from "./Settings/SettingsPanel";
 import LayersTab from "./LayersTab/LayersTab";
-import { Layers } from "lucide-react";
+import { Layers, Eye } from "lucide-react";
 export default function Sidebar({
     menu, selectMenu,
     canvasSelect, selectCanvasAddon, setCanvasSelect,
@@ -11,63 +11,150 @@ export default function Sidebar({
     savedTypesStore, navigate, overlaysStore
 }) {
     return (
-        <aside className="flex h-full bg-background border-r z-40 relative shadow-sm">
-            <ul className="flex flex-col items-center py-4 w-16 h-full border-r bg-muted/30 gap-4">
+        <aside style={{
+            display: 'flex',
+            height: '100%',
+            backgroundColor: 'var(--color-background-surface)',
+            borderRight: '1px solid var(--color-border)',
+            zIndex: 40,
+            position: 'relative',
+            flexShrink: 0
+        }}>
+            <ul style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '10px 0',
+                width: '46px',
+                height: '100%',
+                borderRight: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-background-card)',
+                gap: '8px',
+                margin: 0,
+                listStyle: 'none',
+                boxSizing: 'border-box',
+                flexShrink: 0
+            }}>
                 <li
                     id="menu-draw"
-                    className={`cursor-pointer p-2 rounded-md transition-colors ${menu === "draw" ? "bg-accent/80 shadow-sm" : "hover:bg-accent/50"}`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: menu === "draw" ? 'var(--color-border)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={(e) => selectMenu(e, "draw")}
                     title="Draw Tools"
                 >
-                    <img src="/icons/brush.svg" alt="Draw" className="w-6 h-6 dark:invert opacity-80 hover:opacity-100" />
+                    <img src="/icons/brush.svg" alt="Draw" style={{ width: 24, height: 24, filter: 'invert(1)', opacity: menu === "draw" ? 1 : 0.7 }} />
                 </li>
                 <li
                     id="menu-map"
-                    className={`cursor-pointer p-2 rounded-md transition-colors ${menu === "map" ? "bg-accent/80 shadow-sm" : "hover:bg-accent/50"}`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: menu === "map" ? 'var(--color-border)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={(e) => selectMenu(e, "map")}
                     title="Map Data"
                 >
-                    <img src="/icons/map.svg" alt="Properties" className="w-6 h-6 dark:invert opacity-80 hover:opacity-100" />
+                    <img src="/icons/map.svg" alt="Properties" style={{ width: 24, height: 24, filter: 'invert(1)', opacity: menu === "map" ? 1 : 0.7 }} />
                 </li>
                 <li
                     id="menu-layers"
-                    className={`cursor-pointer p-2 rounded-md transition-colors flex justify-center items-center ${menu === "layers" ? "bg-accent/80 shadow-sm text-foreground" : "hover:bg-accent/50 text-foreground/80 hover:text-foreground"}`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: menu === "layers" ? 'var(--color-border)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: menu === "layers" ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={(e) => selectMenu(e, "layers")}
                     title="Map Layers"
                 >
-                    <Layers className="w-6 h-6" strokeWidth={1.5} />
+                    <Layers size={24} strokeWidth={1.5} />
                 </li>
                 <li
                     id="menu-render"
-                    className={`cursor-pointer p-2 rounded-md transition-colors hover:bg-accent/50`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={() => navigate("/render")}
                     title="3D Render"
                 >
-                    <img src="/icons/eye.svg" alt="Render Page" className="w-6 h-6 dark:invert opacity-80 hover:opacity-100" />
+                    <Eye size={24} strokeWidth={1.5} style={{ opacity: 0.7 }} />
                 </li>
                 <li
                     id="menu-exports"
-                    className={`cursor-pointer p-2 rounded-md transition-colors ${menu === "exports" ? "bg-accent/80 shadow-sm" : "hover:bg-accent/50"}`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: menu === "exports" ? 'var(--color-border)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={(e) => selectMenu(e, "exports")}
                     title="Export Data"
                 >
-                    <img src="/icons/export.svg" alt="Exports" className="w-6 h-6 dark:invert opacity-80 hover:opacity-100" />
+                    <img src="/icons/export.svg" alt="Exports" style={{ width: 24, height: 24, filter: 'invert(1)', opacity: menu === "exports" ? 1 : 0.7 }} />
                 </li>
                 
-                <div className="flex-grow"></div>
+                <div style={{ flexGrow: 1 }} />
+
                 <li
                     id="menu-settings"
-                    className={`cursor-pointer p-2 rounded-md transition-colors ${menu === "settings" ? "bg-accent/80 shadow-sm" : "hover:bg-accent/50"}`}
+                    style={{
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        backgroundColor: menu === "settings" ? 'var(--color-border)' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background-color 0.2s'
+                    }}
                     onClick={(e) => selectMenu(e, "settings")}
                     title="Settings"
                 >
-                    <img src="/icons/setting.svg" alt="Settings" className="w-6 h-6 dark:invert opacity-80 hover:opacity-100" />
+                    <img src="/icons/setting.svg" alt="Settings" style={{ width: 24, height: 24, filter: 'invert(1)', opacity: menu === "settings" ? 1 : 0.7 }} />
                 </li>
             </ul>
 
             {/* The active panel for the selected menu */}
             {menu && (
-                <div id="menu-tools" className="w-80 bg-card h-full overflow-y-auto shadow-lg relative border-r animate-in slide-in-from-left-4 duration-200">
+                <div id="menu-tools" style={{
+                    width: '260px',
+                    backgroundColor: 'var(--color-background-surface)',
+                    height: '100%',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    borderRight: '1px solid var(--color-border)',
+                    boxShadow: '4px 0 16px rgba(0,0,0,0.2)',
+                    position: 'relative',
+                    boxSizing: 'border-box'
+                }}>
                 {menu === "map" && (
                     <DataTab
                         mapProperties={mapProperties}
@@ -95,17 +182,15 @@ export default function Sidebar({
                 )}
 
                 {menu === "exports" && (
-                    <li className="flex flex-col p-4">
-                        <div className="flex flex-col gap-2">
-                            <h4 className="font-semibold tracking-tight text-foreground uppercase text-sm">Data Export</h4>
-                            <p className="text-muted-foreground text-sm">Coming Soon...</p>
-                        </div>
-                    </li>
+                    <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 6px', gap: '6px' }}>
+                        <h4 style={{ margin: 0, fontWeight: 600, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Data Export</h4>
+                        <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '12px' }}>Coming Soon...</p>
+                    </div>
                 )}
 
                 {menu === "settings" && <SettingsPanel onClose={(e) => selectMenu(e, "settings")} />}
                 </div>
             )}
         </aside>
-    )
+    );
 }

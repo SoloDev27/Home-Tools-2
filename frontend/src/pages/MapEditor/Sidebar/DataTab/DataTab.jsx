@@ -1,5 +1,24 @@
-import { Button } from "@/components/ui/button";
-import { Trash2, ChevronDown, GripVertical } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
+import { 
+    Trash2, 
+    ChevronDown, 
+    GripVertical,
+    Home,
+    Wrench,
+    Trees,
+    AlertCircle,
+    Sparkles,
+    Type,
+    Zap,
+    Hexagon,
+    Square,
+    Circle,
+    Spline,
+    Ruler,
+    Columns2,
+    Palette,
+    MapPin
+} from "lucide-react";
 import { useState, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -17,6 +36,54 @@ export default function DataTab({
 
     const toggleMapOpen = (mId) => {
         setOpenMaps(prev => ({ ...prev, [mId]: !prev[mId] }));
+    };
+
+    const renderItemIcon = (p, isProperty) => {
+        if (p.icon && (p.icon.startsWith("http") || p.icon.startsWith("/") || p.icon.startsWith("data:"))) {
+            return <img src={p.icon} alt="Icon" style={{ width: 18, height: 18, objectFit: 'contain' }} />;
+        }
+        switch (p.type) {
+            case "structure":
+            case "home":
+                return <Home size={18} color="#6366f1" />;
+            case "valve":
+                return <Wrench size={18} color="#ef4444" />;
+            case "flora":
+                return <Trees size={18} color="#10b981" />;
+            case "inspection":
+                return <AlertCircle size={18} color="#f59e0b" />;
+            case "fixture":
+                return <Sparkles size={18} color="#06b6d4" />;
+            case "callout":
+                return <Type size={18} color="#8b5cf6" />;
+            case "utility":
+                return <Zap size={18} color="#f97316" />;
+            case "polygon":
+                return <Hexagon size={18} color="#3b82f6" />;
+            case "rectangle":
+                return <Square size={18} color="#6366f1" />;
+            case "radius":
+                return <Circle size={18} color="#8b5cf6" />;
+            case "curve":
+                return <Spline size={18} color="#10b981" />;
+            case "measure":
+                return <Ruler size={18} color="#ec4899" />;
+            case "setback":
+                return <Columns2 size={18} color="#f59e0b" />;
+            case "material":
+                return <Palette size={18} color="#22c55e" />;
+            case "line":
+                return <Ruler size={18} color="#3b82f6" />;
+            case "apartment":
+                return <img src="/icons/building-point.svg" alt="Apartment" style={{ width: 18, height: 18, filter: 'invert(1)' }} />;
+            case "unit":
+                return <img src="/icons/unit-point.svg" alt="Unit" style={{ width: 18, height: 18, filter: 'invert(1)' }} />;
+            default:
+                if (p.icon && p.icon.length <= 4) {
+                    return <span style={{ fontSize: '16px' }}>{p.icon}</span>;
+                }
+                return <MapPin size={18} color="#ef4444" />;
+        }
     };
 
     const mapGroups = useMemo(() => {
@@ -80,52 +147,51 @@ export default function DataTab({
                     <div 
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`flex items-center justify-between p-2 rounded-md hover:bg-accent cursor-pointer group transition-colors border ${snapshot.isDragging ? 'bg-accent border-border shadow-md z-50' : 'border-transparent hover:border-border'}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '8px 10px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            backgroundColor: snapshot.isDragging ? 'var(--color-border)' : 'var(--color-background-card)',
+                            border: '1px solid var(--color-border)',
+                            boxShadow: snapshot.isDragging ? '0 4px 12px rgba(0,0,0,0.3)' : 'none',
+                            zIndex: snapshot.isDragging ? 50 : 1,
+                            transition: 'background-color 0.2s'
+                        }}
                         onClick={() => handlePointSelect(p)}
                     >
-                        <div className="flex items-center gap-3 overflow-hidden flex-1">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', flex: 1 }}>
                             <div 
                                 {...provided.dragHandleProps}
-                                className="opacity-0 group-hover:opacity-50 hover:!opacity-100 cursor-grab active:cursor-grabbing transition-opacity"
+                                style={{ cursor: 'grab', display: 'flex', alignItems: 'center', opacity: 0.6 }}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <GripVertical className="w-4 h-4" />
+                                <GripVertical size={16} />
                             </div>
 
-                            <div className="flex items-center justify-center w-6 h-6 shrink-0">
-                                {isProperty ? (
-                                    (p.icon && (p.icon.startsWith("http") || p.icon.startsWith("/") || p.icon.startsWith("data:"))) ? <img src={p.icon} alt="Icon" className="w-5 h-5 object-contain" /> :
-                                    p.icon ? <span className="text-lg">{p.icon}</span> :
-                                    p.type === "home" ? <img src="/icons/home-point.svg" alt="Home" className="dark:invert w-5 h-5" /> :
-                                    p.type === "apartment" ? <img src="/icons/building-point.svg" alt="Apartment" className="dark:invert w-5 h-5" /> :
-                                    p.type === "unit" ? <img src="/icons/unit-point.svg" alt="Unit" className="dark:invert w-5 h-5" /> :
-                                    "📍"
-                                ) : (
-                                    p.type === "radius" ? "⭕" :
-                                    p.type === "line" ? "📏" :
-                                    (p.icon && (p.icon.startsWith("http") || p.icon.startsWith("/") || p.icon.startsWith("data:"))) ? <img src={p.icon} alt="Marker" className="w-5 h-5 object-contain" /> :
-                                    (p.icon ? <span className="text-lg">{p.icon}</span> : "📍")
-                                )}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, flexShrink: 0 }}>
+                                {renderItemIcon(p, isProperty)}
                             </div>
                             
-                            <div className="flex items-center gap-2 overflow-hidden flex-1">
-                                <span className="truncate text-sm font-medium">
-                                    {(p.name || (p.type === "marker" || p.type === "icon" ? "Icon" : `${isProperty ? 'Property' : 'Point'} ${p.id}`)).replace("(Unsaved)", "").trim()}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px', fontWeight: 500 }}>
+                                    {(p.text || p.extra_info?.text || p.name || (p.type === "marker" || p.type === "icon" ? "Icon" : `${isProperty ? 'Property' : 'Point'} ${p.id}`)).replace("(Unsaved)", "").trim()}
                                 </span>
                                 {(p.name?.includes("(Unsaved)") || p.source === "canvas" || p.source === "mod") && (
-                                    <div className="w-2 h-2 bg-amber-500 rounded-full shrink-0" title="Unsaved changes" />
+                                    <div style={{ width: 8, height: 8, backgroundColor: '#f59e0b', borderRadius: '50%', flexShrink: 0 }} title="Unsaved changes" />
                                 )}
                             </div>
                         </div>
                         
                         <Button 
                             variant="ghost" 
-                            size="icon" 
-                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                            size="small"
+                            label="Delete"
+                            icon={<Trash2 size={14} />}
                             onClick={(e) => { e.stopPropagation(); deleteCanvasObjects(p.id); }}
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
+                        />
                     </div>
                 )}
             </Draggable>
@@ -133,21 +199,34 @@ export default function DataTab({
     };
 
     return (
-        <div className="flex flex-col p-4 gap-6 h-full overflow-y-auto">
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '14px 12px', gap: '12px', height: '100%', overflowY: 'auto' }}>
             <DragDropContext onDragEnd={onDragEnd}>
                 {mapGroups.map((group) => {
                     const isOpen = openMaps[group.id] !== false;
                     return (
-                        <div key={`map-group-${group.id}`} className="flex flex-col gap-2">
+                        <div key={`map-group-${group.id}`} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                             <button 
                                 onClick={() => toggleMapOpen(group.id)}
-                                className={`flex items-center justify-between font-semibold tracking-tight text-sm w-full hover:bg-accent/50 p-2 rounded-md transition-colors ${group.id === Number(mapId) ? "text-primary" : "text-foreground"}`}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    fontWeight: 600,
+                                    fontSize: '13px',
+                                    width: '100%',
+                                    padding: '8px 10px',
+                                    borderRadius: '6px',
+                                    backgroundColor: 'var(--color-background-surface)',
+                                    border: '1px solid var(--color-border)',
+                                    color: 'var(--color-text-primary)',
+                                    cursor: 'pointer'
+                                }}
                             >
-                                <div className="flex flex-col items-start gap-1">
-                                    <span className="truncate max-w-[200px] text-left">{group.name}</span>
-                                    {group.id === Number(mapId) && <span className="text-[10px] uppercase tracking-wider opacity-70">Base Map</span>}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px', overflow: 'hidden' }}>
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px', textAlign: 'left' }}>{group.name}</span>
+                                    {group.id === Number(mapId) && <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.7 }}>Base Map</span>}
                                 </div>
-                                <ChevronDown className={`w-4 h-4 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+                                <ChevronDown size={14} style={{ transition: 'transform 0.2s', flexShrink: 0, transform: isOpen ? 'rotate(180deg)' : 'none' }} />
                             </button>
                             
                             {isOpen && (
@@ -156,10 +235,20 @@ export default function DataTab({
                                         <div 
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
-                                            className={`flex flex-col gap-2 mt-2 min-h-[50px] p-2 rounded-md transition-colors ${snapshot.isDraggingOver ? 'bg-accent/50 border-dashed border-2 border-primary/50' : 'border-2 border-transparent'}`}
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                gap: '6px',
+                                                marginTop: '4px',
+                                                minHeight: '40px',
+                                                padding: '4px',
+                                                borderRadius: '6px',
+                                                border: snapshot.isDraggingOver ? '2px dashed var(--color-border)' : '1px dashed transparent',
+                                                backgroundColor: snapshot.isDraggingOver ? 'var(--color-background-card)' : 'transparent'
+                                            }}
                                         >
                                             {group.items.length === 0 && !snapshot.isDraggingOver && (
-                                                <div className="text-sm text-muted-foreground text-center py-4">No data</div>
+                                                <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textAlign: 'center', padding: '12px' }}>No data</div>
                                             )}
                                             {group.items.map((item, index) => renderItem(item, index))}
                                             {provided.placeholder}

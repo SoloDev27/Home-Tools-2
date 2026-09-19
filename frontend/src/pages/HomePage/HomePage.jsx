@@ -1,5 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@astryxdesign/core/Button";
+import { Card } from "@astryxdesign/core/Card";
+import { Grid } from "@astryxdesign/core/Grid";
+import { VStack } from "@astryxdesign/core/VStack";
+import { Center } from "@astryxdesign/core/Center";
+import { Heading } from "@astryxdesign/core/Heading";
+import { Text } from "@astryxdesign/core/Text";
 import { useNavigate } from "react-router-dom";
 
 const features = [
@@ -12,43 +17,48 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-background to-muted/30 p-8">
-            <Card className="max-w-md w-full mb-8">
-                <CardHeader className="text-center pb-2">
-                    <span className="text-4xl mb-2">🏠</span>
-                    <CardTitle className="text-3xl font-bold">Home Tools</CardTitle>
-                    <CardDescription className="text-base mt-1">
-                        Professional floorplan design and 3D visualization
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-3 px-8 pb-8">
-                    <Button
-                        className="w-full h-12 text-base"
-                        size="lg"
-                        onClick={() => navigate("/login")}
-                    >
-                        Get Started
-                    </Button>
-                    <Button
-                        className="w-full h-12 text-base"
-                        variant="outline"
-                        size="lg"
-                        onClick={() => navigate("/signup")}
-                    >
-                        Create Account
-                    </Button>
-                </CardContent>
-            </Card>
+        <Center width="100%" height="100%" padding={6} style={{ flex: 1, minHeight: '100%' }}>
+            <VStack align="center" gap={6} width="100%">
+                <Card maxWidth={440} width="100%" padding={6} elevation="low">
+                    <VStack align="center" gap={4} width="100%">
+                        <span style={{ fontSize: '3rem', userSelect: 'none' }}>🏠</span>
+                        <VStack align="center" gap={1}>
+                            <Heading level={1} type="display-3" justify="center">Home Tools</Heading>
+                            <Text type="large" color="secondary" justify="center">
+                                Professional floorplan design and 3D visualization
+                            </Text>
+                        </VStack>
+                        <VStack gap={3} width="100%">
+                            <Button
+                                label="Get Started"
+                                variant="primary"
+                                size="lg"
+                                width="100%"
+                                onClick={() => navigate("/login")}
+                            />
+                            <Button
+                                label="Create Account"
+                                variant="secondary"
+                                size="lg"
+                                width="100%"
+                                onClick={() => navigate("/signup")}
+                            />
+                        </VStack>
+                    </VStack>
+                </Card>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
-                {features.map((f, i) => (
-                    <Card key={i} className="text-center p-4">
-                        <span className="text-2xl">{f.icon}</span>
-                        <h3 className="font-semibold text-sm mt-2">{f.title}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>
-                    </Card>
-                ))}
-            </div>
-        </div>
+                <Grid columns={{ minWidth: 200, max: 3 }} gap={4} maxWidth={680} width="100%">
+                    {features.map((f, i) => (
+                        <Card key={i} padding={4} elevation="none">
+                            <VStack align="center" gap={2} width="100%">
+                                <span style={{ fontSize: '2rem', userSelect: 'none' }}>{f.icon}</span>
+                                <Heading level={3} weight="semibold" justify="center">{f.title}</Heading>
+                                <Text type="supporting" justify="center">{f.desc}</Text>
+                            </VStack>
+                        </Card>
+                    ))}
+                </Grid>
+            </VStack>
+        </Center>
     );
 }

@@ -1,12 +1,11 @@
 import { useState, useEffect, useMemo, useRef, createContext, useContext, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
+import { Box, ExternalLink } from "lucide-react";
 import { Tree } from "react-arborist";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Button } from "@astryxdesign/core/Button";
+import { Badge } from "@astryxdesign/core/Badge";
+import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
 import { reverseLookupAddress } from "../../../../functions/nominatim";
 import NodeDetailsEditor from "./NodeDetailsEditor";
 import NoteCanvas from "./NoteCanvas";
@@ -93,13 +92,13 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
         >
             <div className="node-toggle-col">
                 {hasChildren && (
-                    <Button variant="ghost" size="icon" className="node-toggle-btn" onClick={(e) => { e.stopPropagation(); node.toggle(); }}>
+                    <button type="button" className="node-toggle-btn" onClick={(e) => { e.stopPropagation(); node.toggle(); }}>
                         <img
                             src={node.isOpen ? "/icons/arrow_drop_down.svg" : "/icons/arrow_drop_up.svg"}
                             alt="toggle"
                             className="toggle-svg"
                         />
-                    </Button>
+                    </button>
                 )}
             </div>
 
@@ -108,19 +107,20 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
             </div>
             
             {isEditing ? (
-                <Input
+                <input
                     value={tempName}
                     onChange={(e) => setTempName(e.target.value)}
                     onBlur={() => { setIsEditing(false); handleRenameNode(node.id, tempName); }}
                     onKeyDown={(e) => { if (e.key === 'Enter') { setIsEditing(false); handleRenameNode(node.id, tempName); } }}
                     autoFocus
                     onClick={(e) => e.stopPropagation()}
-                    className="h-7 text-sm"
+                    className="sidebar-input"
+                    style={{ height: '28px', fontSize: '13px', padding: '2px 6px' }}
                 />
             ) : (
                 <div className="node-text-wrapper">
                     <span className="node-text">{node.data.name}</span>
-                    {node.data.type === 'notes-folder' && <Badge variant={noteCount > 0 ? "default" : "outline"} className="ml-auto">{noteCount}</Badge>}
+                    {node.data.type === 'notes-folder' && <Badge variant="neutral">{noteCount}</Badge>}
                     {isDirty && !isFolder && <span className="dirty-indicator">●</span>}
                 </div>
             )}
@@ -128,25 +128,24 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
             <div className="node-actions">
                 {node.data.type === 'property' && (
                     <>
-                        <Button
-                            variant="ghost"
-                            size="icon"
+                        <button
+                            type="button"
                             title={hideAllNotes ? "Show Notes" : "Hide Notes"}
                             onClick={(e) => { e.stopPropagation(); setHideAllNotes(!hideAllNotes); }}
-                            className={hideAllNotes ? 'active' : ''}
+                            className={`action-btn ${hideAllNotes ? 'active' : ''}`}
                         >
                             <img src={hideAllNotes ? "/icons/folder_off.svg" : "/icons/folder.svg"} className="action-svg icon-notes" alt="toggle" />
-                        </Button>
-                        <Button variant="ghost" size="icon" title="Add Floor" onClick={(e) => { e.stopPropagation(); handleCreateChild('root', 'floor'); }}>
+                        </button>
+                        <button type="button" className="action-btn" title="Add Floor" onClick={(e) => { e.stopPropagation(); handleCreateChild('root', 'floor'); }}>
                             <img src="/icons/add-custom.svg" alt="add" className="action-svg" />
-                        </Button>
+                        </button>
                     </>
                 )}
                 {node.data.type === 'floor' && (
                     <div className="add-room-container">
-                        <Button variant="ghost" size="icon" title="Add Room..." onClick={(e) => { e.stopPropagation(); setShowRoomTypes(!showRoomTypes); }}>
+                        <button type="button" className="action-btn" title="Add Room..." onClick={(e) => { e.stopPropagation(); setShowRoomTypes(!showRoomTypes); }}>
                             <img src="/icons/add-custom.svg" alt="add" className="action-svg" />
-                        </Button>
+                        </button>
                         {showRoomTypes && (
                             <div className="room-type-dropdown">
                                 {roomTypes.map(type => (
@@ -164,18 +163,18 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
                     </div>
                 )}
                 {(node.data.type === 'notes-folder' || node.data.type === 'exterior-folder') && (
-                    <Button variant="ghost" size="icon" title="Add Note" onClick={(e) => { e.stopPropagation(); handleCreateChild(node.data.parentId, 'note'); }}>
+                    <button type="button" className="action-btn" title="Add Note" onClick={(e) => { e.stopPropagation(); handleCreateChild(node.data.parentId, 'note'); }}>
                         <img src="/icons/assignment_add.svg" alt="add" className="action-svg" />
-                    </Button>
+                    </button>
                 )}
                 {node.data.type !== 'property' && !isFolder && (
                     <>
-                        <Button variant="ghost" size="icon" title="Rename" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+                        <button type="button" className="action-btn" title="Rename" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
                             <img src="/icons/brush.svg" alt="edit" className="action-svg" />
-                        </Button>
-                        <Button variant="ghost" size="icon" title="Delete" onClick={(e) => { e.stopPropagation(); handleDeleteNode(node.id); }}>
+                        </button>
+                        <button type="button" className="action-btn" title="Delete" onClick={(e) => { e.stopPropagation(); handleDeleteNode(node.id); }}>
                             <img src="/icons/delete.svg" className="action-svg icon-danger" alt="delete" />
-                        </Button>
+                        </button>
                     </>
                 )}
             </div>
@@ -184,6 +183,7 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
 };
 
 export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDelete, isPinned, onPinToggle }) {
+    const navigate = useNavigate();
     const treeRef = useRef(null);
     const containerRef = useRef(null);
     const [activeTab, setActiveTab] = useState("general");
@@ -618,240 +618,312 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                         <p className="sidebar-subtitle">Editing {name}</p>
                     </div>
                     <div className="sidebar-header-actions">
-                        <Button variant="ghost" size="icon" onClick={onPinToggle}>
+                        <Button variant="ghost" isIconOnly label="Pin sidebar" onClick={onPinToggle}>
                             {isPinned ? '📍' : '📌'}
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={onClose}>
+                        <Button variant="ghost" isIconOnly label="Close sidebar" onClick={onClose}>
                              <img src="/icons/delete.svg" className="close-svg" alt="close" />
                         </Button>
                     </div>
                 </header>
 
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 min-h-0">
-                    <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-auto p-0 gap-0">
-                        <TabsTrigger value="general" className="rounded-none data-active:bg-transparent data-active:border-b-2 data-active:border-primary flex-1">General</TabsTrigger>
-                        <TabsTrigger value="structure" className="rounded-none data-active:bg-transparent data-active:border-b-2 data-active:border-primary flex-1">Details</TabsTrigger>
-                        <TabsTrigger value="editor" className="rounded-none data-active:bg-transparent data-active:border-b-2 data-active:border-primary flex-1">Editor</TabsTrigger>
-                    </TabsList>
+                <div style={{ padding: '8px 16px 0 16px' }}>
+                    <SegmentedControl
+                        value={activeTab}
+                        onChange={(val) => setActiveTab(val)}
+                        label="Sidebar tabs"
+                        layout="fill"
+                    >
+                        <SegmentedControlItem value="general">General</SegmentedControlItem>
+                        <SegmentedControlItem value="structure">Details</SegmentedControlItem>
+                        <SegmentedControlItem value="editor">Editor</SegmentedControlItem>
+                    </SegmentedControl>
+                </div>
 
-                    <div className="sidebar-form" ref={containerRef}>
-                        <TabsContent value="general">
-                            <Card className="sidebar-pane border-0 shadow-none">
-                                <div className="sidebar-group">
-                                    <Label>Name</Label>
-                                    <Input value={name} onChange={(e) => { 
-                                        const val = e.target.value;
-                                        setName(val);
-                                        onUpdate({ ...point, name: `(Unsaved) ${val}` });
-                                    }} />
+                <div className="sidebar-form" ref={containerRef}>
+                    {activeTab === "general" && (
+                        <div className="sidebar-pane" style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                            <div className="sidebar-group">
+                                <label className="sidebar-label">Name</label>
+                                <input className="sidebar-input" value={name} onChange={(e) => { 
+                                    const val = e.target.value;
+                                    setName(val);
+                                    onUpdate({ ...point, name: `(Unsaved) ${val}` });
+                                }} />
+                            </div>
+                            <div className="sidebar-group">
+                                <label className="sidebar-label">Type</label>
+                                <select className="sidebar-input sidebar-select" value={type} onChange={(e) => {
+                                    const val = e.target.value;
+                                    setType(val);
+                                    onUpdate({ ...point, type: val, name: `(Unsaved) ${name}` });
+                                }}>
+                                    <option value="structure">Structure / Dwelling</option>
+                                    <option value="valve">Utility / Shut-off Valve</option>
+                                    <option value="flora">Tree / Landscape Specimen</option>
+                                    <option value="inspection">Work Order / Inspection</option>
+                                    <option value="fixture">Outdoor Fixture / HVAC</option>
+                                    <option value="callout">Text Callout / Note</option>
+                                    <option value="marker">General Marker</option>
+                                    <option value="home">Home (Legacy)</option>
+                                    <option value="apartment">Apartment (Legacy)</option>
+                                    <option value="unit">Unit (Legacy)</option>
+                                    <option value="point">Generic Point</option>
+                                </select>
+                            </div>
+                            <div className="sidebar-group">
+                                <label className="sidebar-label">Address</label>
+                                <input className="sidebar-input" value={location || ""} onChange={(e) => {
+                                    const val = e.target.value;
+                                    setLocation(val);
+                                    onUpdate({ ...point, location: val, name: `(Unsaved) ${name}` });
+                                }} placeholder="Enter address..." />
+                            </div>
+                            <div className="sidebar-group">
+                                <label className="sidebar-label">Coordinates</label>
+                                <div className="sidebar-coords">
+                                    <span>LAT {point.lat != null ? Number(point.lat).toFixed(6) : "—"}</span>
+                                    <span>LNG {point.lng != null ? Number(point.lng).toFixed(6) : "—"}</span>
                                 </div>
+                            </div>
+
+                            {(point.area || point.extra_info?.area) && (
                                 <div className="sidebar-group">
-                                    <Label>Type</Label>
-                                    <select className="sidebar-input sidebar-select" value={type} onChange={(e) => {
-                                        const val = e.target.value;
-                                        setType(val);
-                                        onUpdate({ ...point, type: val, name: `(Unsaved) ${name}` });
-                                    }}>
-                                        <option value="home">Home</option>
-                                        <option value="apartment">Apartment</option>
-                                        <option value="unit">Unit</option>
-                                        <option value="point">Point</option>
-                                    </select>
-                                </div>
-                                <div className="sidebar-group">
-                                    <Label>Address</Label>
-                                    <Input value={location || ""} onChange={(e) => {
-                                        const val = e.target.value;
-                                        setLocation(val);
-                                        onUpdate({ ...point, location: val, name: `(Unsaved) ${name}` });
-                                    }} placeholder="Enter address..." />
-                                </div>
-                                <div className="sidebar-group">
-                                    <Label>Coordinates</Label>
-                                    <div className="sidebar-coords">
-                                        <span>LAT {point.lat.toFixed(6)}</span>
-                                        <span>LNG {point.lng.toFixed(6)}</span>
+                                    <label className="sidebar-label">Calculated Area</label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px 10px', background: 'var(--color-background-card)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                            {Number(point.area ?? point.extra_info?.area ?? 0).toLocaleString(undefined, { maximumFractionDigits: 1 })} sq ft
+                                        </span>
+                                        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                                            {(Number(point.area ?? point.extra_info?.area ?? 0) / 43560).toFixed(2)} acres
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="sidebar-footer-push"></div>
-                                <div className="sidebar-footer-anchor">
-                                    {!confirmingDelete ? (
-                                        <Button variant="destructive" size="sm" className="w-full" onClick={() => setConfirmingDelete(true)}>Delete Point</Button>
-                                    ) : (
-                                        <div className="delete-confirm">
-                                            <span>Confirm Deletion?</span>
-                                            <div style={{ display: 'flex', gap: '8px' }}>
-                                                <Button variant="destructive" size="sm" onClick={() => onDelete(point.id)}>Confirm</Button>
-                                                <Button variant="ghost" size="sm" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </Card>
-                        </TabsContent>
+                            )}
 
-                        <TabsContent value="structure">
-                            <Card className="sidebar-pane flex-pane border-0 shadow-none">
-                                <div className="tree-scroll-container" style={{ height: `${splitHeight}px` }}>
-                                    <Tree
-                                        ref={treeRef}
-                                        data={treeData}
-                                        width="100%"
-                                        height={splitHeight}
-                                        indent={20}
-                                        rowHeight={36}
-                                        overscanCount={1}
+                            {(point.distance || point.extra_info?.distance || point.perimeter || point.extra_info?.perimeter) && (
+                                <div className="sidebar-group">
+                                    <label className="sidebar-label">
+                                        {point.perimeter || point.extra_info?.perimeter ? "Perimeter / Boundary" : "Linear Distance"}
+                                    </label>
+                                    <div style={{ padding: '8px 10px', background: 'var(--color-background-card)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+                                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                            {Number(point.distance ?? point.extra_info?.distance ?? point.perimeter ?? point.extra_info?.perimeter ?? 0).toLocaleString(undefined, { maximumFractionDigits: 1 })} ft
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {(point.type === "structure" || point.type === "home" || point.type === "apartment") && (
+                                <div className="sidebar-group" style={{ marginTop: '8px' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/render")}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            width: '100%',
+                                            padding: '10px 14px',
+                                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                                            color: '#ffffff',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            fontWeight: 600,
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
+                                            transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)'; }}
                                     >
-                                        {NodeRenderer}
-                                    </Tree>
+                                        <Box size={16} />
+                                        <span>Open Interior Floorplan Studio</span>
+                                        <ExternalLink size={14} style={{ opacity: 0.8 }} />
+                                    </button>
                                 </div>
+                            )}
+                            <div className="sidebar-footer-push"></div>
+                            <div className="sidebar-footer-anchor">
+                                {!confirmingDelete ? (
+                                    <Button variant="destructive" label="Delete Point" size="small" style={{ width: '100%' }} onClick={() => setConfirmingDelete(true)}>Delete Point</Button>
+                                ) : (
+                                    <div className="delete-confirm">
+                                        <span>Confirm Deletion?</span>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <Button variant="destructive" label="Confirm" size="small" onClick={() => onDelete(point.id)}>Confirm</Button>
+                                            <Button variant="ghost" label="Cancel" size="small" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
-                                <div className="split-divider" onMouseDown={handleMouseDown}>
-                                    <div className="divider-handle"></div>
-                                </div>
+                    {activeTab === "structure" && (
+                        <div className="sidebar-pane flex-pane" style={{ padding: '16px' }}>
+                            <div className="tree-scroll-container" style={{ height: `${splitHeight}px` }}>
+                                <Tree
+                                    ref={treeRef}
+                                    data={treeData}
+                                    width="100%"
+                                    height={splitHeight}
+                                    indent={20}
+                                    rowHeight={36}
+                                    overscanCount={1}
+                                >
+                                    {NodeRenderer}
+                                </Tree>
+                            </div>
 
-                                <div className="editor-scroll-container">
-                                    {selectedNodeData && (
-                                        <NodeDetailsEditor 
-                                            nodeData={selectedNodeData} 
-                                            onUpdate={(details) => handleUpdateNodeDetails(selectedNodeId, details)}
-                                            onUpdateNode={handleUpdateNodeDetails}
-                                            onCreateChild={handleCreateChild}
-                                            hierarchy={hierarchy}
-                                        />
-                                    )}
-                                 </div>
-                            </Card>
-                        </TabsContent>
+                            <div className="split-divider" onMouseDown={handleMouseDown}>
+                                <div className="divider-handle"></div>
+                            </div>
 
-                        <TabsContent value="editor">
-                            <Card className="sidebar-pane editor-pane border-0 shadow-none">
-                                {!selectedDetailNoteId ? (
-                                    <>
-                                        <PersonaMenu />
-                                        <div className="document-portal">
-                                            <Label>Document Portal</Label>
-                                            <div className="portal-navigator">
-                                                {groupedDocuments.map(group => {
-                                                    const isOpen = expandedFolders.has(group.id);
-                                                    return (
-                                                        <div key={group.id} className={`portal-group ${isOpen ? 'is-open' : 'is-closed'}`}>
-                                                            <div className="portal-group-header" onClick={() => toggleFolder(group.id)}>
-                                                                <div className="folder-name">
-                                                                    <img 
-                                                                        src={isOpen ? "/icons/arrow_drop_down.svg" : "/icons/arrow_drop_up.svg"} 
-                                                                        alt="toggle"
-                                                                        className="portal-toggle-icon"
-                                                                    />
-                                                                    <span>{group.name}</span>
-                                                                </div>
-                                                                <Button variant="ghost" size="sm" className="portal-add-btn" title="New Document" onMouseDown={(e) => handleOpenTemplateMenu(e, group.id)}>+</Button>
+                            <div className="editor-scroll-container">
+                                {selectedNodeData && (
+                                    <NodeDetailsEditor 
+                                        nodeData={selectedNodeData} 
+                                        onUpdate={(details) => handleUpdateNodeDetails(selectedNodeId, details)}
+                                        onUpdateNode={handleUpdateNodeDetails}
+                                        onCreateChild={handleCreateChild}
+                                        hierarchy={hierarchy}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === "editor" && (
+                        <div className="sidebar-pane editor-pane" style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                            {!selectedDetailNoteId ? (
+                                <>
+                                    <PersonaMenu />
+                                    <div className="document-portal">
+                                        <label className="sidebar-label">Document Portal</label>
+                                        <div className="portal-navigator">
+                                            {groupedDocuments.map(group => {
+                                                const isOpen = expandedFolders.has(group.id);
+                                                return (
+                                                    <div key={group.id} className={`portal-group ${isOpen ? 'is-open' : 'is-closed'}`}>
+                                                        <div className="portal-group-header" onClick={() => toggleFolder(group.id)}>
+                                                            <div className="folder-name">
+                                                                <img 
+                                                                    src={isOpen ? "/icons/arrow_drop_down.svg" : "/icons/arrow_drop_up.svg"} 
+                                                                    alt="toggle"
+                                                                    className="portal-toggle-icon"
+                                                                />
+                                                                <span>{group.name}</span>
                                                             </div>
-                                                            {isOpen && (
-                                                                <div className="portal-docs">
-                                                                     {group.docs.map(doc => (
-                                                                        <div 
-                                                                            key={doc.id} 
-                                                                            className={`portal-doc-item ${selectedDetailNoteId === doc.id ? 'active' : ''}`}
-                                                                            onClick={() => setSelectedDetailNoteId(doc.id)}
-                                                                        >
-                                                                            <img src="/icons/assignment.svg" alt="doc" className="doc-icon" />
-                                                                            <span>{doc.title || doc.name}</span>
-                                                                            {doc.isDirty && <span className="dirty-dot" title="Unsaved changes">●</span>}
-                                                                        </div>
-                                                                    ))}
-                                                                    {group.docs.length === 0 && <span className="empty-msg">No documents available</span>}
-                                                                </div>
-                                                            )}
+                                                            <Button variant="ghost" size="small" label="+" className="portal-add-btn" title="New Document" onMouseDown={(e) => handleOpenTemplateMenu(e, group.id)}>+</Button>
                                                         </div>
-                                                    );
-                                                })}
-                                                {groupedDocuments.length === 0 && (
-                                                    <div className="portal-empty-state">
-                                                        <p>Initializing property hierarchy...</p>
+                                                        {isOpen && (
+                                                            <div className="portal-docs">
+                                                                 {group.docs.map(doc => (
+                                                                    <div 
+                                                                        key={doc.id} 
+                                                                        className={`portal-doc-item ${selectedDetailNoteId === doc.id ? 'active' : ''}`}
+                                                                        onClick={() => setSelectedDetailNoteId(doc.id)}
+                                                                    >
+                                                                        <img src="/icons/assignment.svg" alt="doc" className="doc-icon" />
+                                                                        <span>{doc.title || doc.name}</span>
+                                                                        {doc.isDirty && <span className="dirty-dot" title="Unsaved changes">●</span>}
+                                                                    </div>
+                                                                ))}
+                                                                {group.docs.length === 0 && <span className="empty-msg">No documents available</span>}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                )}
+                                                );
+                                            })}
+                                            {groupedDocuments.length === 0 && (
+                                                <div className="portal-empty-state">
+                                                    <p>Initializing property hierarchy...</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                selectedDetailNote && (() => {
+                                    const isInspection = (selectedDetailNote.name || "").includes("Inspection");
+                                    const isBuild = (selectedDetailNote.name || "").includes("Build");
+                                    const isCreative = (selectedDetailNote.name || "").includes("Creative");
+                                    const noteColor = isInspection ? "#60a5fa" : isBuild ? "#34d399" : isCreative ? "#a78bfa" : "var(--accent)";
+
+                                    const handleAddBlockInternal = (type) => {
+                                        const id = `b-${Math.random().toString(36).substr(2, 9)}`;
+                                        let data = "";
+                                        if (type === 'inspector_findings') data = [{ label: "General Condition", status: "ok" }];
+                                        if (type === 'builder_cost') data = [{ item: "Initial Material", est: 0, act: 0 }];
+                                        
+                                        const updatedBlocks = [...(selectedDetailNote.blocks || []), { id, type, data }];
+                                        handleUpdateNodeDetails(selectedDetailNoteId, { blocks: updatedBlocks });
+                                        setUtilityMenuOpen(false);
+                                    };
+
+                                    return (
+                                        <div className="details-note-view fullscreen-integrated">
+                                            <div className="editor-topbar">
+                                                <div className="topbar-left">
+                                                    <div className="editor-title-container">
+                                                        <input
+                                                            className="editor-topbar-input sidebar-input"
+                                                            value={selectedDetailNote.title || selectedDetailNote.name}
+                                                            onChange={(e) => handleRenameNode(selectedDetailNoteId, e.target.value)}
+                                                            placeholder="Document Title..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="topbar-right">
+                                                    <div className="utility-menu-container">
+                                                        <Button
+                                                            variant="ghost"
+                                                            isIconOnly
+                                                            label="Block Tools"
+                                                            className="utility-trigger"
+                                                            onClick={() => setUtilityMenuOpen(!utilityMenuOpen)}
+                                                            title="Block Tools"
+                                                        >
+                                                            ⋮
+                                                        </Button>
+                                                        {utilityMenuOpen && (
+                                                            <div className="utility-dropdown">
+                                                                <div className="utility-opt" onClick={() => handleAddBlockInternal('inspector_findings')}>
+                                                                    <span>🔍</span> Findings Context
+                                                                </div>
+                                                                <div className="utility-opt" onClick={() => handleAddBlockInternal('builder_cost')}>
+                                                                    <span>🏗️</span> Cost Track
+                                                                </div>
+                                                                <div className="utility-opt" onClick={() => handleAddBlockInternal('rich_text')}>
+                                                                    <span>✍️</span> Text Block
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <Button variant="ghost" isIconOnly label="Close Editor" className="exit-editor-btn" onClick={() => setSelectedDetailNoteId(null)} title="Close Editor">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                                          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                                        </svg>
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="editor-scroll-body">
+                                                <NoteCanvas 
+                                                    noteData={selectedDetailNote} 
+                                                    onUpdate={(details) => handleUpdateNodeDetails(selectedDetailNoteId, details)} 
+                                                />
                                             </div>
                                         </div>
-                                    </>
-                                ) : (
-                                    selectedDetailNote && (() => {
-                                        const isInspection = (selectedDetailNote.name || "").includes("Inspection");
-                                        const isBuild = (selectedDetailNote.name || "").includes("Build");
-                                        const isCreative = (selectedDetailNote.name || "").includes("Creative");
-                                        const noteColor = isInspection ? "#60a5fa" : isBuild ? "#34d399" : isCreative ? "#a78bfa" : "var(--accent)";
-
-                                        const handleAddBlockInternal = (type) => {
-                                            const id = `b-${Math.random().toString(36).substr(2, 9)}`;
-                                            let data = "";
-                                            if (type === 'inspector_findings') data = [{ label: "General Condition", status: "ok" }];
-                                            if (type === 'builder_cost') data = [{ item: "Initial Material", est: 0, act: 0 }];
-                                            
-                                            const updatedBlocks = [...(selectedDetailNote.blocks || []), { id, type, data }];
-                                            handleUpdateNodeDetails(selectedDetailNoteId, { blocks: updatedBlocks });
-                                            setUtilityMenuOpen(false);
-                                        };
-
-                                        return (
-                                            <div className="details-note-view fullscreen-integrated">
-                                                <div className="editor-topbar">
-                                                    <div className="topbar-left">
-                                                        <div className="editor-title-container">
-                                                            <Input
-                                                                className="editor-topbar-input"
-                                                                value={selectedDetailNote.title || selectedDetailNote.name}
-                                                                onChange={(e) => handleRenameNode(selectedDetailNoteId, e.target.value)}
-                                                                placeholder="Document Title..."
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="topbar-right">
-                                                        <div className="utility-menu-container">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="utility-trigger"
-                                                                onClick={() => setUtilityMenuOpen(!utilityMenuOpen)}
-                                                                title="Block Tools"
-                                                            >
-                                                                ⋮
-                                                            </Button>
-                                                            {utilityMenuOpen && (
-                                                                <div className="utility-dropdown">
-                                                                    <div className="utility-opt" onClick={() => handleAddBlockInternal('inspector_findings')}>
-                                                                        <span>🔍</span> Findings Context
-                                                                    </div>
-                                                                    <div className="utility-opt" onClick={() => handleAddBlockInternal('builder_cost')}>
-                                                                        <span>🏗️</span> Cost Track
-                                                                    </div>
-                                                                    <div className="utility-opt" onClick={() => handleAddBlockInternal('rich_text')}>
-                                                                        <span>✍️</span> Text Block
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <Button variant="ghost" size="icon" className="exit-editor-btn" onClick={() => setSelectedDetailNoteId(null)} title="Close Editor">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                                              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                                            </svg>
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="editor-scroll-body">
-                                                    <NoteCanvas 
-                                                        noteData={selectedDetailNote} 
-                                                        onUpdate={(details) => handleUpdateNodeDetails(selectedDetailNoteId, details)} 
-                                                    />
-                                                </div>
-                                            </div>
-                                        );
-                                    })()
-                                )}
-                            </Card>
-                        </TabsContent>
-                    </div>
-                </Tabs>
+                                    );
+                                })()
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </SidebarContext.Provider>
     );

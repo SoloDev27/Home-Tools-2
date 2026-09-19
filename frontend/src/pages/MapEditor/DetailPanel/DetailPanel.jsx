@@ -9,7 +9,20 @@ export default function DetailPanel({
     if (!selectedPoint) return null;
 
     return (
-        <aside className="absolute top-0 right-0 h-full w-96 bg-background border-l z-40 shadow-xl overflow-hidden animate-in slide-in-from-right-4 duration-200">
+        <aside style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: '384px',
+            backgroundColor: 'var(--color-background-surface)',
+            borderLeft: '1px solid var(--color-border)',
+            zIndex: 45,
+            boxShadow: '-4px 0 16px rgba(0,0,0,0.2)',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+        }}>
             <PropertyDetailsSidebar
                 point={selectedPoint}
                 onClose={handleCloseSidebar}
@@ -20,5 +33,5 @@ export default function DetailPanel({
                 onPinToggle={onPinToggle}
             />
         </aside>
-    )
+    );
 }

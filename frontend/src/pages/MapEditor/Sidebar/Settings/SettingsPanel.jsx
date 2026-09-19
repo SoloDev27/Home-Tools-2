@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { Button } from "@astryxdesign/core/Button";
+import { Text } from "@astryxdesign/core/Text";
+import { Heading } from "@astryxdesign/core/Heading";
 import { thunkUpdateSettings } from "../../../../redux/settings";
 
 export default function SettingsPanel({ onClose }) {
@@ -13,90 +14,102 @@ export default function SettingsPanel({ onClose }) {
     };
 
     return (
-        <div className="flex flex-col p-4 gap-6">
-            <div className="flex items-center justify-between pb-2 border-b">
-                <h4 className="font-semibold tracking-tight text-foreground">Editor Settings</h4>
-                <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                    X
-                </Button>
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '14px 12px', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
+                <Heading level={4}>Editor Settings</Heading>
+                <Button label="Close" variant="ghost" size="small" onClick={onClose} icon={<span>✕</span>} />
             </div>
 
-            <div className="flex flex-col gap-3">
-                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Visual Theme</h4>
-                <div className="flex flex-col gap-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Text type="label" color="secondary">Visual Theme</Text>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <Button
-                        variant={settings.theme === "light" ? "default" : "outline"}
-                        size="sm"
-                        className="w-full"
+                        label="☀️ Light"
+                        variant={settings.theme === "light" ? "primary" : "secondary"}
+                        size="small"
+                        width="100%"
                         onClick={() => handleUpdate({ theme: "light" })}
-                    >
-                        ☀️ Light
-                    </Button>
+                    />
                     <Button
-                        variant={settings.theme === "dark" ? "default" : "outline"}
-                        size="sm"
-                        className="w-full"
+                        label="🌙 Dark"
+                        variant={settings.theme === "dark" ? "primary" : "secondary"}
+                        size="small"
+                        width="100%"
                         onClick={() => handleUpdate({ theme: "dark" })}
-                    >
-                        🌙 Dark
-                    </Button>
+                    />
                     <Button
-                        variant={settings.theme === "system" ? "default" : "outline"}
-                        size="sm"
-                        className="w-full"
+                        label="⚙️ System"
+                        variant={settings.theme === "system" ? "primary" : "secondary"}
+                        size="small"
+                        width="100%"
                         onClick={() => handleUpdate({ theme: "system" })}
-                    >
-                        ⚙️ System
-                    </Button>
+                    />
                     <Button
-                        variant={settings.theme === "blueprint" ? "default" : "outline"}
-                        size="sm"
-                        className="w-full"
+                        label="📐 Blueprint"
+                        variant={settings.theme === "blueprint" ? "primary" : "secondary"}
+                        size="small"
+                        width="100%"
                         onClick={() => handleUpdate({ theme: "blueprint" })}
-                    >
-                        📐 Blueprint
-                    </Button>
+                    />
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Map Style</h4>
-                <div className="flex flex-col gap-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h4 style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Map Style</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <div 
-                        className={`flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-accent transition-colors ${settings.map_layer === "osm-layer" ? "bg-accent border border-primary/20" : "border border-transparent"}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '8px 10px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            border: settings.map_layer === "osm-layer" ? '1px solid var(--color-border)' : '1px solid transparent',
+                            backgroundColor: settings.map_layer === "osm-layer" ? 'var(--color-border)' : 'var(--color-background-card)'
+                        }}
                         onClick={() => handleUpdate({ map_layer: "osm-layer" })}
                     >
-                        <span className="text-xl">🗺️</span>
-                        <span className="font-medium text-sm">Street Map (2D)</span>
+                        <span style={{ fontSize: '18px' }}>🗺️</span>
+                        <span style={{ fontSize: '12px', fontWeight: 500 }}>Street Map (2D)</span>
                     </div>
                     <div 
-                        className={`flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-accent transition-colors ${settings.map_layer === "satellite-layer" ? "bg-accent border border-primary/20" : "border border-transparent"}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '8px 10px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            border: settings.map_layer === "satellite-layer" ? '1px solid var(--color-border)' : '1px solid transparent',
+                            backgroundColor: settings.map_layer === "satellite-layer" ? 'var(--color-border)' : 'var(--color-background-card)'
+                        }}
                         onClick={() => handleUpdate({ map_layer: "satellite-layer" })}
                     >
-                        <span className="text-xl">🛰️</span>
-                        <span className="font-medium text-sm">Satellite (3D Views)</span>
+                        <span style={{ fontSize: '18px' }}>🛰️</span>
+                        <span style={{ fontSize: '12px', fontWeight: 500 }}>Satellite (3D Views)</span>
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 mt-2">
-                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Marker Scaling</h4>
-                <div className="flex flex-col gap-2">
-                    <Label className="text-xs">Icon Size ({settings.icon_size}px)</Label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+                <Text type="label" color="secondary">Marker Scaling</Text>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Text type="supporting">Icon Size ({settings.icon_size}px)</Text>
                     <input
                         type="range" min="16" max="64"
                         value={settings.icon_size}
                         onChange={(e) => handleUpdate({ icon_size: parseInt(e.target.value) })}
-                        className="w-full accent-primary"
+                        style={{ width: '100%', cursor: 'pointer' }}
                     />
                 </div>
-                <div className="flex flex-col gap-2">
-                    <Label className="text-xs">Label Text Size ({settings.text_size}px)</Label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Text type="supporting">Label Text Size ({settings.text_size}px)</Text>
                     <input
                         type="range" min="8" max="24"
                         value={settings.text_size}
                         onChange={(e) => handleUpdate({ text_size: parseInt(e.target.value) })}
-                        className="w-full accent-primary"
+                        style={{ width: '100%', cursor: 'pointer' }}
                     />
                 </div>
             </div>

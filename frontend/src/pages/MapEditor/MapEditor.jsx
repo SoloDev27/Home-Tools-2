@@ -4,16 +4,17 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { thunkGetPoints } from "../../redux/points";
 import { thunkGetAllProperties } from "../../redux/properties";
 import { thunkGetAllMaps, thunkCreateMap, thunkUpdateMap, thunkDeleteMap } from "../../redux/maps";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search as SearchIcon, Share2, Plus, ChevronDown, Check, Edit2 } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { Search as SearchIcon, Plus, Edit2 } from "lucide-react";
 import { handleSearchAddress } from "../../functions/nominatim";
 import MapComponent from "../../components/MapPageComponents/Map";
+import FloatingToolbar from "./FloatingToolbar/FloatingToolbar";
 import Sidebar from "./Sidebar";
-import DetailPanel from "./DetailPanel";
 import useCanvasStaging from "../../hooks/useMapStaging";
 import { useModal } from "../../context/Modal";
 import MapForm from "../../components/Forms/MapForm/MapForm";
+import ScreenSizeOverlay from "../../components/ScreenSizeOverlay/ScreenSizeOverlay";
 
 export default function MapEditor() {
     const { mapId } = useParams();
@@ -44,21 +45,17 @@ export default function MapEditor() {
 
     const [lngLat, setLngLat] = useState([-83.5, 32.9]);
     const [canvasSelect, setCanvasSelect] = useState({ icon: null, name: null, type: null });
+    const [drawingState, setDrawingState] = useState({ inProgress: false, points: [], liveMetrics: "" });
+    const mapComponentRef = useRef(null);
 
     const [search, setSearch] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showSearchResults, setShowSearchResults] = useState(false);
     const searchRef = useRef(null);
 
-    const [mapDropdownOpen, setMapDropdownOpen] = useState(false);
-    const mapDropdownRef = useRef(null);
-
     const contextMenuRef = useRef(null);
 
-    const [menu, setMenu] = useState("map")
-    const [selectedPoint, setSelectedPoint] = useState(null);
-    const [isPinned, setIsPinned] = useState(false);
-
+    const [menu, setMenu] = useState("map");
     const [contextMenu, setContextMenu] = useState({ isOpen: false, x: 0, y: 0, type: null, data: null });
 
     const navigate = useNavigate();
@@ -76,9 +73,6 @@ export default function MapEditor() {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
                 setShowSearchResults(false);
             }
-            if (mapDropdownRef.current && !mapDropdownRef.current.contains(event.target)) {
-                setMapDropdownOpen(false);
-            }
             if (contextMenu.isOpen && contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
                 setContextMenu(prev => ({ ...prev, isOpen: false }));
             }
@@ -95,7 +89,7 @@ export default function MapEditor() {
             const searchDelay = setTimeout(() => {
                 handleSearchAddress(search)
                     .then(data => setSearchResults(data))
-                    .catch(err => console.log(err));
+                    .catch(err => console.error("Address search failed:", err));
             }, 500);
 
             return () => {
@@ -106,13 +100,13 @@ export default function MapEditor() {
 
     const mapProperties = useMemo(() => {
         return Object.values(canvasObjects)
-            .filter(p => ["home", "apartment", "unit"].includes(p.type))
-            .map(p => ({ ...p, type: p.type || "home" }));
+            .filter(p => ["home", "apartment", "unit", "structure"].includes(p.type))
+            .map(p => ({ ...p, type: p.type || "structure" }));
     }, [canvasObjects]);
 
     const mapPoints = useMemo(() => {
         return Object.values(canvasObjects)
-            .filter(p => !["home", "apartment", "unit"].includes(p.type));
+            .filter(p => !["home", "apartment", "unit", "structure"].includes(p.type));
     }, [canvasObjects]);
 
     const memoMarkers = useMemo(() => {
@@ -137,17 +131,6 @@ export default function MapEditor() {
 
     const handlePointSelect = (point) => {
         if (!point) return;
-        
-        let pIdStr = String(point.id);
-        if (!pIdStr.startsWith('temp-') && !pIdStr.startsWith('prop-') && !pIdStr.startsWith('point-')) {
-            const pType = point.type || "home";
-            if (["home", "apartment", "unit"].includes(pType)) {
-                pIdStr = `prop-${point.id}`;
-            } else {
-                pIdStr = `point-${point.id}`;
-            }
-        }
-        setSelectedPoint(point);
         if (point.lngLat) {
             setLngLat([...point.lngLat]);
         } else if (point.lng !== undefined && point.lat !== undefined) {
@@ -155,134 +138,148 @@ export default function MapEditor() {
         }
     };
 
-    const handleCloseSidebar = () => {
-        if (!isPinned) setSelectedPoint(null);
-    };
-
     const selectMenu = (e, val) => {
         e.preventDefault();
         setMenu(prev => prev === val ? "" : val);
     };
 
-    const selectCanvasAddon = (icon, name, type = "icon") => {
-        if (canvasSelect.icon === icon && canvasSelect.name === name) {
+    const selectCanvasAddon = (icon, name, type = "icon", extra = {}) => {
+        if (canvasSelect.type === type && (!name || canvasSelect.name === name)) {
             setCanvasSelect({ icon: null, name: null, type: null });
             return;
         }
-        setCanvasSelect({ icon, name, type });
+        setCanvasSelect({ icon, name, type, ...extra });
     };
 
     return (
-        <div className="h-screen w-full overflow-hidden bg-background text-foreground flex flex-col">
+        <div style={{
+            height: '100vh',
+            width: '100vw',
+            minWidth: '768px',
+            minHeight: '500px',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            backgroundColor: 'var(--color-background-body)',
+            color: 'var(--color-text-primary)'
+        }}>
             {!loaded ? (
-                <div className="flex-1 flex items-center justify-center">
-                    <i className="fa-solid fa-spinner fa-spin-pulse text-4xl"></i>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '18px', color: 'var(--color-text-secondary)' }}>Loading Map...</span>
                 </div>
             ) : (
-                <div id="editor" className="flex flex-col h-full w-full">
-                    <header className="flex items-center justify-between px-4 py-2 bg-card border-b z-50">
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => navigate("/")}>Home</Button>
+                <div id="editor" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', minWidth: '768px', minHeight: '500px', overflow: 'hidden' }}>
+                    <header style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0 12px',
+                        height: '56px',
+                        backgroundColor: 'var(--color-background-card)',
+                        borderBottom: '1px solid var(--color-border)',
+                        zIndex: 50,
+                        flexShrink: 0,
+                        boxSizing: 'border-box',
+                        width: '100%',
+                        gap: '8px'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                            <Button label="Home" variant="ghost" size="small" onClick={() => navigate("/")} />
                             <Button
-                                variant="default"
-                                size="sm"
+                                label={saving ? "Saving..." : "Save All"}
+                                variant="primary"
+                                size="small"
                                 onClick={handleSaveAll}
-                                disabled={!hasUnsavedChanges || saving}
-                            >{saving ? "Saving..." : "Save All"}</Button>
-
-                            <div className="relative ml-4" ref={mapDropdownRef}>
-                                <button
-                                    onClick={() => setMapDropdownOpen(!mapDropdownOpen)}
-                                    className="flex items-center justify-between h-8 bg-input border border-border text-foreground text-sm rounded-md px-3 min-w-[200px] hover:bg-accent/50 transition-colors"
-                                >
-                                    <span className="truncate max-w-[150px]">
-                                        {mapStore.data.find(m => String(m.id) === String(mapId))?.name || "Select Map..."}
-                                    </span>
-                                    <ChevronDown className="w-4 h-4 opacity-50" />
-                                </button>
-                                
-                                {mapDropdownOpen && (
-                                    <div className="absolute top-full left-0 mt-1 w-[250px] max-h-80 overflow-y-auto bg-popover text-popover-foreground border border-border rounded-md shadow-md z-50 flex flex-col p-1 animate-in fade-in zoom-in-95 duration-100">
-                                        {(mapStore.data || []).map(m => (
-                                            <div
-                                                key={m.id}
-                                                className={`flex items-center justify-between px-3 py-2 text-sm cursor-pointer rounded-sm hover:bg-accent hover:text-accent-foreground ${String(m.id) === String(mapId) ? 'bg-accent/50 font-medium' : ''}`}
-                                                onClick={() => {
-                                                    if (String(m.id) === String(mapId)) {
-                                                        setMapDropdownOpen(false);
-                                                        return;
-                                                    }
-                                                    if (hasUnsavedChanges) {
-                                                        if (!window.confirm("You have unsaved changes. Change map anyway?")) return;
-                                                    }
-                                                    setMapDropdownOpen(false);
-                                                    navigate(`/editor/${m.id}`);
-                                                }}
-                                                onContextMenu={async (e) => {
-                                                    e.preventDefault();
-                                                    setContextMenu({
-                                                        isOpen: true,
-                                                        x: e.clientX,
-                                                        y: e.clientY,
-                                                        type: 'map',
-                                                        data: m
-                                                    });
-                                                }}
-                                                title="Right-click for options"
-                                            >
-                                                <span className="truncate">{m.name}</span>
-                                                {String(m.id) === String(mapId) && <Check className="w-4 h-4 ml-2 flex-shrink-0" />}
-                                            </div>
-                                        ))}
-                                        
-                                        <div className="h-px bg-border my-1" />
-                                        
-                                        <div
-                                            className="flex items-center px-3 py-2 text-sm cursor-pointer rounded-sm hover:bg-primary/10 text-primary font-medium"
-                                            onClick={() => {
-                                                setMapDropdownOpen(false);
-                                                setModalContent(<MapForm onSuccess={(data) => {
-                                                    if (Object.keys(canvasObjects).length > 0) {
-                                                        if (!window.confirm("You have unsaved changes. Change map anyway?")) return;
-                                                    }
-                                                    navigate(`/editor/${data.id}`);
-                                                }} />);
-                                            }}
-                                        >
-                                            <Plus className="w-4 h-4 mr-2" /> Create New Map
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                                isDisabled={!hasUnsavedChanges || saving}
+                                isLoading={saving}
+                            />
+                            <Button
+                                label="✨ Unified Editor (v2)"
+                                variant="secondary"
+                                size="small"
+                                onClick={() => navigate(`/unified-editor/${mapId}`)}
+                            />
                         </div>
 
-                        <div className="flex-1 flex justify-center px-4">
-                            <div className="relative w-full max-w-md flex items-center" ref={searchRef}>
-                                <SearchIcon className="absolute left-3 w-4 h-4 text-muted-foreground" />
-                                <Input
-                                    type="text"
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '0 4px', minWidth: '120px', maxWidth: '380px' }}>
+                            <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }} ref={searchRef}>
+                                <TextInput
+                                    label="Search"
+                                    isLabelHidden
                                     value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
+                                    onChange={(val) => {
+                                        const str = typeof val === "string" ? val : val?.target?.value ?? "";
+                                        setSearch(str);
+                                        setShowSearchResults(true);
+                                    }}
                                     placeholder="Find addresses or points..."
-                                    className="pl-9 w-full bg-input/50 border-input"
+                                    width="100%"
                                     onFocus={() => setShowSearchResults(true)}
                                 />
                                 {showSearchResults && search.length > 0 && search.length <= 2 && (
-                                    <div className="absolute top-full left-0 mt-1 w-full bg-popover text-popover-foreground border border-border rounded-md shadow-md z-50 p-3 text-sm">
-                                        <p>Type 3+ characters to search...</p>
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 'calc(100% + 4px)',
+                                        left: 0,
+                                        width: '100%',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-primary)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                                        zIndex: 100,
+                                        padding: '12px',
+                                        fontSize: '13px'
+                                    }}>
+                                        <p style={{ margin: 0, opacity: 0.7 }}>Type 3+ characters to search...</p>
                                     </div>
                                 )}
                                 {showSearchResults && search.length > 2 && searchResults.length === 0 && (
-                                    <div className="absolute top-full left-0 mt-1 w-full bg-popover text-popover-foreground border border-border rounded-md shadow-md z-50 p-3 text-sm">
-                                        <p>No results found.</p>
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 'calc(100% + 4px)',
+                                        left: 0,
+                                        width: '100%',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-primary)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                                        zIndex: 100,
+                                        padding: '12px',
+                                        fontSize: '13px'
+                                    }}>
+                                        <p style={{ margin: 0, opacity: 0.7 }}>No results found.</p>
                                     </div>
                                 )}
                                 {showSearchResults && searchResults.length > 0 && (
-                                    <div className="absolute top-full left-0 mt-1 w-full bg-popover text-popover-foreground border border-border rounded-md shadow-md max-h-60 overflow-y-auto z-50 flex flex-col py-1">
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 'calc(100% + 4px)',
+                                        left: 0,
+                                        width: '100%',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-primary)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                                        maxHeight: '260px',
+                                        overflowY: 'auto',
+                                        zIndex: 100,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        padding: '4px'
+                                    }}>
                                         {searchResults.map((res, i) => (
-                                            <div
+                                             <div
                                                 key={i}
-                                                className="px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    fontSize: '13px',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '4px',
+                                                    borderBottom: '1px solid var(--color-border)'
+                                                }}
                                                 onClick={() => {
                                                     setLngLat([res.lng, res.lat]);
                                                     setSearch("");
@@ -308,27 +305,31 @@ export default function MapEditor() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                             <Button
+                                label="Undo"
                                 variant="ghost"
-                                size="sm"
+                                size="small"
                                 onClick={undo}
-                                disabled={historyIndex <= 0}
-                            >Undo</Button>
+                                isDisabled={historyIndex <= 0}
+                            />
                             <Button
+                                label="Redo"
                                 variant="ghost"
-                                size="sm"
+                                size="small"
                                 onClick={redo}
-                                disabled={historyIndex >= history.length - 1}
-                            >Redo</Button>
-                            
-                            <Button variant="outline" size="sm" className="ml-2 gap-2" onClick={() => alert("Share Map coming soon!")}>
-                                <Share2 className="w-4 h-4" /> Share
-                            </Button>
+                                isDisabled={historyIndex >= history.length - 1}
+                            />
                         </div>
                     </header>
 
-                    <section className="flex flex-1 overflow-hidden relative">
+                    <section style={{
+                        display: 'flex',
+                        flex: 1,
+                        height: 'calc(100vh - 56px)',
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}>
                         <Sidebar
                             menu={menu}
                             selectMenu={selectMenu}
@@ -346,39 +347,50 @@ export default function MapEditor() {
                             overlaysStore={overlaysStore}
                         />
 
-                        <DetailPanel
-                            selectedPoint={selectedPoint}
-                            canvasObjects={canvasObjects}
-                            addCanvasObjects={addCanvasObjects}
-                            deleteCanvasObjects={deleteCanvasObjects}
-                            isPinned={isPinned}
-                            onPinToggle={() => setIsPinned(!isPinned)}
-                            handleCloseSidebar={handleCloseSidebar}
-                            setSelectedPoint={setSelectedPoint}
-                        />
-
-                        <MapComponent
-                            layer={settings.map_layer}
-                            lngLat={lngLat}
-                            markers={memoMarkers}
-                            canvasTool={canvasSelect}
-                            createdCanvasObject={addCanvasObjects}
-                            deletedCanvasObject={deleteCanvasObjects}
-                            getMetadata={getMetadata}
-                            onSelect={handlePointSelect}
-                            onCloseSidebar={handleCloseSidebar}
-                        />
+                        <div style={{ flex: 1, height: '100%', position: 'relative', overflow: 'hidden' }}>
+                            <FloatingToolbar
+                                canvasSelect={canvasSelect}
+                                setCanvasSelect={setCanvasSelect}
+                                drawingState={drawingState}
+                                finishDrawing={() => mapComponentRef.current?.finishDrawing?.()}
+                                cancelDrawing={() => mapComponentRef.current?.cancelDrawing?.()}
+                            />
+                            <MapComponent
+                                ref={mapComponentRef}
+                                layer={settings.map_layer}
+                                lngLat={lngLat}
+                                markers={memoMarkers}
+                                canvasTool={canvasSelect}
+                                createdCanvasObject={addCanvasObjects}
+                                deletedCanvasObject={deleteCanvasObjects}
+                                getMetadata={getMetadata}
+                                onSelect={handlePointSelect}
+                                onDrawingStateChange={setDrawingState}
+                            />
+                        </div>
 
                         {contextMenu.isOpen && (
                             <div 
                                 ref={contextMenuRef}
-                                className="fixed z-[100] w-48 bg-popover text-popover-foreground border border-border rounded-md shadow-md py-1 text-sm animate-in fade-in zoom-in-95 duration-100"
-                                style={{ top: contextMenu.y, left: contextMenu.x }}
+                                style={{
+                                    position: 'fixed',
+                                    top: contextMenu.y,
+                                    left: contextMenu.x,
+                                    zIndex: 1000,
+                                    width: '192px',
+                                    backgroundColor: 'var(--color-background-card)',
+                                    color: 'var(--color-text-primary)',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                                    padding: '4px',
+                                    fontSize: '13px'
+                                }}
                             >
                                 {contextMenu.type === 'search' && (
                                     <>
                                         <div 
-                                            className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
+                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
                                             onClick={() => {
                                                 setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
                                                 setSearch(""); setShowSearchResults(false);
@@ -387,9 +399,48 @@ export default function MapEditor() {
                                         >
                                             Go to Location
                                         </div>
-                                        <div className="h-px bg-border my-1" />
+                                        <div style={{ height: '1px', backgroundColor: 'var(--color-border)', margin: '4px 0' }} />
                                         <div 
-                                            className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
+                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                            onClick={() => {
+                                                const id = `temp-structure-${Date.now()}`;
+                                                const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Main Residence";
+                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'structure', source: "canvas" });
+                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
+                                                setSearch(""); setShowSearchResults(false);
+                                                setContextMenu({ ...contextMenu, isOpen: false });
+                                            }}
+                                        >
+                                            Place Structure
+                                        </div>
+                                        <div 
+                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                            onClick={() => {
+                                                const id = `temp-valve-${Date.now()}`;
+                                                const name = "Water Shut-off";
+                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'valve', source: "canvas" });
+                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
+                                                setSearch(""); setShowSearchResults(false);
+                                                setContextMenu({ ...contextMenu, isOpen: false });
+                                            }}
+                                        >
+                                            Place Utility Valve
+                                        </div>
+                                        <div 
+                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                            onClick={() => {
+                                                const id = `temp-inspection-${Date.now()}`;
+                                                const name = "Maintenance Item";
+                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'inspection', source: "canvas" });
+                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
+                                                setSearch(""); setShowSearchResults(false);
+                                                setContextMenu({ ...contextMenu, isOpen: false });
+                                            }}
+                                        >
+                                            Place Work Order / Issue
+                                        </div>
+                                        <div 
+                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
                                             onClick={() => {
                                                 const id = `temp-point-${Date.now()}`;
                                                 const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Marker";
@@ -399,59 +450,19 @@ export default function MapEditor() {
                                                 setContextMenu({ ...contextMenu, isOpen: false });
                                             }}
                                         >
-                                            Place Point
-                                        </div>
-                                        <div 
-                                            className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
-                                            onClick={() => {
-                                                const id = `temp-home-${Date.now()}`;
-                                                const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Home";
-                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'home', source: "canvas" });
-                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
-                                                setSearch(""); setShowSearchResults(false);
-                                                setContextMenu({ ...contextMenu, isOpen: false });
-                                            }}
-                                        >
-                                            Place Property (Home)
-                                        </div>
-                                        <div 
-                                            className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
-                                            onClick={() => {
-                                                const id = `temp-unit-${Date.now()}`;
-                                                const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Unit";
-                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'unit', source: "canvas" });
-                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
-                                                setSearch(""); setShowSearchResults(false);
-                                                setContextMenu({ ...contextMenu, isOpen: false });
-                                            }}
-                                        >
-                                            Place Property (Unit)
-                                        </div>
-                                        <div 
-                                            className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
-                                            onClick={() => {
-                                                const id = `temp-apartment-${Date.now()}`;
-                                                const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Apartment";
-                                                addCanvasObjects({ id, name, lng: Number(contextMenu.data.lng), lat: Number(contextMenu.data.lat), lngLat: [Number(contextMenu.data.lng), Number(contextMenu.data.lat)], type: 'apartment', source: "canvas" });
-                                                setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
-                                                setSearch(""); setShowSearchResults(false);
-                                                setContextMenu({ ...contextMenu, isOpen: false });
-                                            }}
-                                        >
-                                            Place Property (Apartment)
+                                            Place General Marker
                                         </div>
                                     </>
                                 )}
                                 {contextMenu.type === 'map' && (
                                     <div 
-                                        className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
                                         onClick={() => {
                                             setContextMenu({ ...contextMenu, isOpen: false });
-                                            setMapDropdownOpen(false);
                                             setModalContent(<MapForm mapId={contextMenu.data.id} initialData={contextMenu.data} />);
                                         }}
                                     >
-                                        <Edit2 className="w-4 h-4" /> Edit Map Info
+                                        <Edit2 size={16} /> Edit Map Info
                                     </div>
                                 )}
                             </div>
@@ -459,6 +470,7 @@ export default function MapEditor() {
                     </section>
                 </div>
             )}
+            <ScreenSizeOverlay minWidth={768} minHeight={500} />
         </div>
-    )
+    );
 }

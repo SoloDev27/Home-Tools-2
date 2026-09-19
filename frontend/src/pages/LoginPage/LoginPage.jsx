@@ -2,23 +2,28 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { thunkLogin } from "../../redux/session";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@astryxdesign/core/Button";
+import { Card } from "@astryxdesign/core/Card";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { Banner } from "@astryxdesign/core/Banner";
+import { Heading } from "@astryxdesign/core/Heading";
+import { Text } from "@astryxdesign/core/Text";
+import { Grid } from "@astryxdesign/core/Grid";
+import { VStack } from "@astryxdesign/core/VStack";
+import { HStack } from "@astryxdesign/core/HStack";
+import { Center } from "@astryxdesign/core/Center";
+import { Section } from "@astryxdesign/core/Section";
 
 export default function LoginFormPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
     const [err, setErr] = useState({});
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e?.preventDefault?.();
         setErr({});
         setLoading(true);
         try {
@@ -42,91 +47,87 @@ export default function LoginFormPage() {
     };
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-b from-background to-muted/30">
-            {/* Left: Illustration */}
-            <div className="hidden lg:flex lg:w-1/2 items-center justify-center bg-muted/20 p-12">
-                <div className="max-w-sm text-center">
-                    <svg viewBox="0 0 200 200" className="w-64 h-64 mx-auto mb-6 text-primary" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <rect x="20" y="80" width="160" height="100" rx="4" />
-                        <polygon points="100,20 180,80 20,80" />
-                        <rect x="70" y="120" width="60" height="60" rx="2" />
-                        <rect x="40" y="100" width="20" height="40" rx="2" />
-                        <rect x="140" y="100" width="20" height="40" rx="2" />
-                    </svg>
-                    <h2 className="text-xl font-semibold text-foreground mb-2">Design in 3D</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Draw floorplans, furnish rooms, and visualize in 3D — all in one tool.
-                    </p>
-                </div>
-            </div>
+        <Grid columns={{ minWidth: 360, max: 2 }} width="100%" height="100%" style={{ flex: 1, minHeight: '100%' }}>
+            {/* Left: Illustration Column */}
+            <Section variant="muted" dividers={['end']} height="100%" padding={0}>
+                <Center width="100%" height="100%" padding={8}>
+                    <VStack align="center" gap={4} maxWidth={360}>
+                        <svg viewBox="0 0 200 200" style={{ width: 180, height: 180 }} fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <rect x="20" y="80" width="160" height="100" rx="4" />
+                            <polygon points="100,20 180,80 20,80" />
+                            <rect x="70" y="120" width="60" height="60" rx="2" />
+                            <rect x="40" y="100" width="20" height="40" rx="2" />
+                            <rect x="140" y="100" width="20" height="40" rx="2" />
+                        </svg>
+                        <Heading level={2} justify="center">Design in 3D</Heading>
+                        <Text type="supporting" justify="center">
+                            Draw floorplans, furnish rooms, and visualize in 3D — all in one tool.
+                        </Text>
+                    </VStack>
+                </Center>
+            </Section>
 
-            {/* Right: Form */}
-            <div className="flex flex-1 items-center justify-center p-6">
-                <Card className="w-full max-w-sm">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-2xl">Welcome Back</CardTitle>
-                        <CardDescription>Sign in to Home Tools</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* Right: Form Column */}
+            <Section variant="transparent" height="100%" padding={0}>
+                <Center width="100%" height="100%" padding={8}>
+                    <Card maxWidth={400} width="100%" padding={6} elevation="low">
+                        <VStack gap={4} width="100%">
+                            <VStack gap={1} align="center">
+                                <Heading level={2} justify="center">Welcome Back</Heading>
+                                <Text type="supporting" justify="center">Sign in to Home Tools</Text>
+                            </VStack>
+
                             {err.server && (
-                                <Alert variant="destructive">
-                                    <AlertDescription>{err.server}</AlertDescription>
-                                </Alert>
+                                <Banner
+                                    status="error"
+                                    title={err.server}
+                                />
                             )}
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="text"
+                            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+                                <TextInput
+                                    label="Email"
+                                    type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={setEmail}
                                     placeholder="you@example.com"
-                                    required
+                                    isRequired
+                                    width="100%"
                                 />
-                            </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <div className="relative">
-                                    <Input
-                                        id="password"
-                                        type={showPassword ? "text" : "password"}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Enter your password"
-                                        required
+                                <TextInput
+                                    label="Password"
+                                    type="password"
+                                    value={password}
+                                    onChange={setPassword}
+                                    placeholder="Enter your password"
+                                    isRequired
+                                    width="100%"
+                                />
+
+                                <Button
+                                    label={loading ? "Signing in..." : "Log In"}
+                                    type="submit"
+                                    variant="primary"
+                                    width="100%"
+                                    isLoading={loading}
+                                    isDisabled={loading}
+                                />
+
+                                <HStack justify="center" align="center" gap={1}>
+                                    <Text type="supporting">Don&apos;t have an account?</Text>
+                                    <Button
+                                        label="Sign up"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => navigate("/signup")}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-sm"
-                                        tabIndex={-1}
-                                    >
-                                        {showPassword ? "🙈" : "👁"}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <Button type="submit" className="w-full" disabled={loading}>
-                                {loading ? "Signing in..." : "Log In"}
-                            </Button>
-
-                            <p className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/signup")}
-                                    className="text-primary hover:underline underline-offset-4"
-                                >
-                                    Sign up
-                                </button>
-                            </p>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
+                                </HStack>
+                            </form>
+                        </VStack>
+                    </Card>
+                </Center>
+            </Section>
+        </Grid>
     );
 }

@@ -1,62 +1,53 @@
+import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useRef } from "react";
 import { thunkLogout } from "../../../redux/session";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@astryxdesign/core/Button";
+import { HStack } from "@astryxdesign/core/HStack";
+import { Text } from "@astryxdesign/core/Text";
 
 export default function Navbar({ isLoaded }) {
-    const user = useSelector((store)=> store.session.user);
+    const user = useSelector((store) => store.session.user);
     const navigate = useNavigate();
     const location = useLocation();
     const startLocations = useRef(new Set(["/", "", "/login", "/signup"]));
-    const disabledLocations = useRef(new Set(["editor", "render"]))
     const dispatch = useDispatch();
-    
 
-    useEffect(()=> {
+    useEffect(() => {
         if (!isLoaded) return;
 
-        if(user) {
-            if(startLocations.current.has(location.pathname)) {
+        if (user) {
+            if (startLocations.current.has(location.pathname)) {
                 navigate("/dashboard");
-            };
-
-            if(disabledLocations.current.has(location.pathname.split("/")[1])) {
-                const nav = document.getElementById("navbar");
-                nav.classList.toggle("hidden", true);
-            } else {
-                const nav = document.getElementById("navbar");
-                nav.classList.toggle("hidden", false);
-            };
+            }
         } else {
-            if(!startLocations.current.has(location.pathname)) {
+            if (!startLocations.current.has(location.pathname)) {
                 navigate("/");
-            };
+            }
         }
-    }, [isLoaded, user, location]);
+    }, [isLoaded, user, location, navigate]);
 
     const logout = async (e) => {
-        e.preventDefault();
-        await dispatch(thunkLogout())
-    }
+        e?.preventDefault?.();
+        await dispatch(thunkLogout());
+    };
 
     return (
-        <div id="navbar" className="flex items-center justify-between px-6 py-3 bg-background border-b border-border">
-            <Link to="/" className="flex items-center gap-2">
-                <span className="text-lg font-bold text-foreground">Home Tools</span>
-            </Link>
+        <header id="navbar" style={{ height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-background-surface)', zIndex: 40 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Text weight="bold" size="lg">Dashboard</Text>
+            </div>
+
             {!user ? (
-                <div className="flex items-center gap-3">
-                    <Button variant="ghost" onClick={()=> navigate('/login')}>Login</Button>
-                    <Button onClick={()=> navigate('/signup')}>Sign Up</Button>
-                </div>
+                <HStack align="center" gap={2}>
+                    <Button label="Login" variant="ghost" size="sm" onClick={() => navigate('/login')} />
+                    <Button label="Sign Up" variant="primary" size="sm" onClick={() => navigate('/signup')} />
+                </HStack>
             ) : (
-                <div className="flex items-center gap-3">
-                    <Button variant="ghost" onClick={()=> navigate('/dashboard')}>Dashboard</Button>
-                    <Button variant="outline" onClick={logout}>Logout</Button>
-                </div>
+                <HStack align="center" gap={2}>
+                    <Button label="Logout" variant="secondary" size="sm" onClick={logout} />
+                </HStack>
             )}
-        </div>
-    )
+        </header>
+    );
 }

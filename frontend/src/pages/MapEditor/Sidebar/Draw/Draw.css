@@ -1,0 +1,106 @@
+.draw-tab-container {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 14px;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.draw-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.draw-section-title {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary, #94a3b8);
+    margin: 0 2px;
+    user-select: none;
+}
+
+.draw-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.draw-tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    width: 100%;
+    min-width: 0;
+    border-radius: 8px;
+    border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+    background-color: var(--color-background-card, #262626);
+    color: var(--color-text-primary, #ffffff);
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    position: relative;
+}
+
+.draw-tool-btn:hover {
+    background-color: var(--color-background-hover, rgba(255, 255, 255, 0.08));
+    border-color: var(--color-border-hover, rgba(255, 255, 255, 0.25));
+    transform: translateY(-1px);
+}
+
+.draw-tool-btn:focus-visible {
+    border-color: var(--color-primary-default, #3b82f6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+
+.draw-tool-btn.active {
+    background-color: rgba(59, 130, 246, 0.22);
+    border-color: var(--color-primary-default, #3b82f6);
+    color: var(--color-primary-default, #3b82f6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.draw-tool-btn.active:hover {
+    background-color: rgba(59, 130, 246, 0.3);
+}
+
+.draw-mouse-tooltip {
+    position: fixed;
+    z-index: 999999;
+    pointer-events: none;
+    background-color: rgba(15, 23, 42, 0.96);
+    color: #f8fafc;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    transition: opacity 0.08s ease;
+    animation: fadeInTooltip 0.1s ease-out;
+}
+
+@keyframes fadeInTooltip {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

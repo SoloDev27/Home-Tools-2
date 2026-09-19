@@ -33,7 +33,6 @@ export const thunkGetAllProperties = (mapId) => async(dispatch) => {
         credentials: "include"
     });
     const check = await checkAndReturnRes(res);
-    console.log("CHECK", check)
     if(check.ok) {
         await dispatch(loadProperties(check.data.data.properties))
     }

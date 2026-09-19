@@ -27,7 +27,6 @@ export default function EditPointPopup({
     const { closeModal } = useModal();
 
     useEffect(()=> {
-        console.log("MANAGE POINTS HIT", {point, isSaved, addFunc, deleteFunc, changeFunc})
         let newName = point?.name || "";
         if(newName.includes("(Unsaved)")) {
             newName = newName.split("(Unsaved)")[1].trim();

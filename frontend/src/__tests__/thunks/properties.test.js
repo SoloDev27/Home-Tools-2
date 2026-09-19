@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import propertiesReducer, { thunkGetAllProperties, thunkCreateProperty, thunkDeleteProperty } from "../../redux/properties";
+import propertiesReducer, { thunkGetAllProperties, thunkCreateProperty, thunkEditProperty, thunkDeleteProperty } from "../../redux/properties";
 
 const mockFetch = (response) =>
     vi.fn(() =>
@@ -32,6 +32,21 @@ describe("properties thunks", () => {
         await store.dispatch(thunkCreateProperty({ name: "New", lat: 0, lng: 0 }));
         const state = store.getState();
         expect(state.properties.data).toHaveLength(1);
+    });
+
+    test("thunkEditProperty updates name and icon in state", async () => {
+        global.fetch = mockFetch({
+            success: true,
+            data: { property: { id: 1, name: "Renamed Villa", icon: "🏢" } }
+        });
+        const store = configureStore({
+            reducer: { properties: propertiesReducer },
+            preloadedState: { properties: { data: [{ id: 1, name: "Test", icon: "🏠" }] } },
+        });
+        await store.dispatch(thunkEditProperty(1, { name: "Renamed Villa", icon: "🏢" }));
+        const state = store.getState();
+        expect(state.properties.data[0].name).toBe("Renamed Villa");
+        expect(state.properties.data[0].icon).toBe("🏢");
     });
 
     test("thunkDeleteProperty removes from state", async () => {

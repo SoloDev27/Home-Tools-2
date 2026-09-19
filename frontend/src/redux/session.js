@@ -20,10 +20,7 @@ export const thunkSessions = () => async (dispatch) => {
     });
     const data = await res.json();
     if(res.ok) {
-        console.log("SIGNUP DATA", data);
         await dispatch(setUser(data))
-    } else {
-        console.log("RESS ERROR", data);
     }
     return data
 }
@@ -36,10 +33,7 @@ export const thunkSignup = (credentials) => async () => {
     });
     const data = await res.json();
     if(res.ok) {
-        console.log("SIGNUP DATA", data);
         trackEvent("signup", { method: "email" });
-    } else {
-        console.log("RESS ERROR", data);
     }
     return data
 }
@@ -52,11 +46,9 @@ export const thunkLogin = (credentials) => async (dispatch) => {
     });
     const data = await res.json();
     if(res.ok) {
-        console.log("SIGNUP DATA", data);
         await dispatch(setUser(data.data.db_user))
         trackEvent("login", { method: "email" });
     } else {
-        console.log("RESS ERROR", data);
         trackEvent("login_failed", { error: data.message || "unknown" });
     }
     return data
@@ -68,12 +60,9 @@ export const thunkLogout = () => async (dispatch) => {
     });
     const data = await res.json();
     if(res.ok) {
-        console.log("LOGOUT DATA", data);
         localStorage.clear();
         await dispatch(removeUser())
         trackEvent("logout");
-    } else {
-        console.log("RESS ERROR", data);
     }
     return data
 }

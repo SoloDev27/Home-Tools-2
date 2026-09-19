@@ -1,116 +1,272 @@
-import { useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { thunkGetAllMaps, thunkDeleteMap } from "../../redux/maps";
-import { ModalButton } from "../../context/Modal";
-import MapForm from "../../components/Forms/MapForm";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Map as MapIcon, Trash2, Edit } from "lucide-react";
+import MapCard from "../../components/MapCard";
+import { Layout, LayoutHeader, LayoutContent } from "@astryxdesign/core/Layout";
+import { Heading } from "@astryxdesign/core/Heading";
+import { Text } from "@astryxdesign/core/Text";
+import { Card } from "@astryxdesign/core/Card";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { ToggleButton, ToggleButtonGroup } from "@astryxdesign/core/ToggleButton";
+import { OverflowList } from "@astryxdesign/core/OverflowList";
+import { DropdownMenu } from "@astryxdesign/core/DropdownMenu";
+import { Divider } from "@astryxdesign/core/Divider";
+import { Center } from "@astryxdesign/core/Center";
+import { VStack, HStack, StackItem } from "@astryxdesign/core/Stack";
+import { Button } from "@astryxdesign/core/Button";
+import { Search, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+
+const CATEGORIES = ['All', 'Maps'];
 
 export default function Dashboard() {
     const mapsState = useSelector(store => store.maps);
     const maps = mapsState?.data || [];
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const scrollContainerRef = useRef(null);
 
-    useEffect(()=> {
+    const [activeTab, setActiveTab] = useState('All');
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
         dispatch(thunkGetAllMaps());
     }, [dispatch]);
 
     const handleDelete = async (e, id) => {
-        e.stopPropagation(); // Prevent card click
+        e.stopPropagation();
         if (window.confirm("Are you sure you want to delete this map? All associated data will be lost.")) {
             await dispatch(thunkDeleteMap(id));
         }
-    }
+    };
+
+    const filtered = useMemo(() => {
+        let items = maps;
+        if (search.trim()) {
+            const q = search.toLowerCase();
+            items = items.filter(
+                i =>
+                    i.name.toLowerCase().includes(q) ||
+                    (i.description && i.description.toLowerCase().includes(q))
+            );
+        }
+        return items;
+    }, [maps, search]);
+
+    const displayMaps = useMemo(() => filtered.slice(0, 6), [filtered]);
 
     return (
-        <div className="min-h-screen bg-background p-8">
-            <div className="max-w-6xl mx-auto space-y-8">
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Maps Dashboard</h1>
-                        <p className="text-muted-foreground mt-1">Manage your workspaces and floorplans</p>
-                    </div>
-                    <ModalButton
-                        modalComponent={<MapForm />}
-                        itemText={
-                            <Button className="flex items-center gap-2">
-                                <Plus size={16} /> New Map
-                            </Button>
-                        } 
-                    />
-                </div>
-
-                {/* Grid */}
-                {maps.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {maps.map(map => (
-                            <Card 
-                                key={map.id} 
-                                className="group cursor-pointer hover:border-primary transition-colors overflow-hidden flex flex-col"
-                                onClick={() => navigate(`/editor/${map.id}`)}
-                            >
-                                <div className="h-40 bg-muted/50 flex items-center justify-center border-b group-hover:bg-muted/80 transition-colors">
-                                    <MapIcon size={48} className="text-muted-foreground/30" />
-                                </div>
-                                <CardHeader>
-                                    <CardTitle>{map.name}</CardTitle>
-                                    <CardDescription className="line-clamp-2 min-h-[40px]">
-                                        {map.description || "No description provided."}
-                                    </CardDescription>
-                                </CardHeader>
-                                <div className="flex-1"></div>
-                                <CardFooter className="flex justify-between border-t p-4 bg-muted/10">
-                                    <div className="text-xs text-muted-foreground">
-                                        Created: {new Date(map.created_at).toLocaleDateString()}
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <ModalButton
-                                                modalComponent={<MapForm mapId={map.id} initialData={map} />}
-                                                itemText={
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                                                        <Edit size={16} />
-                                                    </Button>
+        <Layout
+            height="auto"
+            header={
+                <LayoutHeader hasDivider padding={6}>
+                    <VStack gap={1}>
+                        <Heading level={1}>All</Heading>
+                        <Text type="supporting" color="secondary">
+                            All tools and workspaces
+                        </Text>
+                    </VStack>
+                </LayoutHeader>
+            }
+            content={
+                <LayoutContent padding={6}>
+                    <VStack gap={6} width="100%">
+                        <VStack gap={4} width="100%">
+                            <TextInput
+                                label="Search"
+                                isLabelHidden
+                                placeholder="Search..."
+                                value={search}
+                                onChange={setSearch}
+                                startIcon={<Search size={18} />}
+                                size="lg"
+                            />
+                            <HStack vAlign="center" gap={4} width="100%">
+                                <StackItem size="fill">
+                                    <VStack>
+                                        <ToggleButtonGroup
+                                            label="Filter by category"
+                                            value={activeTab}
+                                            onChange={v => {
+                                                if (v === 'Maps') {
+                                                    navigate('/maps');
+                                                } else {
+                                                    setActiveTab(v ?? 'All');
                                                 }
+                                            }}
+                                        >
+                                            <OverflowList
+                                                gap={1}
+                                                behavior="observeParent"
+                                                overflowRenderer={overflowItems => (
+                                                    <DropdownMenu
+                                                        button={{
+                                                            label: `+${overflowItems.length}`,
+                                                            variant: 'ghost',
+                                                            size: 'lg',
+                                                        }}
+                                                        items={overflowItems.map(({ index }) => ({
+                                                            label: CATEGORIES[index],
+                                                            onClick: () => {
+                                                                if (CATEGORIES[index] === 'Maps') {
+                                                                    navigate('/maps');
+                                                                } else {
+                                                                    setActiveTab(CATEGORIES[index]);
+                                                                }
+                                                            },
+                                                        }))}
+                                                    />
+                                                )}
+                                            >
+                                                {CATEGORIES.map(cat => (
+                                                    <ToggleButton
+                                                        key={cat}
+                                                        label={cat}
+                                                        value={cat}
+                                                        size="lg"
+                                                    />
+                                                ))}
+                                            </OverflowList>
+                                        </ToggleButtonGroup>
+                                    </VStack>
+                                </StackItem>
+                            </HStack>
+                        </VStack>
+
+                        <Divider />
+
+                        {filtered.length === 0 ? (
+                            <Center style={{ padding: '48px 0' }}>
+                                <Text type="supporting" color="secondary">
+                                    {maps.length === 0 ? "No maps yet." : "No results found."}
+                                </Text>
+                            </Center>
+                        ) : (
+                            <VStack gap={4} width="100%">
+                                <HStack justify="between" align="center" width="100%">
+                                    <Heading level={2}>Maps</Heading>
+                                    <HStack gap={1} align="center">
+                                        <Button 
+                                            isIconOnly 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            icon={<ChevronLeft size={18} />} 
+                                            aria-label="Slide left"
+                                            onClick={() => scrollContainerRef.current?.scrollBy({ left: -340, behavior: 'smooth' })} 
+                                        />
+                                        <Button 
+                                            isIconOnly 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            icon={<ChevronRight size={18} />} 
+                                            aria-label="Slide right"
+                                            onClick={() => scrollContainerRef.current?.scrollBy({ left: 340, behavior: 'smooth' })} 
+                                        />
+                                    </HStack>
+                                </HStack>
+
+                                <div 
+                                    ref={scrollContainerRef}
+                                    style={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'row', 
+                                        gap: 16, 
+                                        overflowX: 'auto', 
+                                        scrollSnapType: 'x mandatory',
+                                        scrollBehavior: 'smooth',
+                                        paddingBottom: 16,
+                                        paddingTop: 4,
+                                        alignItems: 'stretch',
+                                        width: '100%',
+                                        boxSizing: 'border-box'
+                                    }}
+                                >
+                                    {displayMaps.map(map => (
+                                        <div 
+                                            key={map.id} 
+                                            style={{ 
+                                                flex: '0 0 320px', 
+                                                width: 320, 
+                                                minWidth: 320, 
+                                                scrollSnapAlign: 'start', 
+                                                display: 'flex', 
+                                                flexDirection: 'column' 
+                                            }}
+                                        >
+                                            <MapCard 
+                                                map={map} 
+                                                onDelete={handleDelete} 
+                                                onSelect={() => navigate(`/editor/${map.id}`)} 
                                             />
                                         </div>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
-                                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                            onClick={(e) => handleDelete(e, map.id)}
+                                    ))}
+
+                                    {/* Extra View All div */}
+                                    <div 
+                                        onClick={() => navigate('/maps')}
+                                        style={{ 
+                                            flex: '0 0 320px', 
+                                            width: 320, 
+                                            minWidth: 320, 
+                                            scrollSnapAlign: 'start',
+                                            cursor: 'pointer', 
+                                            display: 'flex', 
+                                            flexDirection: 'column' 
+                                        }}
+                                    >
+                                        <Card 
+                                            padding={6} 
+                                            elevation="low" 
+                                            style={{ 
+                                                height: '100%', 
+                                                minHeight: 280,
+                                                display: 'flex', 
+                                                flexDirection: 'column', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center',
+                                                border: '2px dashed var(--color-border)',
+                                                backgroundColor: 'var(--color-background-surface)',
+                                                boxSizing: 'border-box',
+                                                textAlign: 'center',
+                                                cursor: 'pointer'
+                                            }}
                                         >
-                                            <Trash2 size={16} />
-                                        </Button>
+                                            <VStack gap={3} align="center" justify="center">
+                                                <div style={{ 
+                                                    width: 52, 
+                                                    height: 52, 
+                                                    borderRadius: '50%', 
+                                                    backgroundColor: 'var(--color-background-muted)', 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    justifyContent: 'center',
+                                                    border: '1px solid var(--color-border)'
+                                                }}>
+                                                    <ArrowRight size={24} />
+                                                </div>
+                                                <Heading level={3} weight="semibold">View All</Heading>
+                                                <Text type="supporting" size="sm" color="secondary">
+                                                    See all maps ({maps.length})
+                                                </Text>
+                                                <Button 
+                                                    label="View All Maps" 
+                                                    variant="secondary" 
+                                                    size="sm"
+                                                    icon={<ArrowRight size={14} />} 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate('/maps');
+                                                    }}
+                                                />
+                                            </VStack>
+                                        </Card>
                                     </div>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-lg border-muted">
-                        <div className="bg-muted p-4 rounded-full mb-4">
-                            <MapIcon size={48} className="text-muted-foreground" />
-                        </div>
-                        <h3 className="text-xl font-semibold mb-2 text-foreground">No maps yet</h3>
-                        <p className="text-muted-foreground mb-6 max-w-sm">
-                            Create your first map to start drawing floorplans, placing furniture, and rendering in 3D.
-                        </p>
-                        <ModalButton
-                            modalComponent={<MapForm />}
-                            itemText={
-                                <Button className="flex items-center gap-2">
-                                    <Plus size={16} /> Create First Map
-                                </Button>
-                            } 
-                        />
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+                                </div>
+                            </VStack>
+                        )}
+                    </VStack>
+                </LayoutContent>
+            }
+        />
+    );
 }

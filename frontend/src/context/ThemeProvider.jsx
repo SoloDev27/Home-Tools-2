@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Theme } from '@astryxdesign/core';
+import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 
 export default function ThemeProvider({ children }) {
   const theme = useSelector((state) => state.settings?.theme || 'system');
@@ -32,5 +34,11 @@ export default function ThemeProvider({ children }) {
     }
   }, [theme]);
 
-  return <>{children}</>;
+  const effectiveMode = theme === 'system' ? 'system' : (theme === 'dark' || theme === 'blueprint') ? 'dark' : 'light';
+
+  return (
+    <Theme theme={neutralTheme} mode={effectiveMode}>
+      {children}
+    </Theme>
+  );
 }
