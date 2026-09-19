@@ -200,12 +200,17 @@ Plans:
 11. Build passes, tests pass
 
 ---
-## Phase 7: shadcn UI Overhaul — Global to Page-by-Page
+## Phase 7: UI Overhaul — Global to Page-by-Page
 
-**Goal:** Migrate entire project from plain CSS to shadcn/ui (mira preset). Initialize shadcn first (global CSS, Tailwind, theme), then convert pages one at a time: Home → Auth → Dashboard → MapPage → RenderPage.
+**Goal:** Migrate the project off plain CSS to a component system. **The chosen
+system changed mid-phase: shadcn/ui was replaced by `@astryxdesign`** (`core`,
+`theme-neutral`, `cli`). shadcn's `components/ui/` and `components.json` have been
+removed, so the plans below describe the abandoned path; treat them as history.
 **Requirements:** (infrastructure — no REQ-IDs)
 **Depends on:** None (standalone styling phase)
-**Plans:** 7 plans
+**Status:** ◆ In Progress — migrated: HomePage, LoginPage, SignupPage, Dashboard,
+MapsPage, MapEditor. Not yet: UnifiedEditor, RenderPage, RenderHomePage, NotFoundPage.
+**Plans:** 7 plans (written for shadcn; see `frontend/AGENTS.md` for Astryx rules)
 
 **Plans:**
 - [ ] 07-01-PLAN.md — Initialize shadcn: run init with mira preset, set up Tailwind, install core components, migrate global index.css
@@ -234,11 +239,18 @@ Plans:
 | 1 | Page Reorganization | ✓ Complete | — |
 | 2 | Import Audit & Cleanup | ✓ Complete | — |
 | 3 | Component Restructuring | ✓ Complete | — |
-| 4 | Code Cleanup | ○ Pending | CLEAN-01, CLEAN-02, CLEAN-03 |
-| 5 | Render Page — 2D Tools | ○ Pending | RENDER-01 to RENDER-04 |
-| 5.1 | Outline Stage Enhancements | ○ Pending | (infrastructure) |
-| 6 | Objects Stage + 3D Render | ○ Pending | RENDER-05 |
-| 6.4 | 3D Render Stage Enhancements | ○ Pending | (infrastructure) |
-| 7 | shadcn UI Overhaul | ○ Pending | (infrastructure) |
+| 4 | Code Cleanup | ◆ In Progress | CLEAN-01, CLEAN-02, CLEAN-03 |
+| 5 | Render Page — 2D Tools | ✓ Implemented | RENDER-01 to RENDER-04 |
+| 5.1 | Outline Stage Enhancements | ✓ Implemented | (infrastructure) |
+| 5.2 | Sections Stage Enhancements | ✓ Implemented | (infrastructure) |
+| 6 | Objects Stage + 3D Render | ✓ Implemented | RENDER-05 |
+| 6.1 | Objects Stage Enhancements | ✓ Implemented | (infrastructure) |
+| 6.2 | 3D Render Stage | ✓ Implemented | (infrastructure) |
+| 6.4 | 3D Render Stage Enhancements | ◆ In Progress | (infrastructure) |
+| 7 | UI Overhaul (now Astryx, was shadcn) | ◆ In Progress | (infrastructure) |
 
-**10 requirements** across **6 pending phases** | Phase 7 is standalone styling
+**10 requirements** | 10 phases implemented, 3 in progress (4, 6.4, 7)
+
+Outstanding: commit the uncommitted Unified Editor / Maps work; finish Astryx migration
+(UnifiedEditor, RenderPage, RenderHomePage, NotFoundPage); 06.4-04 wall cutouts via CSG;
+remove remaining `console.*` statements.

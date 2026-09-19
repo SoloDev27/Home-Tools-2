@@ -9,3 +9,11 @@ start_local.ps1
 start_local.cmd
 start_local.command
 form1-example.html
+.code-review-graph
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.db-journal
+*.db
+screenshots/
+frontend/dist/
