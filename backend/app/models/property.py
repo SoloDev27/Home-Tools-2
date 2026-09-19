@@ -36,6 +36,7 @@ class HierarchySchema(BaseModel):
     dimensions: Optional[DimensionSchema] = None
     notes: List[NoteSchema] = []
     floors: List[FloorNodeSchema] = []
+    coordinates: Optional[Any] = None
 
 class PydanticType(types.TypeDecorator):
     """
@@ -82,6 +83,7 @@ class Property(Base):
     lat = Column(Float, nullable=False)
     lng = Column(Float, nullable=False)
     group_id = Column(Integer, ForeignKey("home_groups.id", ondelete="CASCADE"))
+    area_id = Column(Integer, ForeignKey("areas.id", ondelete="CASCADE"), nullable=True)
     type = Column(TEXT, default='home')
     icon = Column(TEXT)
     hierarchy = Column(PydanticType(HierarchySchema))
@@ -91,24 +93,27 @@ class Property(Base):
     # Relationships
     owner = relationship("User", back_populates="properties")
     map = relationship("Map", back_populates="properties")
+    area = relationship("Area", back_populates="properties")
     group = relationship("HomeGroup", back_populates="properties")
     images = relationship("Image", back_populates="property", cascade="all, delete-orphan")
     floors = relationship("Floor", back_populates="property", cascade="all, delete-orphan")
     render = relationship("Render", back_populates="property", uselist=False, cascade="all, delete-orphan")
+    notes = relationship("Note", back_populates="property", cascade="all, delete-orphan")
 
 class PropertySchema(BaseModel):
     id: Optional[int] = None
     owner_id: Optional[int] = None
-    map_id: int
-    name: str = Field(min_length=1, max_length=100)
+    map_id: Optional[int] = None
+    area_id: Optional[int] = None
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     address: Optional[str] = None
     city: Optional[str] = None
     county: Optional[str] = None
     state: Optional[str] = None
     country: Optional[str] = None
     zip: Optional[str] = None
-    lat: float
-    lng: float
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     type: Optional[str] = "home"
     icon: Optional[str] = None
     hierarchy: Optional[HierarchySchema] = None

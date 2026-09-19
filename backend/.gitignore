@@ -1,2 +1,10 @@
-.venv
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+.venv/
 *.db
+*.db-journal
+test.db
+app/uploads/

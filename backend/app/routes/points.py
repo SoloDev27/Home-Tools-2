@@ -17,8 +17,15 @@ router = APIRouter(prefix="/points", tags=["Points"])
 
 # Common logic for point validation and variable setup
 def validate_point_data(point_schema: PointSchema, is_patch=False):
+    if not is_patch and point_schema.map_id is None:
+        raise HTTPException(status_code=400, detail="Missing required field: map_id")
+
     # Validation based on type
-    allowed_types = ["icon", "home", "apartment", "unit", "radius", "line"]
+    allowed_types = [
+        "icon", "home", "apartment", "unit", "radius", "line", "marker",
+        "structure", "valve", "flora", "inspection", "fixture",
+        "polygon", "rectangle", "measure", "setback", "utility", "curve", "callout", "material"
+    ]
     if point_schema.type not in allowed_types:
         raise HTTPException(status_code=400, detail=f"Invalid point type: '{point_schema.type}'. Allowed types are: {', '.join(allowed_types)}")
 

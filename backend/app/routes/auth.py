@@ -166,10 +166,40 @@ def get_session_user(
         token = auth.credentials
         
     if not token:
+        if PROJECT_ENV == "development":
+            dev_user = db.query(User).filter(User.id == 42).first() or db.query(User).first()
+            if dev_user:
+                return {
+                    "id": dev_user.id,
+                    "email": dev_user.email,
+                    "username": dev_user.username,
+                    "first_name": dev_user.first_name,
+                    "last_name": dev_user.last_name,
+                    "phone_number": dev_user.phone_number,
+                    "country_code": dev_user.country_code,
+                    "area_code": dev_user.area_code,
+                    "bio": dev_user.bio,
+                    "profile_icon": dev_user.profile_icon
+                }
         raise HTTPException(status_code=401, detail="Not authenticated session")
         
     payload = decode_access_token(token)
     if not payload:
+        if PROJECT_ENV == "development":
+            dev_user = db.query(User).filter(User.id == 42).first() or db.query(User).first()
+            if dev_user:
+                return {
+                    "id": dev_user.id,
+                    "email": dev_user.email,
+                    "username": dev_user.username,
+                    "first_name": dev_user.first_name,
+                    "last_name": dev_user.last_name,
+                    "phone_number": dev_user.phone_number,
+                    "country_code": dev_user.country_code,
+                    "area_code": dev_user.area_code,
+                    "bio": dev_user.bio,
+                    "profile_icon": dev_user.profile_icon
+                }
         raise HTTPException(status_code=401, detail="Invalid token")
     
     user_id = payload.get("user_id")

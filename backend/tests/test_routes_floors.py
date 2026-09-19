@@ -1,5 +1,5 @@
 def test_create_floor(client, auth_headers):
-    prop_res = client.post("/api/property", json={"name": "Test Home", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
+    prop_res = client.post("/api/property", json={"map_id": 1, "name": "Test Home", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
     prop_id = prop_res.json()["data"]["property"]["id"]
     res = client.post("/api/floors", json={
         "property_id": prop_id,
@@ -13,7 +13,7 @@ def test_create_floor(client, auth_headers):
     assert data["data"]["floor"]["bedroom_count"] == 3
 
 def test_get_floors_by_property(client, auth_headers):
-    prop_res = client.post("/api/property", json={"name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
+    prop_res = client.post("/api/property", json={"map_id": 1, "name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
     prop_id = prop_res.json()["data"]["property"]["id"]
     client.post("/api/floors", json={"property_id": prop_id, "name": "Floor 1"}, headers=auth_headers)
     client.post("/api/floors", json={"property_id": prop_id, "name": "Floor 2"}, headers=auth_headers)
@@ -22,7 +22,7 @@ def test_get_floors_by_property(client, auth_headers):
     assert len(res.json()["data"]["floors"]) == 2
 
 def test_edit_floor(client, auth_headers):
-    prop_res = client.post("/api/property", json={"name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
+    prop_res = client.post("/api/property", json={"map_id": 1, "name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
     prop_id = prop_res.json()["data"]["property"]["id"]
     create_res = client.post("/api/floors", json={"property_id": prop_id, "name": "Old Floor"}, headers=auth_headers)
     floor_id = create_res.json()["data"]["floor"]["id"]
@@ -32,7 +32,7 @@ def test_edit_floor(client, auth_headers):
     assert res.json()["data"]["floor"]["bedroom_count"] == 4
 
 def test_delete_floor(client, auth_headers):
-    prop_res = client.post("/api/property", json={"name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
+    prop_res = client.post("/api/property", json={"map_id": 1, "name": "Test", "lat": 32.0, "lng": -83.0}, headers=auth_headers)
     prop_id = prop_res.json()["data"]["property"]["id"]
     create_res = client.post("/api/floors", json={"property_id": prop_id, "name": "Delete Me"}, headers=auth_headers)
     floor_id = create_res.json()["data"]["floor"]["id"]

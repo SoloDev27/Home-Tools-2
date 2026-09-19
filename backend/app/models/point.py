@@ -13,6 +13,19 @@ class PointType(str, Enum):
     unit = "unit"
     icon = "icon"
     marker = "marker"
+    structure = "structure"
+    valve = "valve"
+    flora = "flora"
+    inspection = "inspection"
+    fixture = "fixture"
+    polygon = "polygon"
+    rectangle = "rectangle"
+    measure = "measure"
+    setback = "setback"
+    utility = "utility"
+    curve = "curve"
+    callout = "callout"
+    material = "material"
 
 class Point(Base):
     __tablename__ = "points"
@@ -35,7 +48,7 @@ class Point(Base):
     map = relationship("Map", back_populates="points")
 
 class PointSchema(BaseModel):
-    map_id: int
+    map_id: Optional[int] = None
     type: PointType
     name: str
     icon: Optional[str] = None

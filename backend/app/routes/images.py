@@ -41,7 +41,7 @@ def add_image(image_schema: ImageSchema = Depends(), file: UploadFile = File(...
         if prop.owner_id != current_user["id"]:
             raise HTTPException(status_code=401, detail="User not authorized to add image to property")
             
-    uploaded_img = upload_image(image_schema, file)
+    uploaded_img = upload_image(image_schema, file, owner_id=current_user["id"])
     if not uploaded_img:
         return ResponseModel(False, "Failed to upload image")
         

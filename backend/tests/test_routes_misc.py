@@ -57,37 +57,3 @@ def test_delete_group(client, auth_headers):
     group_id = create_res.json()["data"]["group"]["id"]
     res = client.delete(f"/api/groups/{group_id}", headers=auth_headers)
     assert res.status_code == 200
-
-def test_get_notifications(client, auth_headers):
-    res = client.get("/api/notifications", headers=auth_headers)
-    assert res.status_code == 200
-
-def test_create_notification(client, auth_headers):
-    res = client.post("/api/notifications", json={
-        "sender_id": 1,
-        "recipient_id": 1,
-        "title": "Test Notification",
-        "message": "This is a test"
-    }, headers=auth_headers)
-    assert res.status_code == 200
-    assert res.json()["data"]["notification"]["title"] == "Test Notification"
-
-def test_mark_notification_read(client, auth_headers):
-    create_res = client.post("/api/notifications", json={
-        "sender_id": 1, "recipient_id": 1,
-        "title": "Read Me", "message": "Please"
-    }, headers=auth_headers)
-    notif_id = create_res.json()["data"]["notification"]["id"]
-    res = client.patch(f"/api/notifications/{notif_id}", headers=auth_headers)
-    assert res.status_code == 200
-    data = res.json()["data"]["notification"]
-    assert str(data.get("read")) in ("1", "True")
-
-def test_delete_notification(client, auth_headers):
-    create_res = client.post("/api/notifications", json={
-        "sender_id": 1, "recipient_id": 1,
-        "title": "Delete", "message": "Me"
-    }, headers=auth_headers)
-    notif_id = create_res.json()["data"]["notification"]["id"]
-    res = client.delete(f"/api/notifications/{notif_id}", headers=auth_headers)
-    assert res.status_code == 200

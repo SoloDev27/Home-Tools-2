@@ -24,7 +24,6 @@ class User(Base):
 
     # Relationships
     maps = relationship("Map", back_populates="owner", cascade="all, delete-orphan")
-    user_teams = relationship("UserTeam", back_populates="user", cascade="all, delete-orphan")
     properties = relationship("Property", back_populates="owner", cascade="all, delete-orphan")
     images = relationship("Image", back_populates="owner", cascade="all, delete-orphan")
     floors = relationship("Floor", back_populates="owner", cascade="all, delete-orphan")

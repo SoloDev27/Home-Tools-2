@@ -7,12 +7,11 @@ from app.models.user import User
 from app.models.image import Image
 from app.models.floor import Floor
 from app.models.home_group import HomeGroup
-from app.models.user_team import UserTeam
-from app.models.team import Team
-from app.models.notification import Notification
 from app.models.point import Point
 from app.models.saved_types import SavedType
 from app.models.settings import Settings
+
+from app.models.map import Map
 
 # Setup test DB
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -23,6 +22,26 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 def db():
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
+    from app.routes.auth import hash_password
+    existing_user = db.query(User).filter(User.id == 1).first()
+    if not existing_user:
+        user = User(
+            id=1, email="test@example.com", username="test_user",
+            password=hash_password("TestPass123!"),
+            first_name="Test", last_name="User"
+        )
+        db.add(user)
+        db.commit()
+    existing_map = db.query(Map).filter(Map.id == 1).first()
+    if not existing_map:
+        test_map = Map(
+            id=1,
+            owner_id=1,
+            name="Test Map",
+            description="Default map for test"
+        )
+        db.add(test_map)
+        db.commit()
     try:
         yield db
     finally:
@@ -46,6 +65,7 @@ def test_hierarchy_crud(db):
     # 2. Save property
     prop = Property(
         owner_id=1,
+        map_id=1,
         name="Test Home",
         lat=0,
         lng=0,

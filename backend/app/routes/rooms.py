@@ -46,7 +46,7 @@ def edit_room(id: int, room_schema: RoomSchema, current_user = Depends(get_curre
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     try:
-        update_data = room_schema.dict(exclude_unset=True)
+        update_data = room_schema.model_dump(exclude_unset=True)
         for key, value in update_data.items():
             setattr(room, key, value)
         db.commit()

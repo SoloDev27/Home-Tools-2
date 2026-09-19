@@ -38,10 +38,17 @@ def get_property_by_id(id: int, current_user = Depends(get_current_user), db: Se
 # CREATE PROPERTY
 @router.post("")
 def create_property(property_schema: PropertySchema, current_user = Depends(get_current_user), db: Session = Depends(get_db_session)):
+    if property_schema.map_id is None:
+        raise HTTPException(status_code=400, detail="Missing required field: map_id")
+    if property_schema.name is None:
+        raise HTTPException(status_code=400, detail="Missing required field: name")
+    if property_schema.lat is None or property_schema.lng is None:
+        raise HTTPException(status_code=400, detail="Missing required field: lat, lng")
     try:
         new_prop = Property(
             owner_id=current_user["id"],
             map_id=property_schema.map_id,
+            area_id=property_schema.area_id,
             name=property_schema.name,
             address=property_schema.address,
             city=property_schema.city,

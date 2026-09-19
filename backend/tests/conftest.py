@@ -1,3 +1,11 @@
+import os
+
+# Set before importing the app: jwt.py refuses to start without SECRET_KEY, and
+# session.py refuses without POSTGRES_URL. Defaults let `pytest` run with no
+# environment preparation, while still honouring real values if provided.
+os.environ.setdefault("SECRET_KEY", "test-secret-key-not-for-production")
+os.environ.setdefault("POSTGRES_URL", "sqlite:///./test.db")
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -47,6 +55,17 @@ def setup_db():
             first_name="Test", last_name="User"
         )
         db.add(user)
+        db.commit()
+    from app.models.map import Map
+    existing_map = db.query(Map).filter(Map.id == 1).first()
+    if not existing_map:
+        test_map = Map(
+            id=1,
+            owner_id=1,
+            name="Test Map",
+            description="Default map for test"
+        )
+        db.add(test_map)
         db.commit()
     db.close()
     yield
