@@ -48,7 +48,7 @@ export default function useOutlineHistory(propertyId) {
             setOutlinesState(parsed.data);
         }
         setLoaded(true);
-    }, [storageKey]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [storageKey]);
 
     useEffect(() => {
         if (!loaded || savingRef.current || isSavingRef.current) return;
