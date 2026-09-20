@@ -1,0 +1,72 @@
+.settings-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.settings-section-title {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+}
+
+.settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.settings-map-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-element);
+    background: var(--color-background-card);
+    cursor: pointer;
+}
+
+.settings-map-option.is-active {
+    border-color: var(--color-border);
+    background: var(--color-border);
+}
+
+.settings-map-emoji {
+    font-size: var(--font-size-lg);
+}
+
+.settings-map-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.settings-scaling {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-2);
+}
+
+.settings-range {
+    width: 100%;
+    cursor: pointer;
+}
