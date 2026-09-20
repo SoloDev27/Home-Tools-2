@@ -15,6 +15,7 @@ import useCanvasStaging from "../../hooks/useMapStaging";
 import { useModal } from "../../context/Modal";
 import MapForm from "../../components/Forms/MapForm/MapForm";
 import ScreenSizeOverlay from "../../components/ScreenSizeOverlay/ScreenSizeOverlay";
+import "./MapEditor.css";
 
 export default function MapEditor() {
     const { mapId } = useParams();
@@ -152,38 +153,15 @@ export default function MapEditor() {
     };
 
     return (
-        <div style={{
-            height: '100vh',
-            width: '100vw',
-            minWidth: '768px',
-            minHeight: '500px',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            backgroundColor: 'var(--color-background-body)',
-            color: 'var(--color-text-primary)'
-        }}>
+        <div className="map-editor">
             {!loaded ? (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '18px', color: 'var(--color-text-secondary)' }}>Loading Map...</span>
+                <div className="map-editor-loading">
+                    <span className="map-editor-loading-text">Loading Map...</span>
                 </div>
             ) : (
-                <div id="editor" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', minWidth: '768px', minHeight: '500px', overflow: 'hidden' }}>
-                    <header style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0 12px',
-                        height: '56px',
-                        backgroundColor: 'var(--color-background-card)',
-                        borderBottom: '1px solid var(--color-border)',
-                        zIndex: 50,
-                        flexShrink: 0,
-                        boxSizing: 'border-box',
-                        width: '100%',
-                        gap: '8px'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                <div id="editor" className="map-editor-inner">
+                    <header className="map-editor-header">
+                        <div className="map-editor-header-group">
                             <Button label="Home" variant="ghost" size="small" onClick={() => navigate("/")} />
                             <Button
                                 label={saving ? "Saving..." : "Save All"}
@@ -201,8 +179,8 @@ export default function MapEditor() {
                             />
                         </div>
 
-                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', padding: '0 4px', minWidth: '120px', maxWidth: '380px' }}>
-                            <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }} ref={searchRef}>
+                        <div className="map-editor-search">
+                            <div className="map-editor-search-inner" ref={searchRef}>
                                 <TextInput
                                     label="Search"
                                     isLabelHidden
@@ -217,69 +195,21 @@ export default function MapEditor() {
                                     onFocus={() => setShowSearchResults(true)}
                                 />
                                 {showSearchResults && search.length > 0 && search.length <= 2 && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 'calc(100% + 4px)',
-                                        left: 0,
-                                        width: '100%',
-                                        backgroundColor: 'var(--color-background-card)',
-                                        color: 'var(--color-text-primary)',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                                        zIndex: 100,
-                                        padding: '12px',
-                                        fontSize: '13px'
-                                    }}>
-                                        <p style={{ margin: 0, opacity: 0.7 }}>Type 3+ characters to search...</p>
+                                    <div className="map-editor-search-popover">
+                                        <p className="map-editor-search-hint">Type 3+ characters to search...</p>
                                     </div>
                                 )}
                                 {showSearchResults && search.length > 2 && searchResults.length === 0 && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 'calc(100% + 4px)',
-                                        left: 0,
-                                        width: '100%',
-                                        backgroundColor: 'var(--color-background-card)',
-                                        color: 'var(--color-text-primary)',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                                        zIndex: 100,
-                                        padding: '12px',
-                                        fontSize: '13px'
-                                    }}>
-                                        <p style={{ margin: 0, opacity: 0.7 }}>No results found.</p>
+                                    <div className="map-editor-search-popover">
+                                        <p className="map-editor-search-hint">No results found.</p>
                                     </div>
                                 )}
                                 {showSearchResults && searchResults.length > 0 && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 'calc(100% + 4px)',
-                                        left: 0,
-                                        width: '100%',
-                                        backgroundColor: 'var(--color-background-card)',
-                                        color: 'var(--color-text-primary)',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '8px',
-                                        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                                        maxHeight: '260px',
-                                        overflowY: 'auto',
-                                        zIndex: 100,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        padding: '4px'
-                                    }}>
+                                    <div className="map-editor-search-popover is-results">
                                         {searchResults.map((res, i) => (
                                              <div
                                                 key={i}
-                                                style={{
-                                                    padding: '8px 12px',
-                                                    fontSize: '13px',
-                                                    cursor: 'pointer',
-                                                    borderRadius: '4px',
-                                                    borderBottom: '1px solid var(--color-border)'
-                                                }}
+                                                className="map-editor-search-result"
                                                 onClick={() => {
                                                     setLngLat([res.lng, res.lat]);
                                                     setSearch("");
@@ -305,7 +235,7 @@ export default function MapEditor() {
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                        <div className="map-editor-header-group">
                             <Button
                                 label="Undo"
                                 variant="ghost"
@@ -323,13 +253,7 @@ export default function MapEditor() {
                         </div>
                     </header>
 
-                    <section style={{
-                        display: 'flex',
-                        flex: 1,
-                        height: 'calc(100vh - 56px)',
-                        position: 'relative',
-                        overflow: 'hidden'
-                    }}>
+                    <section className="map-editor-body">
                         <Sidebar
                             menu={menu}
                             selectMenu={selectMenu}
@@ -347,7 +271,7 @@ export default function MapEditor() {
                             overlaysStore={overlaysStore}
                         />
 
-                        <div style={{ flex: 1, height: '100%', position: 'relative', overflow: 'hidden' }}>
+                        <div className="map-editor-canvas">
                             <FloatingToolbar
                                 canvasSelect={canvasSelect}
                                 setCanvasSelect={setCanvasSelect}
@@ -372,25 +296,12 @@ export default function MapEditor() {
                         {contextMenu.isOpen && (
                             <div 
                                 ref={contextMenuRef}
-                                style={{
-                                    position: 'fixed',
-                                    top: contextMenu.y,
-                                    left: contextMenu.x,
-                                    zIndex: 1000,
-                                    width: '192px',
-                                    backgroundColor: 'var(--color-background-card)',
-                                    color: 'var(--color-text-primary)',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                                    padding: '4px',
-                                    fontSize: '13px'
-                                }}
+                                className="map-editor-context-menu"
+                                style={{ top: contextMenu.y, left: contextMenu.x }}
                             >
                                 {contextMenu.type === 'search' && (
                                     <>
-                                        <div 
-                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                        <div className="map-editor-context-item"
                                             onClick={() => {
                                                 setLngLat([contextMenu.data.lng, contextMenu.data.lat]);
                                                 setSearch(""); setShowSearchResults(false);
@@ -399,9 +310,8 @@ export default function MapEditor() {
                                         >
                                             Go to Location
                                         </div>
-                                        <div style={{ height: '1px', backgroundColor: 'var(--color-border)', margin: '4px 0' }} />
-                                        <div 
-                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                        <div className="map-editor-context-separator" />
+                                        <div className="map-editor-context-item"
                                             onClick={() => {
                                                 const id = `temp-structure-${Date.now()}`;
                                                 const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Main Residence";
@@ -413,8 +323,7 @@ export default function MapEditor() {
                                         >
                                             Place Structure
                                         </div>
-                                        <div 
-                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                        <div className="map-editor-context-item"
                                             onClick={() => {
                                                 const id = `temp-valve-${Date.now()}`;
                                                 const name = "Water Shut-off";
@@ -426,8 +335,7 @@ export default function MapEditor() {
                                         >
                                             Place Utility Valve
                                         </div>
-                                        <div 
-                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                        <div className="map-editor-context-item"
                                             onClick={() => {
                                                 const id = `temp-inspection-${Date.now()}`;
                                                 const name = "Maintenance Item";
@@ -439,8 +347,7 @@ export default function MapEditor() {
                                         >
                                             Place Work Order / Issue
                                         </div>
-                                        <div 
-                                            style={{ padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                        <div className="map-editor-context-item"
                                             onClick={() => {
                                                 const id = `temp-point-${Date.now()}`;
                                                 const name = contextMenu.data.name || contextMenu.data.address || contextMenu.data.city || "Marker";
@@ -455,8 +362,7 @@ export default function MapEditor() {
                                     </>
                                 )}
                                 {contextMenu.type === 'map' && (
-                                    <div 
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', cursor: 'pointer', borderRadius: '4px' }}
+                                    <div className="map-editor-context-item"
                                         onClick={() => {
                                             setContextMenu({ ...contextMenu, isOpen: false });
                                             setModalContent(<MapForm mapId={contextMenu.data.id} initialData={contextMenu.data} />);
