@@ -11,8 +11,7 @@ import { neutralTheme } from "@astryxdesign/theme-neutral";
  * `contrast: 'high'` is deliberate — this is inspection-grade data, and the higher
  * text/surface gap is what keeps a dense table readable.
  */
-export const homeToolsTheme = defineTheme({
-    name: "home-tools",
+const shared = {
     extends: neutralTheme,
 
     color: {
@@ -63,5 +62,29 @@ export const homeToolsTheme = defineTheme({
         button: {
             base: { borderRadius: "var(--radius-element)" }
         }
+    }
+};
+
+/** The default system: indigo accent, near-black surfaces. */
+export const homeToolsTheme = defineTheme({
+    ...shared,
+    name: "home-tools"
+});
+
+/**
+ * The "blueprint" variant keeps the old cyan-on-navy identity, expressed as an
+ * Astryx theme rather than a second hand-written palette — same surfaces, same
+ * type, a cyan accent. Selected in ThemeProvider when the user picks Blueprint.
+ */
+export const homeToolsBlueprintTheme = defineTheme({
+    ...shared,
+    name: "home-tools-blueprint",
+    color: { ...shared.color, accent: "#22d3ee" },
+    tokens: {
+        ...shared.tokens,
+        "--color-background-body": ["#F4F5F7", "#050B18"],
+        "--color-background-surface": ["#FFFFFF", "#0B1526"],
+        "--color-background-card": ["#FFFFFF", "#0F1B2E"],
+        "--color-background-popover": ["#FFFFFF", "#13223A"]
     }
 });

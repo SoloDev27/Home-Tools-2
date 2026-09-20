@@ -1,7 +1,37 @@
+/**
+ * Legacy tokens are ALIASES for the Astryx theme (see src/theme/homeTools.js and
+ * /design.md). The older stylesheets use these names, so pointing them at the theme
+ * makes every surface follow the locked system instead of carrying its own palette.
+ *
+ * Astryx defines its tokens on <html data-astryx-theme>, and its values use CSS
+ * light-dark(), so one block covers both colour modes — there is no second palette to
+ * keep in sync. Do not reintroduce literal colours here; add a token to the theme.
+ */
 :root {
-  --font-family-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-family-sans: var(--font-family-body);
+  --font-family-mono: var(--font-family-code);
   font-family: var(--font-family-sans);
+
+  --transition-fast: 120ms ease;
+  --transition: 160ms ease;
+  --danger: var(--color-error);
+  --danger-hover: var(--color-error);
+  --warning: var(--color-warning);
+  --success: var(--color-success);
+  --bg-main: var(--color-background-body);
+  --bg-panel: var(--color-background-surface);
+  --bg-sidebar: var(--color-background-surface);
+  --accent-legacy: var(--color-accent);
+  --accent-hover: var(--color-text-accent);
+  --text-main: var(--color-text-primary);
+  --text-dim: var(--color-text-secondary);
+  --border-legacy: var(--color-border);
+  --shadow: var(--shadow-med);
+  --hover-bg: var(--color-overlay-hover);
+  --active-bg: var(--color-accent-muted);
+  --input-bg: var(--color-background-surface);
+  --input-border: var(--color-border-emphasized);
+  --input-focus: var(--color-accent);
 }
 
 html.dark {
@@ -15,105 +45,6 @@ html.light {
 body {
   background-color: var(--color-background-body);
   color: var(--color-text-primary);
-}
-
-/* ── Legacy custom properties (preserved for backward compat) ── */
-:root {
-  --transition-fast: 100ms ease;
-  --transition: 150ms ease;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --warning: #f59e0b;
-  --success: #22c55e;
-  --bg-main: #121212;
-  --bg-panel: #1e1e1e;
-  --bg-sidebar: rgba(15, 23, 42, 0.95);
-  --accent-legacy: #6366f1;
-  --accent-hover: #4f46e5;
-  --text-main: #f8fafc;
-  --text-dim: #94a3b8;
-  --border-legacy: rgba(255, 255, 255, 0.1);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --hover-bg: rgba(255, 255, 255, 0.05);
-  --active-bg: rgba(99, 102, 241, 0.15);
-  --input-bg: #1e1e1e;
-  --input-border: rgba(255, 255, 255, 0.15);
-  --input-focus: #6366f1;
-}
-
-
-
-:root, .light {
-  --bg-main: #ffffff;
-  --bg-panel: #f3f4f6;
-  --bg-sidebar: rgba(255, 255, 255, 0.95);
-  --accent-legacy: #4f46e5;
-  --accent-hover: #4338ca;
-  --text-main: #111827;
-  --text-dim: #4b5563;
-  --border-legacy: rgba(0, 0, 0, 0.1);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --hover-bg: rgba(0, 0, 0, 0.05);
-  --active-bg: rgba(79, 70, 229, 0.1);
-  --input-bg: #f3f4f6;
-  --input-border: rgba(0, 0, 0, 0.15);
-  --input-focus: #4f46e5;
-}
-
-.dark {
-  --bg-main: #0a0a0a;
-  --bg-panel: #141414;
-  --bg-sidebar: rgba(10, 10, 10, 0.98);
-  --accent-legacy: #6366f1;
-  --accent-hover: #4f46e5;
-  --text-main: #f8fafc;
-  --text-dim: #94a3b8;
-  --border-legacy: rgba(255, 255, 255, 0.08);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --hover-bg: rgba(255, 255, 255, 0.05);
-  --active-bg: rgba(99, 102, 241, 0.15);
-  --input-bg: #1e1e1e;
-  --input-border: rgba(255, 255, 255, 0.15);
-  --input-focus: #6366f1;
-}
-
-.theme-blueprint {
-  /* Shadcn modern overrides */
-  --background: oklch(0.15 0.04 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.20 0.04 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.20 0.04 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.75 0.15 220); /* Cyan-ish */
-  --primary-foreground: oklch(0.15 0.04 260);
-  --secondary: oklch(0.25 0.04 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.25 0.04 260);
-  --muted-foreground: oklch(0.70 0.02 260);
-  --accent: oklch(0.28 0.05 260);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.40 0.12 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.30 0.05 260);
-  --input: oklch(0.30 0.05 260);
-  --ring: oklch(0.75 0.15 220);
-
-  /* Legacy variables */
-  --bg-main: #020617;
-  --bg-panel: #0f172a;
-  --bg-sidebar: rgba(15, 23, 42, 0.98);
-  --accent-legacy: #00e5ff;
-  --accent-hover: #00d2eb;
-  --text-main: #f8fafc;
-  --text-dim: #94a3b8;
-  --border-legacy: rgba(0, 229, 255, 0.25);
-  --shadow: 0 0 20px rgba(0, 229, 255, 0.2);
-  --hover-bg: rgba(0, 229, 255, 0.05);
-  --active-bg: rgba(0, 229, 255, 0.1);
-  --input-bg: #0f172a;
-  --input-border: rgba(0, 229, 255, 0.25);
-  --input-focus: #00e5ff;
 }
 
 /* ── Global base styles ── */
