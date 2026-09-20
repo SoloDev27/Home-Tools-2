@@ -9,14 +9,17 @@ import {
     MousePointer2, Move3d, RotateCw, Scaling, ArrowUpFromLine, Trash2,
     Box as BoxIcon, Minus, Columns3, Cylinder as CylinderIcon, Home as HomeIcon,
     Square as SquareIcon, Maximize2, Copy, Layers, Compass, Plus,
-    ExternalLink, Eye, Grid3x3
+    ExternalLink, Eye, Grid3x3, SlidersHorizontal, Combine, MousePointerClick
 } from "lucide-react";
 import {
     PALETTE, findPrimitive, createBuildObject, nextName,
     footprintInside, clampIntoPolygon, polygonRadius, readObjects, withObjects,
-    cameraPositionFor, updateObject, removeObject, applyScaleToObject, snap,
-    metersToFeet, feetToMeters, SNAP_METERS, CAMERA_PRESETS, azimuthFromPosition
+    cameraPositionFor, updateObject, applyScaleToObject, snap,
+    metersToFeet, feetToMeters, SNAP_METERS, CAMERA_PRESETS, azimuthFromPosition,
+    groupCenterY
 } from "../../functions/buildObjects";
+import { localGeometry } from "../../functions/buildGeometry";
+import { applyBoolean, ADDON_OPS } from "../../functions/csgOps";
 import "./Unified3DCanvas.css";
 
 const FENCE_HEIGHT = 0.65;
@@ -32,15 +35,26 @@ const TRANSFORM_TOOLS = [
 ];
 
 const BUILD_TOOLS = [
-    { id: "box", label: "Block", tip: "Block  ·  1", Icon: BoxIcon },
-    { id: "wall", label: "Wall", tip: "Wall  ·  2", Icon: Minus },
-    { id: "column", label: "Column", tip: "Column  ·  3", Icon: Columns3 },
-    { id: "cylinder", label: "Cylinder", tip: "Cylinder  ·  4", Icon: CylinderIcon },
-    { id: "roof", label: "Roof", tip: "Roof  ·  5", Icon: HomeIcon },
-    { id: "slab", label: "Slab", tip: "Slab  ·  6", Icon: SquareIcon }
+    { id: "box", label: "Block", tip: "Block  ·  1", Icon: BoxIcon, blurb: "Rectangular mass" },
+    { id: "wall", label: "Wall", tip: "Wall  ·  2", Icon: Minus, blurb: "Thin vertical panel" },
+    { id: "column", label: "Column", tip: "Column  ·  3", Icon: Columns3, blurb: "Support post" },
+    { id: "cylinder", label: "Cylinder", tip: "Cylinder  ·  4", Icon: CylinderIcon, blurb: "Round mass / tank" },
+    { id: "roof", label: "Roof", tip: "Roof  ·  5", Icon: HomeIcon, blurb: "Pitched gable" },
+    { id: "slab", label: "Slab", tip: "Slab  ·  6", Icon: SquareIcon, blurb: "Flat pad / deck" }
 ];
 
-const CAMERA_ICONS = { Orbit: Compass, Plan: Layers, Iso: BoxIcon, Front: SquareIcon };
+const MENUS = [
+    { id: "objects", label: "Objects", Icon: Layers },
+    { id: "controls", label: "Controls", Icon: SlidersHorizontal },
+    { id: "shapes", label: "Shapes", Icon: BoxIcon },
+    { id: "addons", label: "Addons", Icon: Combine }
+];
+
+const SHADING = [
+    { id: "solid", label: "Solid" },
+    { id: "xray", label: "X-Ray" },
+    { id: "wireframe", label: "Wire" }
+];
 
 // ---------------------------------------------------------------- geometry
 
@@ -63,10 +77,9 @@ function getAreaPolygonPoints(area, centerLng, centerLat) {
 
 /**
  * A 2D shape from local [x, z] points, ready to lay flat with rotateX(-PI/2).
- *
- * The shape is drawn in XY with v = -z. Combined with rotateX(-PI/2) this maps
- * (x, z) -> world (x, 0, z) and extrudes upward. Using rotateX(+PI/2) instead
- * mirrors the result in Z and pushes extrusions below the ground plane.
+ * The shape is drawn in XY with v = -z; with rotateX(-PI/2) that maps to world
+ * (x, 0, z) and extrudes upward. rotateX(+PI/2) mirrors in Z and pushes the
+ * extrusion below ground.
  */
 function ringToShape(points) {
     const shape = new THREE.Shape();
@@ -76,23 +89,6 @@ function ringToShape(points) {
     });
     shape.closePath();
     return shape;
-}
-
-/**
- * A build object's group origin is its vertical CENTRE, so a gizmo attached to
- * the group sits in the middle of the shape. `obj.y` still means the base
- * elevation; this converts between them.
- */
-function groupCenterY(obj) {
-    return (obj.y || 0) + obj.h / 2;
-}
-
-/** Local offset from the group origin (the centre) to the mesh. */
-function meshOffsetY(obj) {
-    // The roof wedge is built spanning 0..h from its base, so its centre is h/2
-    // above the group origin; everything else is modelled centred on the origin.
-    if (obj.kind === "roof") return -obj.h / 2;
-    return 0;
 }
 
 // ---------------------------------------------------------------- scene parts
@@ -117,7 +113,6 @@ function ParcelGround({ points, color = "#6366f1", onMove, onPlace }) {
 
     return (
         <group>
-            {/* Buildable pad — the only surface that accepts objects. */}
             <mesh
                 geometry={slab}
                 position={[0, -FLOOR_DEPTH, 0]}
@@ -144,10 +139,8 @@ function ParcelGround({ points, color = "#6366f1", onMove, onPlace }) {
                 <meshStandardMaterial color="#0e1a2e" roughness={0.95} metalness={0.02} />
             </mesh>
 
-            {/* Bright boundary line (Line2, so lineWidth actually renders). */}
             <Line points={outline} color={color} lineWidth={3} transparent opacity={0.95} />
 
-            {/* Low glowing fence so the edge reads from any camera angle. */}
             {points.map(([x, z], i) => {
                 const [nx, nz] = points[(i + 1) % points.length];
                 const len = Math.hypot(nx - x, nz - z);
@@ -168,7 +161,6 @@ function ParcelGround({ points, color = "#6366f1", onMove, onPlace }) {
                 );
             })}
 
-            {/* Corner posts anchor the corners visually. */}
             {points.map(([x, z], i) => (
                 <mesh key={`c-${i}`} position={[x, FENCE_HEIGHT * 0.8, z]}>
                     <cylinderGeometry args={[0.16, 0.16, FENCE_HEIGHT * 1.6, 16]} />
@@ -239,7 +231,9 @@ function Divider3DLine({ coordinates, centerLng, centerLat, color = "#c084fc" })
 
 /** Legacy "structures" are real Properties with floorplans; shown as masses. */
 function StructureMass({ item, centerLng, centerLat, isSelected, onSelect }) {
-    const { geometry, position } = useMemo(() => {
+    const { geometry, position, edges } = useMemo(() => {
+        let geom = null;
+        let pos = [0, 0, 0];
         const raw = item.hierarchy?.coordinates || item.coordinates;
         if (raw) {
             let ring = raw;
@@ -253,23 +247,19 @@ function StructureMass({ item, centerLng, centerLat, isSelected, onSelect }) {
                 const local = ring.map(([lng, lat]) => gpsToMeters(lng, lat, centerLng, centerLat));
                 const shape = ringToShape(local);
                 const h = item.height_meters || 3.6;
-                const geom = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+                geom = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
                 geom.rotateX(-Math.PI / 2);
-                return { geometry: geom, position: [0, 0, 0] };
             }
         }
-        if (item.lat && item.lng) {
+        if (!geom && item.lat && item.lng) {
             const [x, z] = gpsToMeters(item.lng, item.lat, centerLng, centerLat);
             const h = item.height_meters || 3.6;
-            return {
-                geometry: new THREE.BoxGeometry(12, h, 9),
-                position: [x, h / 2, z]
-            };
+            geom = new THREE.BoxGeometry(12, h, 9);
+            pos = [x, h / 2, z];
         }
-        return { geometry: null, position: [0, 0, 0] };
+        return { geometry: geom, position: pos, edges: geom ? new THREE.EdgesGeometry(geom) : null };
     }, [item, centerLng, centerLat]);
 
-    const edges = useMemo(() => (geometry ? new THREE.EdgesGeometry(geometry) : null), [geometry]);
     useEffect(() => () => { edges?.dispose(); }, [edges]);
 
     if (!geometry) return null;
@@ -289,45 +279,19 @@ function StructureMass({ item, centerLng, centerLat, isSelected, onSelect }) {
     );
 }
 
-function PrimitiveGeometry({ kind, w, d, h }) {
-    const roof = useMemo(() => {
-        if (kind !== "roof") return null;
-        const hw = Math.max(0.1, w) / 2;
-        const dd = Math.max(0.1, d);
-        const shape = new THREE.Shape();
-        shape.moveTo(-hw, 0);
-        shape.lineTo(hw, 0);
-        shape.lineTo(0, h);
-        shape.closePath();
-        const geo = new THREE.ExtrudeGeometry(shape, { depth: dd, bevelEnabled: false });
-        geo.translate(0, 0, -dd / 2);
-        geo.computeVertexNormals();
-        return geo;
-    }, [kind, w, d, h]);
-
-    useEffect(() => () => { if (roof) roof.dispose(); }, [roof]);
-
-    if (kind === "roof" && roof) return <primitive object={roof} attach="geometry" />;
-    if (kind === "cylinder") {
-        const r = Math.max(0.08, w / 2);
-        return <cylinderGeometry args={[r, r, h, 28]} />;
-    }
-    return <boxGeometry args={[Math.max(0.08, w), h, Math.max(0.08, d)]} />;
-}
-
 function BuildObjectMesh({ obj, isSelected, materialStyle, onSelect, onReady }) {
     const groupRef = useRef();
+    const geometry = useMemo(() => localGeometry(obj), [obj]);
+    useEffect(() => () => geometry.dispose(), [geometry]);
 
     useEffect(() => {
         onReady(obj.id, groupRef.current);
         return () => onReady(obj.id, null);
     }, [obj.id, onReady]);
 
-    // Colour communicates validity: a ghost over the boundary shows red.
     const opacity = materialStyle === "wireframe" ? 0.16
         : materialStyle === "xray" ? 0.45
             : 0.92;
-    const wireframe = materialStyle === "wireframe";
 
     return (
         <group
@@ -336,25 +300,23 @@ function BuildObjectMesh({ obj, isSelected, materialStyle, onSelect, onReady }) 
             rotation={[0, obj.rot || 0, 0]}
         >
             <mesh
-                position={[0, meshOffsetY(obj), 0]}
+                geometry={geometry}
                 castShadow
                 receiveShadow
-                onClick={(e) => { e.stopPropagation(); onSelect(obj.id); }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(obj.id, e.nativeEvent?.shiftKey || e.nativeEvent?.metaKey);
+                }}
             >
-                <PrimitiveGeometry kind={obj.kind} w={obj.w} d={obj.d} h={obj.h} />
                 <meshStandardMaterial
-                    color={obj.color || "#93c5fd"}
+                    color={isSelected ? "#c7d2fe" : (obj.color || "#93c5fd")}
                     roughness={0.38}
                     metalness={0.12}
                     transparent={opacity < 1}
                     opacity={opacity}
-                    wireframe={wireframe}
+                    wireframe={materialStyle === "wireframe"}
                 />
-                <Edges
-                    threshold={15}
-                    color={isSelected ? "#ffffff" : "#c7d2fe"}
-                    scale={1.001}
-                />
+                <Edges threshold={15} color={isSelected ? "#ffffff" : "#c7d2fe"} />
             </mesh>
         </group>
     );
@@ -362,10 +324,11 @@ function BuildObjectMesh({ obj, isSelected, materialStyle, onSelect, onReady }) 
 
 function GhostPreview({ obj, valid }) {
     const color = valid ? "#4ade80" : "#f87171";
+    const geometry = useMemo(() => localGeometry(obj), [obj]);
+    useEffect(() => () => geometry.dispose(), [geometry]);
     return (
         <group position={[obj.x, groupCenterY(obj), obj.z]} rotation={[0, obj.rot || 0, 0]}>
-            <mesh position={[0, meshOffsetY(obj), 0]}>
-                <PrimitiveGeometry kind={obj.kind} w={obj.w} d={obj.d} h={obj.h} />
+            <mesh geometry={geometry}>
                 <meshStandardMaterial color={color} transparent opacity={0.4} depthWrite={false} />
                 <Edges threshold={15} color={color} />
             </mesh>
@@ -375,8 +338,7 @@ function GhostPreview({ obj, valid }) {
 
 /**
  * Extrude handle, anchored to the TOP face so dragging it raises the shape
- * instead of moving the whole object. During the drag the object's height is
- * updated live; the release commits it.
+ * instead of moving the whole object.
  */
 function TopExtrudeGizmo({ obj, onLive, onCommit }) {
     const pivot = useMemo(() => new THREE.Object3D(), []);
@@ -430,16 +392,14 @@ export default function Unified3DCanvas({
     onUpdateArea,
     onSelectArea
 }) {
+    const [menu, setMenu] = useState("objects");
     const [tool, setTool] = useState("select");
     const [materialStyle, setMaterialStyle] = useState("solid");
     const [cameraPreset, setCameraPreset] = useState("orbit");
-    // The direction the "Front" elevation looks from. Meaningless until the
-    // user sets it: a parcel has no inherent front, so the default is +Z and
-    // the Set Front action captures the current view.
     const [frontAzimuth, setFrontAzimuth] = useState(0);
     const [fitNonce, setFitNonce] = useState(0);
     const [showGrid, setShowGrid] = useState(true);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
     const [selectedStructure, setSelectedStructure] = useState(null);
     const [gizmoTarget, setGizmoTarget] = useState(null);
     const [hoverPoint, setHoverPoint] = useState(null);
@@ -449,11 +409,9 @@ export default function Unified3DCanvas({
     const objectRefs = useRef({});
     const noticeTimer = useRef(null);
 
-    const selectObject = useCallback((id) => {
-        setSelectedStructure(null);
-        setSelectedId(id);
-    }, []);
+    const primaryId = selectedIds.length ? selectedIds[selectedIds.length - 1] : null;
 
+    // ---- scene anchoring ----
     const { centerLng, centerLat } = useMemo(() => {
         if (!activeArea?.coordinates) return { centerLng: -83.5055, centerLat: 32.9075 };
         const ring = Array.isArray(activeArea.coordinates[0]) ? activeArea.coordinates[0] : activeArea.coordinates;
@@ -491,8 +449,6 @@ export default function Unified3DCanvas({
 
     // ---- objects (persisted on the parcel) ----
     const [objects, setObjects] = useState(() => readObjects(activeArea));
-    // Mirror of `objects` so callbacks can read the latest list without being
-    // re-created on every edit.
     const objectsRef = useRef(objects);
     useEffect(() => { objectsRef.current = objects; }, [objects]);
 
@@ -500,7 +456,7 @@ export default function Unified3DCanvas({
         const restored = readObjects(activeArea);
         objectsRef.current = restored;
         setObjects(restored);
-        setSelectedId(null);
+        setSelectedIds([]);
         setSelectedStructure(null);
         // Resync only when the parcel changes; object edits stay local until committed.
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -515,9 +471,21 @@ export default function Unified3DCanvas({
     }, [activeArea, onUpdateArea]);
 
     const selected = useMemo(
-        () => objects.find((o) => o.id === selectedId) || null,
-        [objects, selectedId]
+        () => objects.find((o) => o.id === primaryId) || null,
+        [objects, primaryId]
     );
+    const selectedObjects = useMemo(
+        () => selectedIds.map((id) => objects.find((o) => o.id === id)).filter(Boolean),
+        [objects, selectedIds]
+    );
+
+    const selectObject = useCallback((id, additive = false) => {
+        setSelectedStructure(null);
+        setSelectedIds((prev) => {
+            if (!additive) return [id];
+            return prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+        });
+    }, []);
 
     const registerObject = useCallback((id, node) => {
         if (node) objectRefs.current[id] = node;
@@ -525,11 +493,27 @@ export default function Unified3DCanvas({
     }, []);
 
     useEffect(() => {
-        setGizmoTarget(selectedId ? objectRefs.current[selectedId] || null : null);
-    }, [selectedId, objects, tool]);
+        setGizmoTarget(primaryId ? objectRefs.current[primaryId] || null : null);
+    }, [primaryId, objects, tool]);
 
-    const isPlacing = tool !== "select" && tool !== "move" && tool !== "rotate"
-        && tool !== "scale" && tool !== "extrude";
+    const flash = useCallback((msg) => {
+        setNotice(msg);
+        window.clearTimeout(noticeTimer.current);
+        noticeTimer.current = window.setTimeout(() => setNotice(null), 2600);
+    }, []);
+    useEffect(() => () => window.clearTimeout(noticeTimer.current), []);
+
+    // A parcel has no inherent front, so "Front" only means something once the
+    // user points at it. Capture the current viewing direction as front.
+    const setFrontFromView = useCallback(() => {
+        const cam = controlsRef.current?.object;
+        if (!cam) return;
+        setFrontAzimuth(azimuthFromPosition(cam.position));
+        setCameraPreset("front");
+        flash("Front set to this viewing direction.");
+    }, [flash]);
+
+    const isPlacing = BUILD_TOOLS.some((t) => t.id === tool);
 
     const ghost = useMemo(() => {
         if (!isPlacing || !hoverPoint) return null;
@@ -549,24 +533,6 @@ export default function Unified3DCanvas({
 
     const ghostValid = ghost ? footprintInside(ghost, boundaryPoints, 0.05) : false;
 
-    const flash = useCallback((msg) => {
-        setNotice(msg);
-        window.clearTimeout(noticeTimer.current);
-        noticeTimer.current = window.setTimeout(() => setNotice(null), 2200);
-    }, []);
-    useEffect(() => () => window.clearTimeout(noticeTimer.current), []);
-
-    // A parcel has no inherent front, so "Front" only means something once the
-    // user points at it. Capture the current viewing direction as front, then
-    // Front/Back/Left/Right elevations are measured from it.
-    const setFrontFromView = useCallback(() => {
-        const cam = controlsRef.current?.object;
-        if (!cam) return;
-        setFrontAzimuth(azimuthFromPosition(cam.position));
-        setCameraPreset("front");
-        flash("Front set to this viewing direction.");
-    }, [flash]);
-
     const placeAt = (x, z) => {
         const prim = findPrimitive(tool);
         if (!prim || !activeArea) return;
@@ -579,17 +545,16 @@ export default function Unified3DCanvas({
             return;
         }
         candidate.name = nextName(tool, objects);
-        const next = [...objects, candidate];
-        commit(next);
+        commit([...objects, candidate]);
         selectObject(candidate.id);
         flash(`Placed ${candidate.name}. Click again to add another, or press V to select.`);
     };
 
-    // The gizmo is attached to the object's group, whose origin is the object's
-    // centre, so a translation has to be converted back to a base elevation.
+    // The gizmo is attached to the object's group, whose origin is the centre,
+    // so a translation has to be converted back to a base elevation.
     const handleGizmoCommit = useCallback(() => {
         const target = gizmoTarget;
-        const obj = objects.find((o) => o.id === selectedId);
+        const obj = objects.find((o) => o.id === primaryId);
         if (!target || !obj) return;
 
         if (tool === "move") {
@@ -600,73 +565,59 @@ export default function Unified3DCanvas({
                 y: Math.max(0, snap(target.position.y - obj.h / 2))
             };
             candidate = clampIntoPolygon(candidate, boundaryPoints);
-            commit(updateObject(objects, selectedId, { x: candidate.x, z: candidate.z, y: candidate.y }));
+            commit(updateObject(objects, primaryId, { x: candidate.x, z: candidate.z, y: candidate.y }));
             target.position.set(candidate.x, groupCenterY(candidate), candidate.z);
         } else if (tool === "rotate") {
-            const rot = target.rotation.y;
-            commit(updateObject(objects, selectedId, { rot }));
+            commit(updateObject(objects, primaryId, { rot: target.rotation.y }));
         } else if (tool === "scale") {
             const scaled = applyScaleToObject(obj, target.scale);
             target.scale.set(1, 1, 1);
-            // A scaled footprint may no longer fit; pull it back inside.
             const clamped = clampIntoPolygon(
                 { ...obj, w: scaled.w, d: scaled.d, h: scaled.h },
                 boundaryPoints
             );
-            commit(updateObject(objects, selectedId, {
+            commit(updateObject(objects, primaryId, {
                 w: scaled.w, d: scaled.d, h: scaled.h, x: clamped.x, z: clamped.z
             }));
         }
-    }, [gizmoTarget, objects, selectedId, tool, boundaryPoints, commit]);
+    }, [gizmoTarget, objects, primaryId, tool, boundaryPoints, commit]);
 
-    // Live (unpersisted) edit while a gizmo is being dragged.
     const setObjectLocal = useCallback((patch) => {
-        const next = updateObject(objectsRef.current, selectedId, patch);
+        const next = updateObject(objectsRef.current, primaryId, patch);
         objectsRef.current = next;
         setObjects(next);
-    }, [selectedId]);
+    }, [primaryId]);
 
-    // Extrude drag: the handle rides the top face, so the new height is simply
-    // how far above the base it currently sits.
     const handleExtrudeLive = useCallback((h) => {
         setObjectLocal({ h });
     }, [setObjectLocal]);
-
     const handleExtrudeCommit = useCallback(() => {
         commit(objectsRef.current);
     }, [commit]);
 
-    const handleDelete = useCallback((id = selectedId) => {
-        if (!id) return;
-        commit(removeObject(objects, id));
-        setSelectedId(null);
-    }, [objects, selectedId, commit]);
+    const handleDelete = useCallback((id) => {
+        const ids = id ? [id] : selectedIds;
+        if (!ids.length) return;
+        commit(objectsRef.current.filter((o) => !ids.includes(o.id)));
+        setSelectedIds([]);
+    }, [selectedIds, commit]);
 
     const handleDuplicate = useCallback(() => {
-        if (!selected || !activeArea) return;
-        const copy = {
-            ...selected,
-            id: undefined,
-            name: `${selected.name} copy`,
-            x: snap(selected.x + 1),
-            z: snap(selected.z + 1)
-        };
-        const placed = createBuildObject(copy.kind, copy.x, copy.z, copy.h);
-        const merged = { ...placed, ...copy, id: placed.id };
-        const clamped = clampIntoPolygon(merged, boundaryPoints);
-        const next = [...objects, clamped];
-        commit(next);
-        selectObject(clamped.id);
-    }, [selected, objects, boundaryPoints, commit, activeArea, selectObject]);
+        if (!selectedObjects.length || !activeArea) return;
+        const copies = selectedObjects.map((src) => {
+            const placed = createBuildObject(src.kind === "mesh" ? "box" : src.kind, snap(src.x + 1), snap(src.z + 1), src.h);
+            return clampIntoPolygon({ ...placed, ...src, id: placed.id, x: snap(src.x + 1), z: snap(src.z + 1), name: `${src.name} copy` }, boundaryPoints);
+        });
+        commit([...objectsRef.current, ...copies]);
+        setSelectedIds(copies.map((c) => c.id));
+    }, [selectedObjects, boundaryPoints, commit, activeArea]);
 
-    // Inspector edits update the scene immediately but coalesce their write:
-    // typing a name should not PUT once per keystroke.
     const patchTimer = useRef(null);
     useEffect(() => () => window.clearTimeout(patchTimer.current), []);
 
     const patchSelected = useCallback((patch) => {
-        if (!selectedId) return;
-        const next = updateObject(objectsRef.current, selectedId, patch);
+        if (!primaryId) return;
+        const next = updateObject(objectsRef.current, primaryId, patch);
         objectsRef.current = next;
         setObjects(next);
         window.clearTimeout(patchTimer.current);
@@ -675,7 +626,27 @@ export default function Unified3DCanvas({
                 onUpdateArea(activeArea.id, { extra_info: withObjects(activeArea, objectsRef.current) });
             }
         }, 450);
-    }, [selectedId, activeArea, onUpdateArea]);
+    }, [primaryId, activeArea, onUpdateArea]);
+
+    const runBoolean = useCallback((op) => {
+        if (selectedObjects.length < 2) {
+            flash("Select two or more shapes first (Shift-click).");
+            return;
+        }
+        const opLabel = ADDON_OPS.find((o) => o.id === op)?.label || op;
+        const result = applyBoolean(op, selectedObjects, {
+            name: `${opLabel} result`,
+            color: selectedObjects[0].color || "#93c5fd"
+        });
+        if (!result) {
+            flash(`${opLabel} could not be computed for those shapes.`);
+            return;
+        }
+        const ids = selectedObjects.map((o) => o.id);
+        commit([...objectsRef.current.filter((o) => !ids.includes(o.id)), result]);
+        setSelectedIds([result.id]);
+        flash(`${opLabel} applied to ${ids.length} shapes.`);
+    }, [selectedObjects, commit, flash]);
 
     // ---- keyboard shortcuts ----
     useEffect(() => {
@@ -683,7 +654,7 @@ export default function Unified3DCanvas({
             const tag = (e.target?.tagName || "").toLowerCase();
             if (tag === "input" || tag === "textarea" || tag === "select" || e.target?.isContentEditable) return;
             const key = e.key.toLowerCase();
-            if (e.key === "Escape") { setSelectedId(null); setSelectedStructure(null); setTool("select"); return; }
+            if (e.key === "Escape") { setSelectedIds([]); setSelectedStructure(null); setTool("select"); return; }
             if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); handleDelete(); return; }
             const map = { v: "select", g: "move", r: "rotate", s: "scale", e: "extrude" };
             if (map[key]) { setTool(map[key]); return; }
@@ -710,462 +681,601 @@ export default function Unified3DCanvas({
                 ? "Outside the buildable parcel — move inside the boundary."
                 : `Click inside the parcel to place a ${findPrimitive(tool)?.label.toLowerCase()}.`)
             : tool === "select"
-                ? "Click an object to select it. Left-drag orbits, right-drag pans, the wheel zooms."
+                ? "Click to select, Shift-click to add. Left-drag orbits, right-drag pans, the wheel zooms."
                 : `Drag the gizmo to ${tool} the selected object.`;
 
     return (
         <div className="u3d-root">
-            <Canvas
-                className="u3d-canvas"
-                shadows
-                camera={{ position: [40, 30, 50], fov: 45, near: 0.1, far: 2000 }}
-                onPointerMissed={() => { if (!isPlacing) { setSelectedId(null); setSelectedStructure(null); } }}
-            >
-                <CameraRig
-                    preset={cameraPreset}
-                    radius={radius}
-                    azimuth={frontAzimuth}
-                    fitNonce={fitNonce}
-                    controlsRef={controlsRef}
-                />
+            {/* ---------------- left menu + panel ---------------- */}
+            <aside className="unified-sidebar u3d-menu">
+                <ul className="unified-icon-strip">
+                    {MENUS.map(({ id, label, Icon }) => (
+                        <li
+                            key={id}
+                            className={`unified-icon-tab ${menu === id ? "active" : ""}`}
+                            onClick={() => setMenu(id)}
+                            title={label}
+                        >
+                            <Icon size={20} />
+                            <span className="unified-icon-tab-label">{label}</span>
+                        </li>
+                    ))}
+                </ul>
 
-                <ambientLight intensity={0.55} />
-                <hemisphereLight args={["#dbeafe", "#0b1220", 0.5]} />
-                <directionalLight
-                    position={[radius, radius * 1.8, radius]}
-                    intensity={1.5}
-                    castShadow
-                    shadow-mapSize-width={2048}
-                    shadow-mapSize-height={2048}
-                    shadow-camera-far={radius * 8}
-                    shadow-camera-left={-radius * 2}
-                    shadow-camera-right={radius * 2}
-                    shadow-camera-top={radius * 2}
-                    shadow-camera-bottom={-radius * 2}
-                />
-
-                {showGrid && (
-                    <Grid
-                        position={[0, -0.02, 0]}
-                        args={[radius * 6, radius * 6]}
-                        cellSize={1}
-                        cellThickness={0.5}
-                        cellColor="#16233b"
-                        sectionSize={5}
-                        sectionThickness={1}
-                        sectionColor="#24405f"
-                        fadeDistance={radius * 8}
-                        fadeStrength={1.4}
-                        infiniteGrid
-                    />
-                )}
-
-                {canBuild && (
-                    <ParcelGround
-                        points={boundaryPoints}
-                        color={activeColor}
-                        onMove={isPlacing ? (x, z) => setHoverPoint(x == null ? null : [x, z]) : undefined}
-                        onPlace={isPlacing ? (x, z) => placeAt(x, z) : undefined}
-                    />
-                )}
-
-                {sections.map((sec, i) => (
-                    <Section3DGround
-                        key={`sec-${sec.id || i}`}
-                        section={sec}
-                        centerLng={centerLng}
-                        centerLat={centerLat}
-                        isSelected={selectedSectionId === sec.id}
-                    />
-                ))}
-
-                {dividers.map((div, i) => (
-                    <Divider3DLine
-                        key={`div-${div.id || i}`}
-                        coordinates={div.coordinates}
-                        centerLng={centerLng}
-                        centerLat={centerLat}
-                        color={div.color || "#c084fc"}
-                    />
-                ))}
-
-                {parcelStructures.map((s) => (
-                    <StructureMass
-                        key={`s-${s.id}`}
-                        item={s}
-                        centerLng={centerLng}
-                        centerLat={centerLat}
-                        isSelected={selectedStructure?.id === s.id}
-                        onSelect={(item) => { setSelectedId(null); setSelectedStructure(item); }}
-                    />
-                ))}
-
-                {objects.map((obj) => (
-                    <BuildObjectMesh
-                        key={obj.id}
-                        obj={obj}
-                        isSelected={selectedId === obj.id}
-                        materialStyle={materialStyle}
-                        onSelect={selectObject}
-                        onReady={registerObject}
-                    />
-                ))}
-
-                {ghost && <GhostPreview obj={ghost} valid={ghostValid} />}
-
-                {gizmoTarget && transformMode && (
-                    <TransformControls
-                        object={gizmoTarget}
-                        mode={transformMode}
-                        size={0.85}
-                        showX={tool !== "rotate"}
-                        showZ={tool !== "rotate"}
-                        translationSnap={SNAP_METERS}
-                        rotationSnap={Math.PI / 12}
-                        scaleSnap={0.05}
-                        onMouseUp={handleGizmoCommit}
-                    />
-                )}
-
-                {tool === "extrude" && selected && (
-                    <TopExtrudeGizmo
-                        obj={selected}
-                        onLive={handleExtrudeLive}
-                        onCommit={handleExtrudeCommit}
-                    />
-                )}
-
-                <OrbitControls
-                    ref={controlsRef}
-                    makeDefault
-                    enableDamping
-                    dampingFactor={0.08}
-                    rotateSpeed={0.85}
-                    zoomSpeed={1.15}
-                    panSpeed={0.9}
-                    screenSpacePanning
-                    zoomToCursor
-                    minDistance={Math.max(1.5, radius * 0.12)}
-                    maxDistance={Math.max(30, radius * 7)}
-                    minPolarAngle={0.05}
-                    maxPolarAngle={Math.PI / 2 - 0.02}
-                />
-
-                <GizmoHelper alignment="bottom-right" margin={[78, 110]}>
-                    <GizmoViewport axisColors={["#f87171", "#4ade80", "#60a5fa"]} labelColor="#e2e8f0" />
-                </GizmoHelper>
-            </Canvas>
-
-            {/* ---------- top bar ---------- */}
-            <div className="u3d-topbar">
-                <div className="u3d-chip">
-                    <span className="u3d-dot" style={{ backgroundColor: activeColor, boxShadow: `0 0 8px ${activeColor}` }} />
-                    <div>
-                        <div className="u3d-chip-title">
-                            {activeArea ? activeArea.name : "No parcel selected"}
+                <div className="unified-sidebar-panel">
+                    <div className="unified-panel-header">
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            {menu === "objects" && <Layers size={15} color="#8b5cf6" />}
+                            {menu === "controls" && <SlidersHorizontal size={15} color="#06b6d4" />}
+                            {menu === "shapes" && <BoxIcon size={15} color="#6366f1" />}
+                            {menu === "addons" && <Combine size={15} color="#f59e0b" />}
+                            <h2 className="unified-panel-title">
+                                {MENUS.find((m) => m.id === menu)?.label}
+                            </h2>
                         </div>
-                        <div className="u3d-chip-sub">
-                            {canBuild
-                                ? `${Math.round(metersToFeet(radius * 2)).toLocaleString()} ft across · ${objects.length} object${objects.length === 1 ? "" : "s"}`
-                                : "Choose an area to build on"}
-                        </div>
+                        <span className={`unified-step-badge ${canBuild ? "ready" : "locked"}`}>
+                            {objects.length} {objects.length === 1 ? "object" : "objects"}
+                        </span>
                     </div>
-                </div>
 
-                <div className="u3d-segmented">
-                    {CAMERA_PRESETS.map((p) => {
-                        const Icon = CAMERA_ICONS[p.icon] || Compass;
-                        return (
-                            <button
-                                key={p.id}
-                                className={cameraPreset === p.id ? "active" : ""}
-                                onClick={() => setCameraPreset(p.id)}
-                                title={`${p.label} view`}
-                            >
-                                <Icon size={13} /> {p.label}
-                            </button>
-                        );
-                    })}
-                    <button
-                        onClick={setFrontFromView}
-                        title="Set Front to the current view — the Front elevation then looks from here"
-                    >
-                        <Compass size={13} /> Set Front
-                    </button>
-                    <button onClick={() => setFitNonce((n) => n + 1)} title="Frame the parcel  ·  F">
-                        <Maximize2 size={13} /> Fit
-                    </button>
-                    <button
-                        className={showGrid ? "active" : ""}
-                        onClick={() => setShowGrid((v) => !v)}
-                        title="Toggle grid"
-                    >
-                        <Grid3x3 size={13} />
-                    </button>
-                </div>
-            </div>
-
-            {/* ---------- left tool rail ---------- */}
-            <div className="u3d-rail">
-                {TRANSFORM_TOOLS.map(({ id, label, tip, Icon }) => (
-                    <button
-                        key={id}
-                        className={`u3d-tool ${tool === id ? "active" : ""}`}
-                        title={tip}
-                        aria-label={label}
-                        aria-pressed={tool === id}
-                        onClick={() => setTool(id)}
-                    >
-                        <Icon size={16} />
-                    </button>
-                ))}
-                <button
-                    className="u3d-tool danger"
-                    title="Delete selected  ·  ⌫"
-                    aria-label="Delete selected"
-                    onClick={() => handleDelete()}
-                    disabled={!selectedId}
-                >
-                    <Trash2 size={16} />
-                </button>
-
-                <div className="u3d-rail-divider" />
-
-                {BUILD_TOOLS.map(({ id, label, tip, Icon }) => (
-                    <button
-                        key={id}
-                        className={`u3d-tool ${tool === id ? "active" : ""}`}
-                        title={canBuild ? tip : "Select a parcel first"}
-                        aria-label={label}
-                        aria-pressed={tool === id}
-                        onClick={() => setTool(id)}
-                        disabled={!canBuild}
-                    >
-                        <Icon size={16} />
-                    </button>
-                ))}
-            </div>
-
-            {/* ---------- inspector ---------- */}
-            <div className="u3d-inspector">
-                <h3>{selected ? "Object" : selectedStructure ? "Building" : "Build"}</h3>
-
-                {selectedStructure ? (
-                    <>
-                        <div className="u3d-field">
-                            <label>Name</label>
-                            <input type="text" value={selectedStructure.name || ""} readOnly />
-                        </div>
-                        <div className="u3d-inspector-empty" style={{ marginBottom: 10 }}>
-                            A real building with a floorplan. Open it in the Render studio to edit
-                            floors, rooms and objects.
-                        </div>
-                        {onNavigateStudio && (
-                            <div className="u3d-inspector-actions">
-                                <button
-                                    className="u3d-btn primary"
-                                    onClick={() => onNavigateStudio(selectedStructure.id)}
-                                >
-                                    <ExternalLink size={12} /> Floorplan Studio
-                                </button>
+                    {/* ---- OBJECTS ---- */}
+                    {menu === "objects" && (
+                        <>
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Tools</span>
+                                </div>
+                                <div className="unified-tool-grid">
+                                    {TRANSFORM_TOOLS.map(({ id, label, Icon, tip }) => (
+                                        <button
+                                            key={id}
+                                            className={`unified-cad-tool ${tool === id ? "active" : ""}`}
+                                            onClick={() => setTool(id)}
+                                            title={tip}
+                                        >
+                                            <Icon size={13} />
+                                            <span>{label}</span>
+                                        </button>
+                                    ))}
+                                    <button
+                                        className="unified-cad-tool"
+                                        onClick={() => handleDelete()}
+                                        disabled={!selectedIds.length}
+                                        title="Delete selected  ·  ⌫"
+                                        style={{ opacity: selectedIds.length ? 1 : 0.45 }}
+                                    >
+                                        <Trash2 size={13} color="#f87171" />
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
                             </div>
-                        )}
-                    </>
-                ) : !selected ? (
-                    <div className="u3d-inspector-empty">
-                        {isPlacing
-                            ? "Move over the parcel and click to place. The ghost turns green where the footprint fits."
-                            : "Select an object to edit its size, height, rotation and colour."}
-                    </div>
-                ) : (
-                    <>
-                        <div className="u3d-field">
-                            <label>Name</label>
-                            <input
-                                type="text"
-                                value={selected.name || ""}
-                                onChange={(e) => patchSelected({ name: e.target.value })}
-                            />
-                        </div>
 
-                        <div className="u3d-field">
-                            <label>Dimensions (ft · W / H / D)</label>
-                            <div className="u3d-dim-grid">
-                                <input
-                                    type="number" step="0.5" min="0.5"
-                                    value={Math.round(metersToFeet(selected.w) * 10) / 10}
-                                    onChange={(e) => patchSelected({ w: feetToMeters(Number(e.target.value)) })}
-                                />
-                                <input
-                                    type="number" step="0.5" min="0.5"
-                                    value={Math.round(metersToFeet(selected.h) * 10) / 10}
-                                    onChange={(e) => patchSelected({ h: feetToMeters(Number(e.target.value)) })}
-                                />
-                                <input
-                                    type="number" step="0.5" min="0.5"
-                                    value={Math.round(metersToFeet(selected.d) * 10) / 10}
-                                    onChange={(e) => patchSelected({ d: feetToMeters(Number(e.target.value)) })}
-                                />
+                            {selectedStructure ? (
+                                <div className="unified-sidebar-section">
+                                    <div className="unified-step-header">
+                                        <span className="unified-step-title">Building</span>
+                                    </div>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: "#f8fafc" }}>
+                                        {selectedStructure.name}
+                                    </div>
+                                    <div className="u3d-hint">
+                                        A real building with a floorplan. Open it in the Render studio
+                                        to edit floors, rooms and objects.
+                                    </div>
+                                    {onNavigateStudio && (
+                                        <button className="u3d-btn primary" onClick={() => onNavigateStudio(selectedStructure.id)}>
+                                            <ExternalLink size={12} /> Floorplan Studio
+                                        </button>
+                                    )}
+                                </div>
+                            ) : selected ? (
+                                <div className="unified-sidebar-section">
+                                    <div className="unified-step-header">
+                                        <span className="unified-step-title">
+                                            {selectedIds.length > 1 ? `${selectedIds.length} selected` : "Selected Object"}
+                                        </span>
+                                        <button className="u3d-link" onClick={() => setSelectedIds([])}>Deselect</button>
+                                    </div>
+
+                                    <div className="u3d-field">
+                                        <label>Name</label>
+                                        <input type="text" value={selected.name || ""}
+                                            onChange={(e) => patchSelected({ name: e.target.value })} />
+                                    </div>
+
+                                    <div className="u3d-field">
+                                        <label>Dimensions (ft · W / H / D)</label>
+                                        <div className="u3d-dim-grid">
+                                            <input type="number" step="0.5" min="0.5"
+                                                value={Math.round(metersToFeet(selected.w) * 10) / 10}
+                                                onChange={(e) => patchSelected({ w: feetToMeters(Number(e.target.value)) })} />
+                                            <input type="number" step="0.5" min="0.5"
+                                                value={Math.round(metersToFeet(selected.h) * 10) / 10}
+                                                onChange={(e) => patchSelected({ h: feetToMeters(Number(e.target.value)) })} />
+                                            <input type="number" step="0.5" min="0.5"
+                                                value={Math.round(metersToFeet(selected.d) * 10) / 10}
+                                                onChange={(e) => patchSelected({ d: feetToMeters(Number(e.target.value)) })} />
+                                        </div>
+                                    </div>
+
+                                    <div className="u3d-field">
+                                        <label>Rotation · {Math.round(((selected.rot || 0) * 180) / Math.PI)}°</label>
+                                        <input type="range" min="-180" max="180" step="5"
+                                            value={Math.round(((selected.rot || 0) * 180) / Math.PI)}
+                                            onChange={(e) => patchSelected({ rot: (Number(e.target.value) * Math.PI) / 180 })} />
+                                    </div>
+
+                                    <div className="u3d-field">
+                                        <label>Colour</label>
+                                        <div className="u3d-swatches">
+                                            {PALETTE.map((c) => (
+                                                <span key={c}
+                                                    className={`u3d-swatch ${selected.color === c ? "active" : ""}`}
+                                                    style={{ backgroundColor: c }}
+                                                    onClick={() => patchSelected({ color: c })} />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="u3d-inspector-actions">
+                                        <button className="u3d-btn" onClick={handleDuplicate}>
+                                            <Copy size={12} /> Duplicate
+                                        </button>
+                                        <button className="u3d-btn danger" onClick={() => handleDelete()}>
+                                            <Trash2 size={12} /> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="unified-sidebar-section">
+                                    <div className="unified-step-header">
+                                        <span className="unified-step-title">Nothing selected</span>
+                                    </div>
+                                    <div className="u3d-hint">
+                                        {isPlacing
+                                            ? "Move over the parcel and click to place."
+                                            : "Click a shape on the canvas or pick one below, then use Tools to move, rotate, extrude or scale it."}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="unified-sidebar-section" style={{ flex: 1 }}>
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Objects ({objects.length})</span>
+                                    <span className="u3d-hint">Shift-click to multi-select</span>
+                                </div>
+                                {objects.length === 0 ? (
+                                    <div className="u3d-hint">
+                                        No shapes yet. Open <strong>Shapes</strong> to place one.
+                                    </div>
+                                ) : (
+                                    <div className="u3d-object-list">
+                                        {objects.map((o) => (
+                                            <button
+                                                key={o.id}
+                                                className={`u3d-object-row ${selectedIds.includes(o.id) ? "active" : ""}`}
+                                                onClick={(e) => selectObject(o.id, e.shiftKey || e.metaKey)}
+                                                title="Select this object (Shift to add)"
+                                            >
+                                                <span className="u3d-object-name">{o.name || o.kind}</span>
+                                                <span className="u3d-object-meta">
+                                                    {Math.round(metersToFeet(o.w))}×{Math.round(metersToFeet(o.d))}×{Math.round(metersToFeet(o.h))} ft
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        </div>
 
-                        <div className="u3d-field">
-                            <label>Rotation · {Math.round(((selected.rot || 0) * 180) / Math.PI)}°</label>
-                            <input
-                                type="range" min="-180" max="180" step="5"
-                                value={Math.round(((selected.rot || 0) * 180) / Math.PI)}
-                                onChange={(e) => patchSelected({ rot: (Number(e.target.value) * Math.PI) / 180 })}
-                            />
-                        </div>
+                            {onAddStructureMass && (
+                                <div className="unified-sidebar-section">
+                                    <button className="u3d-btn" onClick={() => onAddStructureMass()} disabled={!activeArea}>
+                                        <Plus size={12} /> Building (with floorplan)
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
 
-                        <div className="u3d-field">
-                            <label>Colour</label>
-                            <div className="u3d-swatches">
-                                {PALETTE.map((c) => (
-                                    <span
-                                        key={c}
-                                        className={`u3d-swatch ${selected.color === c ? "active" : ""}`}
-                                        style={{ backgroundColor: c }}
-                                        onClick={() => patchSelected({ color: c })}
-                                    />
+                    {/* ---- CONTROLS ---- */}
+                    {menu === "controls" && (
+                        <>
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Camera</span>
+                                </div>
+                                <div className="unified-tool-grid">
+                                    {CAMERA_PRESETS.map((p) => (
+                                        <button
+                                            key={p.id}
+                                            className={`unified-cad-tool ${cameraPreset === p.id ? "active" : ""}`}
+                                            onClick={() => setCameraPreset(p.id)}
+                                            title={`${p.label} view`}
+                                        >
+                                            <Compass size={13} />
+                                            <span>{p.label}</span>
+                                        </button>
+                                    ))}
+                                    <button className="unified-cad-tool" onClick={setFrontFromView}
+                                        title="Set Front to the current view — the Front elevation then looks from here">
+                                        <MousePointerClick size={13} />
+                                        <span>Set Front</span>
+                                    </button>
+                                    <button className="unified-cad-tool" onClick={() => setFitNonce((n) => n + 1)}
+                                        title="Frame the parcel  ·  F">
+                                        <Maximize2 size={13} />
+                                        <span>Fit</span>
+                                    </button>
+                                </div>
+                                <div className="u3d-hint">
+                                    Front is measured from the direction you set, so elevations look the
+                                    way you expect. Left-drag orbits, right-drag pans, the wheel zooms.
+                                </div>
+                            </div>
+
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Display</span>
+                                </div>
+                                <div className="unified-tool-grid">
+                                    {SHADING.map((s) => (
+                                        <button
+                                            key={s.id}
+                                            className={`unified-cad-tool ${materialStyle === s.id ? "active" : ""}`}
+                                            onClick={() => setMaterialStyle(s.id)}
+                                            title={`${s.label} shading`}
+                                        >
+                                            <Eye size={13} />
+                                            <span>{s.label}</span>
+                                        </button>
+                                    ))}
+                                    <button
+                                        className={`unified-cad-tool ${showGrid ? "active" : ""}`}
+                                        onClick={() => setShowGrid((v) => !v)}
+                                        title="Toggle the measurement grid"
+                                    >
+                                        <Grid3x3 size={13} />
+                                        <span>Grid</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* ---- SHAPES ---- */}
+                    {menu === "shapes" && (
+                        <div className="unified-sidebar-section">
+                            <div className="unified-step-header">
+                                <span className="unified-step-title">Primitives</span>
+                            </div>
+                            <div className="unified-tool-grid">
+                                {BUILD_TOOLS.map(({ id, label, tip, Icon, blurb }) => (
+                                    <button
+                                        key={id}
+                                        className={`unified-cad-tool ${tool === id ? "active" : ""}`}
+                                        onClick={() => setTool(id)}
+                                        disabled={!canBuild}
+                                        title={canBuild ? `${tip} — ${blurb}` : "Select a parcel first"}
+                                        style={{ opacity: canBuild ? 1 : 0.45 }}
+                                    >
+                                        <Icon size={13} />
+                                        <span>{label}</span>
+                                    </button>
                                 ))}
                             </div>
-                        </div>
 
-                        <div className="u3d-inspector-actions">
-                            <button className="u3d-btn" onClick={handleDuplicate}>
-                                <Copy size={12} /> Duplicate
-                            </button>
-                            <button className="u3d-btn danger" onClick={() => handleDelete()}>
-                                <Trash2 size={12} /> Delete
-                            </button>
-                        </div>
-                    </>
-                )}
+                            <div className="u3d-field" style={{ marginTop: 10 }}>
+                                <label>New shape height · {buildHeightFeet} ft</label>
+                                <input
+                                    type="range" min="4" max="60" step="1"
+                                    value={buildHeightFeet}
+                                    onChange={(e) => setBuildHeightFeet(Number(e.target.value))}
+                                />
+                            </div>
 
-                {/* Objects are tiny on a large parcel, so a list beats hunting
-                    for them on the canvas. Shown while nothing is selected. */}
-                {!selected && !selectedStructure && objects.length > 0 && (
-                    <>
-                        <h3 style={{ marginTop: 14 }}>Objects ({objects.length})</h3>
-                        <div className="u3d-object-list">
-                            {objects.map((o) => (
-                                <button
-                                    key={o.id}
-                                    className="u3d-object-row"
-                                    onClick={() => selectObject(o.id)}
-                                    title="Select this object"
-                                >
-                                    <span className="u3d-object-name">{o.name || o.kind}</span>
-                                    <span className="u3d-object-meta">
-                                        {Math.round(metersToFeet(o.w))}×{Math.round(metersToFeet(o.d))}×{Math.round(metersToFeet(o.h))} ft
+                            <div className="u3d-hint">
+                                {!canBuild
+                                    ? "Choose a parcel to build on."
+                                    : isPlacing
+                                        ? "Click inside the parcel to place. The ghost turns green where the footprint fits."
+                                        : "Pick a primitive, then click the parcel. Press 1–6 for quick access."}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ---- ADDONS ---- */}
+                    {menu === "addons" && (
+                        <>
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Operands</span>
+                                    <span style={{ display: "flex", gap: 8 }}>
+                                        <button className="u3d-link" onClick={() => setSelectedIds(objects.map((o) => o.id))}>
+                                            All
+                                        </button>
+                                        <button className="u3d-link" onClick={() => setSelectedIds([])}>
+                                            Clear
+                                        </button>
                                     </span>
-                                </button>
-                            ))}
-                        </div>
-                    </>
-                )}
+                                </div>
+                                {objects.length === 0 ? (
+                                    <div className="u3d-hint">No shapes yet. Place some in the Shapes menu.</div>
+                                ) : (
+                                    <div className="u3d-object-list">
+                                        {objects.map((o) => (
+                                            <label key={o.id} className="u3d-check-row">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(o.id)}
+                                                    onChange={() => selectObject(o.id, true)}
+                                                />
+                                                <span className="u3d-object-name">{o.name || o.kind}</span>
+                                                <span className="u3d-object-meta">{o.kind}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
-                {onAddStructureMass && (
-                    <div className="u3d-inspector-actions" style={{ marginTop: 12 }}>
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Boolean Operations</span>
+                                    <span className="u3d-hint">{selectedIds.length} selected</span>
+                                </div>
+                                <div className="unified-tool-grid">
+                                    {ADDON_OPS.map((op) => (
+                                        <button
+                                            key={op.id}
+                                            className="unified-cad-tool"
+                                            onClick={() => runBoolean(op.id)}
+                                            disabled={selectedIds.length < 2}
+                                            title={selectedIds.length < 2 ? "Select two or more shapes" : op.hint}
+                                            style={{ opacity: selectedIds.length < 2 ? 0.45 : 1 }}
+                                        >
+                                            <Combine size={13} color="#f59e0b" />
+                                            <span>{op.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="u3d-hint">
+                                    Select two or more shapes (Shift-click on the canvas or in the
+                                    Objects list), then combine them. Union merges, Subtract cuts the
+                                    others out of the first, Intersect keeps the overlap.
+                                </div>
+                            </div>
+
+                            <div className="unified-sidebar-section">
+                                <div className="unified-step-header">
+                                    <span className="unified-step-title">Quick Actions</span>
+                                </div>
+                                <div className="unified-tool-grid">
+                                    <button className="unified-cad-tool" onClick={handleDuplicate}
+                                        disabled={!selectedIds.length}
+                                        style={{ opacity: selectedIds.length ? 1 : 0.45 }}>
+                                        <Copy size={13} />
+                                        <span>Duplicate</span>
+                                    </button>
+                                    <button className="unified-cad-tool" onClick={() => handleDelete()}
+                                        disabled={!selectedIds.length}
+                                        style={{ opacity: selectedIds.length ? 1 : 0.45 }}>
+                                        <Trash2 size={13} color="#f87171" />
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </aside>
+
+            {/* ---------------- 3D stage ---------------- */}
+            <div className="u3d-stage">
+                <Canvas
+                    className="u3d-canvas"
+                    shadows
+                    camera={{ position: [40, 30, 50], fov: 45, near: 0.1, far: 2000 }}
+                    onPointerMissed={() => { if (!isPlacing) { setSelectedIds([]); setSelectedStructure(null); } }}
+                >
+                    <CameraRig
+                        preset={cameraPreset}
+                        radius={radius}
+                        azimuth={frontAzimuth}
+                        fitNonce={fitNonce}
+                        controlsRef={controlsRef}
+                    />
+
+                    <ambientLight intensity={0.55} />
+                    <hemisphereLight args={["#dbeafe", "#0b1220", 0.5]} />
+                    <directionalLight
+                        position={[radius, radius * 1.8, radius]}
+                        intensity={1.5}
+                        castShadow
+                        shadow-mapSize-width={2048}
+                        shadow-mapSize-height={2048}
+                        shadow-camera-far={radius * 8}
+                        shadow-camera-left={-radius * 2}
+                        shadow-camera-right={radius * 2}
+                        shadow-camera-top={radius * 2}
+                        shadow-camera-bottom={-radius * 2}
+                    />
+
+                    {/* Sits just above the pad so the grid is legible on the
+                        buildable surface, not only on the ground around it. */}
+                    {showGrid && (
+                        <Grid
+                            position={[0, 0.012, 0]}
+                            args={[radius * 6, radius * 6]}
+                            cellSize={1}
+                            cellThickness={0.6}
+                            cellColor="#22304a"
+                            sectionSize={5}
+                            sectionThickness={1.2}
+                            sectionColor="#3b5a86"
+                            fadeDistance={radius * 8}
+                            fadeStrength={1.4}
+                            infiniteGrid
+                        />
+                    )}
+
+                    {canBuild && (
+                        <ParcelGround
+                            points={boundaryPoints}
+                            color={activeColor}
+                            onMove={isPlacing ? (x, z) => setHoverPoint(x == null ? null : [x, z]) : undefined}
+                            onPlace={isPlacing ? (x, z) => placeAt(x, z) : undefined}
+                        />
+                    )}
+
+                    {sections.map((sec, i) => (
+                        <Section3DGround
+                            key={`sec-${sec.id || i}`}
+                            section={sec}
+                            centerLng={centerLng}
+                            centerLat={centerLat}
+                            isSelected={selectedSectionId === sec.id}
+                        />
+                    ))}
+
+                    {dividers.map((div, i) => (
+                        <Divider3DLine
+                            key={`div-${div.id || i}`}
+                            coordinates={div.coordinates}
+                            centerLng={centerLng}
+                            centerLat={centerLat}
+                            color={div.color || "#c084fc"}
+                        />
+                    ))}
+
+                    {parcelStructures.map((s) => (
+                        <StructureMass
+                            key={`s-${s.id}`}
+                            item={s}
+                            centerLng={centerLng}
+                            centerLat={centerLat}
+                            isSelected={selectedStructure?.id === s.id}
+                            onSelect={(item) => { setSelectedIds([]); setSelectedStructure(item); }}
+                        />
+                    ))}
+
+                    {objects.map((obj) => (
+                        <BuildObjectMesh
+                            key={obj.id}
+                            obj={obj}
+                            isSelected={selectedIds.includes(obj.id)}
+                            materialStyle={materialStyle}
+                            onSelect={selectObject}
+                            onReady={registerObject}
+                        />
+                    ))}
+
+                    {ghost && <GhostPreview obj={ghost} valid={ghostValid} />}
+
+                    {gizmoTarget && transformMode && (
+                        <TransformControls
+                            object={gizmoTarget}
+                            mode={transformMode}
+                            size={0.85}
+                            showX={tool !== "rotate"}
+                            showZ={tool !== "rotate"}
+                            translationSnap={SNAP_METERS}
+                            rotationSnap={Math.PI / 12}
+                            scaleSnap={0.05}
+                            onMouseUp={handleGizmoCommit}
+                        />
+                    )}
+
+                    {tool === "extrude" && selected && (
+                        <TopExtrudeGizmo
+                            obj={selected}
+                            onLive={handleExtrudeLive}
+                            onCommit={handleExtrudeCommit}
+                        />
+                    )}
+
+                    <OrbitControls
+                        ref={controlsRef}
+                        makeDefault
+                        enableDamping
+                        dampingFactor={0.08}
+                        rotateSpeed={0.85}
+                        zoomSpeed={1.15}
+                        panSpeed={0.9}
+                        screenSpacePanning
+                        zoomToCursor
+                        minDistance={Math.max(1.5, radius * 0.12)}
+                        maxDistance={Math.max(30, radius * 7)}
+                        minPolarAngle={0.05}
+                        maxPolarAngle={Math.PI / 2 - 0.02}
+                    />
+
+                    <GizmoHelper alignment="bottom-right" margin={[78, 110]}>
+                        <GizmoViewport axisColors={["#f87171", "#4ade80", "#60a5fa"]} labelColor="#e2e8f0" />
+                    </GizmoHelper>
+                </Canvas>
+
+                {/* top bar: parcel identity + quick framing */}
+                <div className="u3d-topbar">
+                    <div className="u3d-chip">
+                        <span className="u3d-dot" style={{ backgroundColor: activeColor, boxShadow: `0 0 8px ${activeColor}` }} />
+                        <div>
+                            <div className="u3d-chip-title">
+                                {activeArea ? activeArea.name : "No parcel selected"}
+                            </div>
+                            <div className="u3d-chip-sub">
+                                {canBuild
+                                    ? `${Math.round(metersToFeet(radius * 2)).toLocaleString()} ft across · ${objects.length} object${objects.length === 1 ? "" : "s"}`
+                                    : "Choose an area to build on"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="u3d-segmented">
+                        <button onClick={() => setFitNonce((n) => n + 1)} title="Frame the parcel  ·  F">
+                            <Maximize2 size={13} /> Fit
+                        </button>
                         <button
-                            className="u3d-btn"
-                            onClick={() => onAddStructureMass()}
-                            disabled={!activeArea}
-                            title="Add a real structure with a floorplan, openable in the Render studio"
+                            className={showGrid ? "active" : ""}
+                            onClick={() => setShowGrid((v) => !v)}
+                            title="Toggle the measurement grid"
                         >
-                            <Plus size={12} /> Building (with floorplan)
+                            <Grid3x3 size={13} /> Grid
                         </button>
                     </div>
-                )}
-
-            </div>
-
-            {/* ---------- bottom status ---------- */}
-            <div className="u3d-statusbar">
-                {isPlacing && (
-                    <>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                            <ArrowUpFromLine size={13} color="#818cf8" />
-                            New height
-                            <input
-                                type="range" min="4" max="60" step="1"
-                                value={buildHeightFeet}
-                                onChange={(e) => setBuildHeightFeet(Number(e.target.value))}
-                                style={{ width: 90, accentColor: "#6366f1" }}
-                            />
-                            <strong style={{ color: "#f8fafc" }}>{buildHeightFeet} ft</strong>
-                        </span>
-                        <span style={{ width: 1, height: 18, background: "rgba(148,163,184,0.25)" }} />
-                    </>
-                )}
-
-                <span className={`u3d-status-hint ${notice ? "" : ghostValid && isPlacing ? "ready" : ""}`}>
-                    {notice || statusHint}
-                </span>
-
-                <span className="u3d-kbd-hint">
-                    <kbd>V</kbd><kbd>G</kbd><kbd>R</kbd><kbd>S</kbd><kbd>E</kbd>
-                    <kbd>1</kbd>–<kbd>6</kbd>
-                    <kbd>F</kbd>
-                    <kbd>⌫</kbd>
-                </span>
-            </div>
-
-            {/* ---------- shading switch ---------- */}
-            <div className="u3d-segmented" style={{ position: "absolute", right: 16, bottom: 16, zIndex: 20 }}>
-                <button
-                    className={materialStyle === "solid" ? "active" : ""}
-                    onClick={() => setMaterialStyle("solid")}
-                    title="Solid"
-                >
-                    <Eye size={13} /> Solid
-                </button>
-                <button
-                    className={materialStyle === "xray" ? "active" : ""}
-                    onClick={() => setMaterialStyle("xray")}
-                    title="X-Ray"
-                >
-                    X-Ray
-                </button>
-                <button
-                    className={materialStyle === "wireframe" ? "active" : ""}
-                    onClick={() => setMaterialStyle("wireframe")}
-                    title="Wireframe"
-                >
-                    Wire
-                </button>
-            </div>
-
-            {!canBuild && (
-                <div className="u3d-empty">
-                    <BoxIcon size={34} color="#475569" />
-                    <strong>Choose a parcel to build on</strong>
-                    <span>The parcel is the only buildable surface in this workspace.</span>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", pointerEvents: "auto", maxWidth: 460 }}>
-                        {areas.map((a) => (
-                            <button
-                                key={a.id}
-                                className="u3d-btn"
-                                style={{ flex: "0 0 auto" }}
-                                onClick={() => onSelectArea?.(a)}
-                            >
-                                <span
-                                    style={{
-                                        width: 8, height: 8, borderRadius: "50%",
-                                        backgroundColor: a.color || "#3b82f6", display: "inline-block"
-                                    }}
-                                />
-                                {a.name}
-                                {a.area_sqft ? ` · ${Math.round(a.area_sqft).toLocaleString()} sq ft` : ""}
-                            </button>
-                        ))}
-                        {areas.length === 0 && (
-                            <span>No boundaries yet — draw one in the 2D workspace first.</span>
-                        )}
-                    </div>
                 </div>
-            )}
+
+                {/* bottom status */}
+                <div className="u3d-statusbar">
+                    <span className={`u3d-status-hint ${notice ? "" : ghostValid && isPlacing ? "ready" : ""}`}>
+                        {notice || statusHint}
+                    </span>
+                    <span className="u3d-kbd-hint">
+                        <kbd>V</kbd><kbd>G</kbd><kbd>R</kbd><kbd>S</kbd><kbd>E</kbd>
+                        <kbd>1</kbd>–<kbd>6</kbd>
+                        <kbd>F</kbd>
+                        <kbd>⇧</kbd>+click
+                        <kbd>⌫</kbd>
+                    </span>
+                </div>
+
+                {!canBuild && (
+                    <div className="u3d-empty">
+                        <BoxIcon size={34} color="#475569" />
+                        <strong>Choose a parcel to build on</strong>
+                        <span>The parcel is the only buildable surface in this workspace.</span>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", pointerEvents: "auto", maxWidth: 460 }}>
+                            {areas.map((a) => (
+                                <button key={a.id} className="u3d-btn" style={{ flex: "0 0 auto" }}
+                                    onClick={() => onSelectArea?.(a)}>
+                                    <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: a.color || "#3b82f6", display: "inline-block" }} />
+                                    {a.name}
+                                    {a.area_sqft ? ` · ${Math.round(a.area_sqft).toLocaleString()} sq ft` : ""}
+                                </button>
+                            ))}
+                            {areas.length === 0 && <span>No boundaries yet — draw one in the 2D workspace first.</span>}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

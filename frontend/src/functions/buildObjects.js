@@ -51,6 +51,11 @@ export function newObjectId() {
     return `obj3d-${Date.now().toString(36)}-${idCounter}`;
 }
 
+/** The world Y of an object's vertical centre (its group origin in the scene). */
+export function groupCenterY(obj) {
+    return (obj.y || 0) + obj.h / 2;
+}
+
 /** Human name for a freshly placed primitive, e.g. "Block 3". */
 export function nextName(kind, existing = []) {
     const prim = findPrimitive(kind);
