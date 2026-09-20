@@ -67,6 +67,33 @@
   text-decoration: none;
 }
 
+/* ModalButton renders a bare <button id="base-modal-button" class="modal-item">
+   when it is given text rather than an element, and nothing styled it — so it
+   showed as the browser's default light button. Styled here once for every call
+   site (RenderHome, Maps, MapCard). */
+button#base-modal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-element);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+button#base-modal-button:hover {
+  background: var(--color-overlay-hover);
+  border-color: var(--color-border-emphasized);
+}
+
 body.no-scroll {
   overflow: hidden;
   height: 100vh;

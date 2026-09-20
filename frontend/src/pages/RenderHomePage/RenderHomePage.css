@@ -1,102 +1,106 @@
-
-/* Main Elements */
+/**
+ * Render landing page. This sheet had two leftover debug borders
+ * (1px solid red / blue) and a hardcoded black rule and light search panel.
+ * Tokenised against the locked system.
+ */
 #render-home {
     display: flex;
     flex-direction: column;
-    height: 100%;
     width: 100%;
-    border: 1px solid red;
+    height: 100%;
 }
 
 #render-home-top {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-
-    padding: 10px 20px;
-    border-bottom: 1px solid black;
-    gap: 10px;
-
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-5);
+    border-bottom: 1px solid var(--color-border);
     position: relative;
-    z-index: 50
+    z-index: 50;
 }
 
 #render-main-screen {
-    flex: 1;
     display: flex;
     flex-direction: column;
+    flex: 1;
     min-height: 0;
-    border: 1px solid blue;
-
-    padding: 10px 20px;
+    padding: var(--spacing-4) var(--spacing-5);
 }
-
 
 /* Top Section */
 .render-search-container {
     grid-column: 2;
     display: flex;
     flex-direction: column;
-    position: relative;
-    z-index: 2;
-
     justify-content: center;
     align-items: center;
+    position: relative;
+    z-index: 2;
 }
 
 #render-search-inp {
     width: 300px;
-    height: 25px;
-    padding: 2px;
-    border-radius: 10px;
+    height: var(--size-element-md);
+    padding: var(--spacing-1) var(--spacing-3);
+    border: 1px solid var(--color-border-emphasized);
+    border-radius: var(--radius-full);
+    background: var(--color-background-surface);
+    color: var(--color-text-primary);
+}
+
+#render-search-inp:focus {
+    outline: none;
+    border-color: var(--color-accent);
 }
 
 .render-search-results {
     position: absolute;
-    top: 36px;
+    top: calc(var(--size-element-md) + var(--spacing-1));
     left: 0;
-
     width: 300px;
     max-height: 300px;
-
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 5px;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5 );
+    padding: var(--spacing-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    background: var(--color-background-popover);
+    box-shadow: var(--shadow-high);
     z-index: 10;
 }
 
 .render-search-res {
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 14px;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-element);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.render-search-res:hover {
+    background: var(--color-overlay-hover);
 }
 
 .render-top-actions {
     grid-column: 3;
     display: flex;
     margin-left: auto;
-    gap: 10px;
+    gap: var(--spacing-2);
 }
-
 
 /* Main Section */
 .render-main-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 5px;
+    gap: var(--spacing-2);
 }
-
-.render-sort-container {}
 
 .render-projects {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 0; 
-    gap: 10px;
+    min-height: 0;
+    gap: var(--spacing-3);
     overflow: hidden;
 }
 
@@ -109,7 +113,13 @@
 }
 
 .render-main-opt-title {
-    font: 27px bolder;
+    /* Section head: small, muted, letter-spaced. */
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2);
 }
 
 .render-main-opts {
