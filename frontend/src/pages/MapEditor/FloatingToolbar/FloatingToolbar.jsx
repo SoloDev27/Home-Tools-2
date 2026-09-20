@@ -20,6 +20,7 @@ import {
     Check,
     X
 } from "lucide-react";
+import "./FloatingToolbar.css";
 
 export const UTILITY_TYPES = [
     { id: "electric", name: "Electric / Power", color: "#f97316", icon: "⚡" },
@@ -175,67 +176,20 @@ export default function FloatingToolbar({
         return canvasSelect.type === type;
     };
 
-    const buttonStyle = (active) => ({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "34px",
-        height: "34px",
-        borderRadius: "8px",
-        border: "none",
-        cursor: "pointer",
-        backgroundColor: active ? "var(--color-primary-default, #3b82f6)" : "transparent",
-        color: active ? "var(--color-on-accent)" : "var(--color-text-secondary, #94a3b8)",
-        transition: "all 0.15s ease",
-        position: "relative",
-        outline: "none",
-        padding: 0
-    });
-
-    const dividerStyle = {
-        width: "1px",
-        height: "20px",
-        backgroundColor: "var(--color-overlay-hover)",
-        margin: "0 2px"
-    };
+    const toolClass = (active) => `map-tool-button${active ? " is-active" : ""}`;
 
     return (
         <div
             id="map-floating-toolbar"
             ref={dropdownRef}
-            style={{
-                position: "absolute",
-                top: "16px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                zIndex: 50,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "8px",
-                pointerEvents: "auto"
-            }}
+            className="map-toolbar-root"
         >
             {/* Primary Floating Tool Dock */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "4px 8px",
-                    gap: "4px",
-                    backgroundColor: "rgba(24, 24, 27, 0.92)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "12px",
-                    boxShadow: "0 12px 36px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35)",
-                    userSelect: "none"
-                }}
-            >
+            <div className="map-toolbar-dock">
                 {/* 1. Select & Pan */}
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive(null))}
+                    className={toolClass(isToolActive(null))}
                     onClick={() => selectTool({ type: null, name: "Select & Transform" })}
                     title="Select & Move (V)"
                 >
@@ -243,19 +197,19 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("pan"))}
+                    className={toolClass(isToolActive("pan"))}
                     onClick={() => selectTool({ type: "pan", name: "Pan Tool", icon: "pan" })}
                     title="Pan View (H)"
                 >
                     <Hand size={17} />
                 </button>
 
-                <div style={dividerStyle} />
+                <div className="map-toolbar-divider" />
 
                 {/* 2. Geometry Suite */}
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("polygon"))}
+                    className={toolClass(isToolActive("polygon"))}
                     onClick={() => selectTool({ type: "polygon", name: "Property Boundary", icon: "polygon" })}
                     title="Property Boundary / Lot Polygon (P)"
                 >
@@ -263,7 +217,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("rectangle"))}
+                    className={toolClass(isToolActive("rectangle"))}
                     onClick={() => selectTool({ type: "rectangle", name: "Building Footprint", icon: "rectangle" })}
                     title="Building Envelope / Footprint (R)"
                 >
@@ -271,7 +225,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("radius"))}
+                    className={toolClass(isToolActive("radius"))}
                     onClick={() => selectTool({ type: "radius", name: "Radius Zone", icon: "radius" })}
                     title="Radius & Spray Zone (C)"
                 >
@@ -279,19 +233,19 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("curve"))}
+                    className={toolClass(isToolActive("curve"))}
                     onClick={() => selectTool({ type: "curve", name: "Landscape Bed", icon: "curve", color: "#10b981" })}
                     title="Organic Landscape Bed / Curve (B)"
                 >
                     <Spline size={17} />
                 </button>
 
-                <div style={dividerStyle} />
+                <div className="map-toolbar-divider" />
 
                 {/* 3. Linear & Utilities */}
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("measure"))}
+                    className={toolClass(isToolActive("measure"))}
                     onClick={() => selectTool({ type: "measure", name: "Tape Measure", icon: "measure", color: "#0284c7" })}
                     title="Tape Measure with CAD Dimension Overlay (M)"
                 >
@@ -299,7 +253,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("setback"))}
+                    className={toolClass(isToolActive("setback"))}
                     onClick={() => selectTool({ type: "setback", name: "Setback Guide (25 ft)", icon: "setback", color: "#f59e0b", setbackDepth: 25 })}
                     title="Setback Guide & Buffer Zone Overlay (O)"
                 >
@@ -307,15 +261,10 @@ export default function FloatingToolbar({
                 </button>
 
                 {/* Utility Route with Dropdown */}
-                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <div className="map-tool-group">
                     <button
                         type="button"
-                        style={{
-                            ...buttonStyle(isToolActive("utility")),
-                            borderTopRightRadius: 0,
-                            borderBottomRightRadius: 0,
-                            paddingRight: "2px"
-                        }}
+                        className={`${toolClass(isToolActive("utility"))} map-tool-button--split-left`}
                         onClick={() => selectTool({
                             type: "utility",
                             name: utilitySubtype.name,
@@ -329,13 +278,7 @@ export default function FloatingToolbar({
                     </button>
                     <button
                         type="button"
-                        style={{
-                            ...buttonStyle(isToolActive("utility")),
-                            width: "16px",
-                            borderTopLeftRadius: 0,
-                            borderBottomLeftRadius: 0,
-                            paddingLeft: "0px"
-                        }}
+                        className={`${toolClass(isToolActive("utility"))} map-tool-button--split-right`}
                         onClick={() => setOpenDropdown(openDropdown === "utility" ? null : "utility")}
                         title="Select Utility Type"
                     >
@@ -343,39 +286,13 @@ export default function FloatingToolbar({
                     </button>
 
                     {openDropdown === "utility" && (
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: "calc(100% + 8px)",
-                                left: 0,
-                                width: "190px",
-                                backgroundColor: "rgba(24, 24, 27, 0.96)",
-                                border: "1px solid var(--color-border)",
-                                borderRadius: "8px",
-                                padding: "4px",
-                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                                zIndex: 100,
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "2px"
-                            }}
-                        >
+                        <div className="map-tool-popover">
                             {UTILITY_TYPES.map((u) => {
                                 const selected = utilitySubtype.id === u.id;
                                 return (
                                     <div
                                         key={u.id}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            padding: "6px 10px",
-                                            fontSize: "12px",
-                                            borderRadius: "6px",
-                                            cursor: "pointer",
-                                            backgroundColor: selected ? "var(--color-overlay-hover)" : "transparent",
-                                            color: "var(--color-text-primary)"
-                                        }}
+                                        className={`map-tool-popover-item${selected ? " is-selected" : ""}`}
                                         onClick={() => {
                                             setUtilitySubtype(u);
                                             selectTool({
@@ -387,8 +304,8 @@ export default function FloatingToolbar({
                                             });
                                         }}
                                     >
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                            <span style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: u.color }} />
+                                        <div className="map-tool-popover-label">
+                                            <span className="map-tool-swatch" style={{ backgroundColor: u.color }} />
                                             <span>{u.name}</span>
                                         </div>
                                         {selected && <Check size={14} />}
@@ -399,12 +316,12 @@ export default function FloatingToolbar({
                     )}
                 </div>
 
-                <div style={dividerStyle} />
+                <div className="map-toolbar-divider" />
 
                 {/* 4. Asset Pins (Replacing Home/Apt/Unit) */}
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("structure"))}
+                    className={toolClass(isToolActive("structure"))}
                     onClick={() => selectTool({ type: "structure", name: "Structure", icon: "structure" })}
                     title="Structure & Dwelling (S) - Replaces Home/Apt/Unit"
                 >
@@ -412,7 +329,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("valve"))}
+                    className={toolClass(isToolActive("valve"))}
                     onClick={() => selectTool({ type: "valve", name: "Shut-off Valve", icon: "valve" })}
                     title="Utility & Shut-off Valve (Shift+V)"
                 >
@@ -420,7 +337,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("flora"))}
+                    className={toolClass(isToolActive("flora"))}
                     onClick={() => selectTool({ type: "flora", name: "Tree / Flora", icon: "flora" })}
                     title="Tree & Landscape Specimen (F)"
                 >
@@ -428,7 +345,7 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("inspection"))}
+                    className={toolClass(isToolActive("inspection"))}
                     onClick={() => selectTool({ type: "inspection", name: "Work Order / Issue", icon: "inspection" })}
                     title="Inspection & Work Order (W)"
                 >
@@ -436,19 +353,19 @@ export default function FloatingToolbar({
                 </button>
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("fixture"))}
+                    className={toolClass(isToolActive("fixture"))}
                     onClick={() => selectTool({ type: "fixture", name: "Outdoor Fixture", icon: "fixture" })}
                     title="Outdoor Fixture & HVAC (X)"
                 >
                     <Sparkles size={17} />
                 </button>
 
-                <div style={dividerStyle} />
+                <div className="map-toolbar-divider" />
 
                 {/* 5. Annotations & Materials */}
                 <button
                     type="button"
-                    style={buttonStyle(isToolActive("callout"))}
+                    className={toolClass(isToolActive("callout"))}
                     onClick={() => selectTool({ type: "callout", name: "Text Callout", icon: "callout" })}
                     title="Text Callout & Note (T)"
                 >
@@ -456,15 +373,10 @@ export default function FloatingToolbar({
                 </button>
 
                 {/* Material Fill with Dropdown */}
-                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <div className="map-tool-group">
                     <button
                         type="button"
-                        style={{
-                            ...buttonStyle(isToolActive("material")),
-                            borderTopRightRadius: 0,
-                            borderBottomRightRadius: 0,
-                            paddingRight: "2px"
-                        }}
+                        className={`${toolClass(isToolActive("material"))} map-tool-button--split-left`}
                         onClick={() => selectTool({
                             type: "material",
                             name: materialSubtype.name,
@@ -478,13 +390,7 @@ export default function FloatingToolbar({
                     </button>
                     <button
                         type="button"
-                        style={{
-                            ...buttonStyle(isToolActive("material")),
-                            width: "16px",
-                            borderTopLeftRadius: 0,
-                            borderBottomLeftRadius: 0,
-                            paddingLeft: "0px"
-                        }}
+                        className={`${toolClass(isToolActive("material"))} map-tool-button--split-right`}
                         onClick={() => setOpenDropdown(openDropdown === "material" ? null : "material")}
                         title="Select Material Fill"
                     >
@@ -492,39 +398,13 @@ export default function FloatingToolbar({
                     </button>
 
                     {openDropdown === "material" && (
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: "calc(100% + 8px)",
-                                right: 0,
-                                width: "180px",
-                                backgroundColor: "rgba(24, 24, 27, 0.96)",
-                                border: "1px solid var(--color-border)",
-                                borderRadius: "8px",
-                                padding: "4px",
-                                boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                                zIndex: 100,
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "2px"
-                            }}
-                        >
+                        <div className="map-tool-popover map-tool-popover--right">
                             {MATERIAL_TYPES.map((m) => {
                                 const selected = materialSubtype.id === m.id;
                                 return (
                                     <div
                                         key={m.id}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            padding: "6px 10px",
-                                            fontSize: "12px",
-                                            borderRadius: "6px",
-                                            cursor: "pointer",
-                                            backgroundColor: selected ? "var(--color-overlay-hover)" : "transparent",
-                                            color: "var(--color-text-primary)"
-                                        }}
+                                        className={`map-tool-popover-item${selected ? " is-selected" : ""}`}
                                         onClick={() => {
                                             setMaterialSubtype(m);
                                             selectTool({
@@ -536,8 +416,8 @@ export default function FloatingToolbar({
                                             });
                                         }}
                                     >
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                            <span style={{ width: "12px", height: "12px", borderRadius: "3px", backgroundColor: m.color }} />
+                                        <div className="map-tool-popover-label">
+                                            <span className="map-tool-swatch map-tool-swatch--square" style={{ backgroundColor: m.color }} />
                                             <span>{m.name}</span>
                                         </div>
                                         {selected && <Check size={14} />}
@@ -551,23 +431,9 @@ export default function FloatingToolbar({
 
             {/* Active Drawing Tool Status / In-Progress Actions */}
             {canvasSelect.type && (
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        padding: "6px 14px",
-                        borderRadius: "20px",
-                        backgroundColor: "rgba(15, 23, 42, 0.90)",
-                        backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(59, 130, 246, 0.4)",
-                        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
-                        fontSize: "12px",
-                        color: "var(--color-text-primary)"
-                    }}
-                >
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6", boxShadow: "0 0 8px #3b82f6" }} />
+                <div className="map-tool-status">
+                    <span className="map-tool-status-inline">
+                        <span className="map-tool-status-dot" />
                         <strong>{canvasSelect.name || canvasSelect.type}</strong>:
                         {drawingState?.inProgress ? (
                             <span>
@@ -575,7 +441,7 @@ export default function FloatingToolbar({
                                 {drawingState.liveMetrics ? ` • ${drawingState.liveMetrics}` : ""}
                             </span>
                         ) : (
-                            <span style={{ opacity: 0.85 }}>
+                            <span className="map-tool-status-hint">
                                 {["structure", "valve", "flora", "inspection", "fixture", "callout"].includes(canvasSelect.type)
                                     ? "Click anywhere on the map to place"
                                     : "Click on map to start drawing"}
@@ -584,36 +450,17 @@ export default function FloatingToolbar({
                     </span>
 
                     {drawingState?.inProgress && (
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px", marginLeft: "4px" }}>
+                        <div className="map-tool-status-actions">
                             <button
                                 type="button"
-                                style={{
-                                    padding: "3px 8px",
-                                    borderRadius: "12px",
-                                    backgroundColor: "#22c55e",
-                                    color: "var(--color-on-accent)",
-                                    border: "none",
-                                    fontSize: "11px",
-                                    fontWeight: 600,
-                                    cursor: "pointer"
-                                }}
+                                className="map-tool-finish"
                                 onClick={finishDrawing}
                             >
                                 Done (Enter)
                             </button>
                             <button
                                 type="button"
-                                style={{
-                                    padding: "3px 6px",
-                                    borderRadius: "12px",
-                                    backgroundColor: "rgba(239, 68, 68, 0.2)",
-                                    color: "#ef4444",
-                                    border: "1px solid rgba(239, 68, 68, 0.4)",
-                                    fontSize: "11px",
-                                    cursor: "pointer",
-                                    display: "flex",
-                                    alignItems: "center"
-                                }}
+                                className="map-tool-cancel"
                                 onClick={cancelDrawing}
                                 title="Cancel Drawing (Esc)"
                             >
