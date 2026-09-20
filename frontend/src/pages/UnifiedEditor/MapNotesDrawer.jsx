@@ -97,17 +97,17 @@ export default function MapNotesDrawer({
         <div className={`unified-drawer ${isOpen ? "open" : ""}`}>
             <div className="unified-drawer-header">
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FileText size={17} color="#6366f1" />
                         Project Notes & Log
                     </h3>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '3px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '3px' }}>
                         {notes.length} total • {openCount} open issues
                     </div>
                 </div>
                 <button
                     onClick={onClose}
-                    style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
                 >
                     <X size={20} />
                 </button>
@@ -124,7 +124,7 @@ export default function MapNotesDrawer({
                 alignItems: 'center',
                 justifyContent: 'space-between'
             }}>
-                <span style={{ fontSize: '12px', color: '#cbd5e1' }}>Total Cost Estimate:</span>
+                <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Total Cost Estimate:</span>
                 <span style={{ fontSize: '14px', fontWeight: 700, color: '#34d399' }}>
                     ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                 </span>
@@ -143,8 +143,8 @@ export default function MapNotesDrawer({
                                 fontSize: '11px',
                                 border: 'none',
                                 cursor: 'pointer',
-                                background: filterStatus === st ? '#6366f1' : 'rgba(255, 255, 255, 0.08)',
-                                color: '#ffffff',
+                                background: filterStatus === st ? '#6366f1' : 'var(--color-overlay-hover)',
+                                color: 'var(--color-text-primary)',
                                 textTransform: 'capitalize',
                                 whiteSpace: 'nowrap'
                             }}
@@ -161,10 +161,10 @@ export default function MapNotesDrawer({
                         style={{
                             flex: 1,
                             background: '#1e293b',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '4px',
                             padding: '4px 8px',
-                            color: '#e2e8f0',
+                            color: 'var(--color-text-secondary)',
                             fontSize: '11px'
                         }}
                     >
@@ -183,7 +183,7 @@ export default function MapNotesDrawer({
                             alignItems: 'center',
                             gap: '4px',
                             background: showAddForm ? '#475569' : '#3b82f6',
-                            color: '#ffffff',
+                            color: 'var(--color-on-accent)',
                             border: 'none',
                             borderRadius: '4px',
                             padding: '4px 10px',
@@ -221,10 +221,10 @@ export default function MapNotesDrawer({
                         onChange={e => setTitle(e.target.value)}
                         style={{
                             background: '#0f172a',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '4px',
                             padding: '6px 8px',
-                            color: '#f8fafc',
+                            color: 'var(--color-text-primary)',
                             fontSize: '11px'
                         }}
                     />
@@ -235,10 +235,10 @@ export default function MapNotesDrawer({
                         rows={2}
                         style={{
                             background: '#0f172a',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '4px',
                             padding: '6px 8px',
-                            color: '#f8fafc',
+                            color: 'var(--color-text-primary)',
                             fontSize: '11px',
                             resize: 'vertical'
                         }}
@@ -252,10 +252,10 @@ export default function MapNotesDrawer({
                             }}
                             style={{
                                 background: '#0f172a',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                border: '1px solid var(--color-border)',
                                 borderRadius: '4px',
                                 padding: '4px 6px',
-                                color: '#f8fafc',
+                                color: 'var(--color-text-primary)',
                                 fontSize: '11px'
                             }}
                         >
@@ -271,10 +271,10 @@ export default function MapNotesDrawer({
                                 onChange={e => setTargetId(e.target.value)}
                                 style={{
                                     background: '#0f172a',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '4px 6px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '11px'
                                 }}
                             >
@@ -289,10 +289,10 @@ export default function MapNotesDrawer({
                                 onChange={e => setTargetId(e.target.value)}
                                 style={{
                                     background: '#0f172a',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '4px 6px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '11px'
                                 }}
                             >
@@ -307,10 +307,10 @@ export default function MapNotesDrawer({
                                 onChange={e => setTargetId(e.target.value)}
                                 style={{
                                     background: '#0f172a',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '4px 6px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '11px'
                                 }}
                             >
@@ -326,10 +326,10 @@ export default function MapNotesDrawer({
                             onChange={e => setCategory(e.target.value)}
                             style={{
                                 background: '#0f172a',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                border: '1px solid var(--color-border)',
                                 borderRadius: '4px',
                                 padding: '4px 6px',
-                                color: '#f8fafc',
+                                color: 'var(--color-text-primary)',
                                 fontSize: '11px'
                             }}
                         >
@@ -346,10 +346,10 @@ export default function MapNotesDrawer({
                             onChange={e => setCostEstimate(e.target.value)}
                             style={{
                                 background: '#0f172a',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                border: '1px solid var(--color-border)',
                                 borderRadius: '4px',
                                 padding: '4px 6px',
-                                color: '#f8fafc',
+                                color: 'var(--color-text-primary)',
                                 fontSize: '11px'
                             }}
                         />
@@ -360,7 +360,7 @@ export default function MapNotesDrawer({
                         disabled={!title.trim() || !content.trim() || isSubmitting}
                         style={{
                             background: '#22c55e',
-                            color: '#ffffff',
+                            color: 'var(--color-on-accent)',
                             border: 'none',
                             borderRadius: '4px',
                             padding: '6px 12px',
@@ -426,7 +426,7 @@ export default function MapNotesDrawer({
                                     </div>
                                 </div>
 
-                                <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                                <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                                     {note.content}
                                 </div>
 

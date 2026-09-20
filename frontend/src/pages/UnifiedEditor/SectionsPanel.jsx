@@ -83,7 +83,7 @@ export default function SectionsPanel({
                             style={{
                                 background: 'transparent',
                                 border: 'none',
-                                color: '#94a3b8',
+                                color: 'var(--color-text-secondary)',
                                 fontSize: '10px',
                                 cursor: 'pointer',
                                 textDecoration: 'underline',
@@ -102,7 +102,7 @@ export default function SectionsPanel({
                             <Lock size={14} />
                             <span>Select a Boundary or Feature</span>
                         </div>
-                        <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.4' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                             You must either have a Boundary or a Feature selected to section it into rooms, zones, and building parcels.
                         </div>
                     </div>
@@ -119,7 +119,7 @@ export default function SectionsPanel({
                                 }}
                             />
                             <div style={{ overflow: 'hidden' }}>
-                                <div style={{ fontSize: '12px', fontWeight: 700, color: '#f8fafc', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                                     {target.type === "area" ? "📐 " : "🧱 "}
                                     {targetItem?.name}
                                 </div>
@@ -137,7 +137,7 @@ export default function SectionsPanel({
             {!target && (
                 <div className="unified-sidebar-section">
                     <div className="unified-step-header">
-                        <span className="unified-step-title" style={{ fontSize: '11px', color: '#cbd5e1' }}>
+                        <span className="unified-step-title" style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
                             Choose Target to Section:
                         </span>
                     </div>
@@ -222,7 +222,7 @@ export default function SectionsPanel({
 
                         {/* Subdivide Presets */}
                         <div style={{ marginTop: '8px' }}>
-                            <div style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 Subdivide Grid
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
@@ -263,7 +263,7 @@ export default function SectionsPanel({
 
                         {/* Perimeter & Setback Inset */}
                         <div style={{ marginTop: '10px' }}>
-                            <div style={{ fontSize: '10px', color: '#94a3b8', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 Perimeter & Core Buffer
                             </div>
                             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -291,7 +291,7 @@ export default function SectionsPanel({
 
                         {/* ACTIVE DIVIDER LINES LIST */}
                         {dividers.length > 0 && (
-                            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--color-border)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                                     <span style={{ fontSize: '10px', color: '#a78bfa', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         ✂ Divider Lines ({dividers.length})
@@ -311,14 +311,14 @@ export default function SectionsPanel({
                                                 style={{
                                                     padding: '6px 8px',
                                                     cursor: 'pointer',
-                                                    borderColor: isDivActive ? '#8b5cf6' : 'rgba(255,255,255,0.08)',
+                                                    borderColor: isDivActive ? '#8b5cf6' : 'var(--color-border)',
                                                     background: isDivActive ? 'rgba(139, 92, 246, 0.2)' : 'rgba(30, 41, 59, 0.4)'
                                                 }}
                                                 title="Click to select divider line and show move/angle handles on map"
                                             >
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
                                                     <Scissors size={12} color={isDivActive ? "#c084fc" : "#8b5cf6"} />
-                                                    <span style={{ fontSize: '11px', fontWeight: isDivActive ? 700 : 500, color: isDivActive ? '#ffffff' : '#cbd5e1' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: isDivActive ? 700 : 500, color: isDivActive ? 'var(--color-on-accent)' : 'var(--color-text-secondary)' }}>
                                                         {div.name || `Divider Line ${dIdx + 1}`}
                                                     </span>
                                                 </div>
@@ -333,7 +333,7 @@ export default function SectionsPanel({
                                                             e.stopPropagation();
                                                             onMergeDivider?.(div.id);
                                                         }}
-                                                        style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '1px' }}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '1px' }}
                                                         title="Merge across this divider line only (rejoins the sections it separates)"
                                                     >
                                                         <RotateCcw size={11} color="#f59e0b" />
@@ -350,8 +350,8 @@ export default function SectionsPanel({
                     {/* 4. ACTIVE SECTION INSPECTOR / ZONE TYPES (DISABLED UNTIL USER CLICKS A SECTION) */}
                     <div className="unified-sidebar-section">
                         <div className="unified-step-header">
-                            <span className="unified-step-title" style={{ color: selectedSectionId ? '#f8fafc' : '#94a3b8' }}>
-                                {selectedSectionId ? <Unlock size={12} color="#10b981" /> : <Lock size={12} color="#94a3b8" />}
+                            <span className="unified-step-title" style={{ color: selectedSectionId ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
+                                {selectedSectionId ? <Unlock size={12} color="#10b981" /> : <Lock size={12} color="var(--color-text-secondary)" />}
                                 2. Section Zone Types
                             </span>
                             {selectedSectionId && (
@@ -360,7 +360,7 @@ export default function SectionsPanel({
                                     style={{
                                         background: 'transparent',
                                         border: 'none',
-                                        color: '#94a3b8',
+                                        color: 'var(--color-text-secondary)',
                                         fontSize: '10px',
                                         cursor: 'pointer',
                                         textDecoration: 'underline',
@@ -379,17 +379,17 @@ export default function SectionsPanel({
                                 padding: '10px 12px',
                                 background: 'rgba(30, 41, 59, 0.55)',
                                 borderRadius: '8px',
-                                border: '1px dashed rgba(255, 255, 255, 0.15)',
+                                border: '1px dashed var(--color-border)',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '4px',
                                 marginBottom: '10px'
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1', fontSize: '11px', fontWeight: 600 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600 }}>
                                     <Info size={13} color="#818cf8" />
                                     <span>Select a section to customize</span>
                                 </div>
-                                <div style={{ fontSize: '10px', color: '#94a3b8', lineHeight: '1.4' }}>
+                                <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                                     Zone types and section properties are disabled until you click on a section on the map or from the list below.
                                 </div>
                             </div>
@@ -413,9 +413,9 @@ export default function SectionsPanel({
                                             onChange={(e) => onUpdateSection?.(selectedSectionId, { name: e.target.value })}
                                             style={{
                                                 background: 'rgba(15, 23, 42, 0.6)',
-                                                border: '1px solid rgba(255,255,255,0.2)',
+                                                border: '1px solid var(--color-border-emphasized)',
                                                 borderRadius: '4px',
-                                                color: '#ffffff',
+                                                color: 'var(--color-text-primary)',
                                                 fontSize: '11px',
                                                 fontWeight: 700,
                                                 padding: '2px 6px',
@@ -433,7 +433,7 @@ export default function SectionsPanel({
                                         <Trash2 size={12} color="#f87171" />
                                     </button>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: '#94a3b8' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: 'var(--color-text-secondary)' }}>
                                     <span>{activeSection?.area_sqft ? `${Math.round(activeSection.area_sqft).toLocaleString()} sq ft` : ""}</span>
                                     {targetAreaSqFt > 0 && activeSection?.area_sqft && (
                                         <span style={{ color: '#a5b4fc', fontWeight: 600 }}>
@@ -499,7 +499,7 @@ export default function SectionsPanel({
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#cbd5e1' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
                                 <span>Auto Colors</span>
                                 <button
                                     onClick={onToggleAutoColors}
@@ -510,7 +510,7 @@ export default function SectionsPanel({
                                 </button>
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: '#cbd5e1' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
                                 <span>Section Badges</span>
                                 <button
                                     onClick={onToggleShowLabels}
@@ -562,7 +562,7 @@ export default function SectionsPanel({
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, overflow: 'hidden' }}>
                                                     <span style={{ fontSize: '14px' }}>{typeObj.icon}</span>
-                                                    <span style={{ fontSize: '11px', fontWeight: isSelected ? 700 : 500, color: isSelected ? '#ffffff' : '#cbd5e1' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--color-on-accent)' : 'var(--color-text-secondary)' }}>
                                                         {sec.name || `Section ${idx + 1}`}
                                                     </span>
                                                 </div>
@@ -581,7 +581,7 @@ export default function SectionsPanel({
                                                         style={{
                                                             background: 'transparent',
                                                             border: 'none',
-                                                            color: '#94a3b8',
+                                                            color: 'var(--color-text-secondary)',
                                                             cursor: 'pointer',
                                                             padding: '2px'
                                                         }}
@@ -592,7 +592,7 @@ export default function SectionsPanel({
                                                 </div>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: '#94a3b8' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: 'var(--color-text-secondary)' }}>
                                                 <span>{Math.round(sec.area_sqft).toLocaleString()} sq ft</span>
                                                 <span style={{ color: '#818cf8', fontWeight: 600 }}>{percent}% of parcel</span>
                                             </div>
@@ -613,7 +613,7 @@ export default function SectionsPanel({
                                                                 borderRadius: '50%',
                                                                 backgroundColor: c,
                                                                 cursor: 'pointer',
-                                                                border: sec.color === c ? '2px solid #ffffff' : '1px solid rgba(0,0,0,0.3)',
+                                                                border: sec.color === c ? '2px solid var(--color-text-primary)' : '1px solid rgba(0,0,0,0.3)',
                                                                 transform: sec.color === c ? 'scale(1.2)' : 'none'
                                                             }}
                                                         />

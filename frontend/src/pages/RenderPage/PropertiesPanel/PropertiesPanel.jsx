@@ -166,7 +166,7 @@ export default function PropertiesPanel({
         const renderObjectNode = (obj, style = {}) => (
             <div key={obj.id} className="render-tree-node render-tree-child"
                 onClick={() => { onSelectObject?.(obj.id); flyToElement(obj); }}
-                style={{ marginLeft: 12, ...style, ...(obj.id === selectedObjectId ? { background: "var(--active-bg)", color: "#fff" } : {}) }}>
+                style={{ marginLeft: 12, ...style, ...(obj.id === selectedObjectId ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}) }}>
                 <span style={{ fontSize: 14, width: 20, textAlign: "center" }}>{obj.icon || "□"}</span>
                 <span style={{ flex: 1 }}>{obj.name || "Object"}</span>
                 <button className="tb-btn" style={{ width: 18, height: 18, fontSize: 10, color: "var(--accent)" }}
@@ -215,7 +215,7 @@ export default function PropertiesPanel({
                                                     <div key={`objects-outline-${outline.id}`}>
                                                         <div className="render-tree-node"
                                                             onClick={() => { onSelectFloor?.(outline.id); toggleFloor(`objects-${outline.id}`); flyToElement(outline); }}
-                                                            style={isOutlineActive ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+                                                            style={isOutlineActive ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
                                                             <span style={{ fontSize: 11, width: 14 }}>{isOutlineExpanded ? "▼" : "▶"}</span>
                                                             <span style={{ flex: 1 }}>{outline.name || outline.type || "Outline"}</span>
                                                             <span style={{ color: "var(--text-dim)", fontSize: 11 }}>
@@ -227,7 +227,7 @@ export default function PropertiesPanel({
                                                                 {outlineChildren.map(child => (
                                                                     <div key={child.id} className="render-tree-node render-tree-child"
                                                                         onClick={() => { onSelectShape?.(child.id); flyToElement(child); }}
-                                                                        style={child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+                                                                        style={child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
                                                                         <span style={{ fontSize: 10, color: child.type === "opening" ? "#38bdf8" : "#d4d4d8" }}>{child.type === "opening" ? "▱" : "▮"}</span>
                                                                         <span style={{ flex: 1 }}>{child.name || elementLabel(child)}</span>
                                                                     </div>
@@ -242,7 +242,7 @@ export default function PropertiesPanel({
 	                                                                        <div key={`objects-room-${room.id}`}>
 	                                                                            <div className="render-tree-node render-tree-child"
 	                                                                                onClick={() => { onSelectShape?.(room.id); flyToElement(room); }}
-	                                                                                style={room.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+	                                                                                style={room.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
 	                                                                                <span style={{ fontSize: 10, color: roomColors[room.roomType] || "var(--accent)" }}>■</span>
 	                                                                                <span style={{ flex: 1 }}>{room.name || elementLabel(room)}</span>
                                                                                     {roomObjects.length > 0 && (
@@ -252,7 +252,7 @@ export default function PropertiesPanel({
 	                                                                            {roomChildren.map(child => (
 	                                                                                <div key={child.id} className="render-tree-node render-tree-child"
                                                                                     onClick={() => { onSelectShape?.(child.id); flyToElement(child); }}
-                                                                                    style={{ marginLeft: 12, ...(child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}) }}>
+                                                                                    style={{ marginLeft: 12, ...(child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}) }}>
                                                                                     <span style={{ fontSize: 10, color: child.type === "opening" ? "#38bdf8" : "#d4d4d8" }}>{child.type === "opening" ? "▱" : "▮"}</span>
 	                                                                                    <span style={{ flex: 1 }}>{child.name || elementLabel(child)}</span>
 	                                                                                </div>
@@ -353,7 +353,7 @@ export default function PropertiesPanel({
                                                             {roomObjects.map(obj => (
                                                                 <div key={obj.id} className="render-tree-node render-tree-child"
                                                                     onClick={() => onSelectObject?.(obj.id)}
-                                                                    style={{ marginLeft: 12, ...(obj.id === selectedObjectId ? { background: "var(--active-bg)", color: "#fff" } : {}) }}>
+                                                                    style={{ marginLeft: 12, ...(obj.id === selectedObjectId ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}) }}>
                                                                     <span style={{ fontSize: 14, width: 20, textAlign: "center" }}>{obj.icon || "□"}</span>
                                                                     <span style={{ flex: 1 }}>{obj.name || "Object"}</span>
                                                                 </div>
@@ -453,7 +453,7 @@ export default function PropertiesPanel({
                                                     <div key={outline.id}>
                                                         <div className="render-tree-node"
                                                             onClick={() => { onSelectFloor(outline.id); toggleFloor(outline.id); flyToElement(outline); }}
-                                                            style={isOutlineActive ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+                                                            style={isOutlineActive ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
                                                             <span style={{ fontSize: 11, width: 14 }}>{isOutlineExpanded ? "▼" : "▶"}</span>
                                                             <span style={{ flex: 1 }}>{outline.name || outline.type || "Outline"}</span>
                                                             <span style={{ color: "var(--text-dim)", fontSize: 11 }}>
@@ -470,7 +470,7 @@ export default function PropertiesPanel({
 	                                                                {outlineChildren.map(child => (
 	                                                                    <div key={child.id} className="render-tree-node render-tree-child"
                                                                         onClick={() => { onSelectShape?.(child.id); flyToElement(child); }}
-	                                                                        style={child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+	                                                                        style={child.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
 	                                                                        <span style={{ fontSize: 10, color: child.type === "opening" ? "#38bdf8" : "#d4d4d8" }}>{child.type === "opening" ? "▱" : "▮"}</span>
 	                                                                        <span style={{ flex: 1 }}>{child.name || elementLabel(child)}</span>
 	                                                                        <button className="tb-btn" style={{ width: 16, height: 16, fontSize: 9, color: "var(--danger)" }}
@@ -488,7 +488,7 @@ export default function PropertiesPanel({
                                                                                         onSelectShape?.(room.id, isBatchClick);
                                                                                         if (!isBatchClick) flyToElement(room);
                                                                                     }}
-                                                                                    style={(room.id === selectedShape?.id || multiSelectIds.includes(room.id)) ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+                                                                                    style={(room.id === selectedShape?.id || multiSelectIds.includes(room.id)) ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
                                                                                     <span style={{ fontSize: 10, color: roomColors[room.roomType] || "var(--accent)" }}>●</span>
                                                                                     <span style={{ flex: 1 }}>{room.name || room.roomType || "room"}</span>
                                                                                     <button className="tb-btn" style={{ width: 16, height: 16, fontSize: 9, color: "var(--danger)" }}
@@ -497,7 +497,7 @@ export default function PropertiesPanel({
                                                                                 {roomWalls.map(wall => (
                                                                                     <div key={wall.id} className="render-tree-node render-tree-child"
                                                                                         onClick={() => { onSelectShape?.(wall.id); flyToElement(wall); }}
-                                                                                        style={{ marginLeft: 16, ...(wall.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}) }}>
+                                                                                        style={{ marginLeft: 16, ...(wall.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}) }}>
                                                                                         <span style={{ fontSize: 10, color: "#d4d4d8" }}>▮</span>
                                                                                         <span style={{ flex: 1 }}>{wall.name || elementLabel(wall)}</span>
                                                                                         <button className="tb-btn" style={{ width: 16, height: 16, fontSize: 9, color: "var(--danger)" }}
@@ -507,8 +507,8 @@ export default function PropertiesPanel({
                                                                                 {roomOpenings.map(opening => (
                                                                                     <div key={opening.id} className="render-tree-node render-tree-child"
                                                                                         onClick={() => { onSelectShape?.(opening.id); flyToElement(opening); }}
-                                                                                        style={{ marginLeft: 16, ...(opening.id === selectedShape?.id ? { background: "var(--active-bg)", color: "#fff" } : {}) }}>
-                                                                                        <span style={{ fontSize: 10, color: opening.openingType === "window" ? "#38bdf8" : "#f8fafc" }}>▱</span>
+                                                                                        style={{ marginLeft: 16, ...(opening.id === selectedShape?.id ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}) }}>
+                                                                                        <span style={{ fontSize: 10, color: opening.openingType === "window" ? "#38bdf8" : "var(--color-text-primary)" }}>▱</span>
                                                                                         <span style={{ flex: 1 }}>{opening.name || elementLabel(opening)}</span>
                                                                                         <button className="tb-btn" style={{ width: 16, height: 16, fontSize: 9, color: "var(--danger)" }}
                                                                                             onClick={(e) => { e.stopPropagation(); deleteElement?.(opening.id); }} title="Delete">✕</button>
@@ -667,7 +667,7 @@ export default function PropertiesPanel({
                     return (
                         <div key={el.id} className="render-tree-node"
                             onClick={(e) => { onSelectShape?.(el.id, e.ctrlKey || e.metaKey); flyToElement(el); }}
-                            style={(el.id === selectedShape?.id || multiSelectIds.includes(el.id)) ? { background: "var(--active-bg)", color: "#fff" } : {}}>
+                            style={(el.id === selectedShape?.id || multiSelectIds.includes(el.id)) ? { background: "var(--active-bg)", color: "var(--color-on-accent)" } : {}}>
                             <span style={{ fontSize: 14, color: hasDeps ? "#f59e0b" : "var(--accent)", width: 20, textAlign: "center" }}>
                                 {el.type === "circle" ? "○" : el.type === "rectangle" ? "▭" : "⬡"}
                             </span>

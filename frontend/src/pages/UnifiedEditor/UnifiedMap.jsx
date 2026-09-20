@@ -204,7 +204,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
     };
 
     // Unambiguous 4-directional CAD Move Crosshair Icon
-    const MOVE_HANDLE_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>`;
+    const MOVE_HANDLE_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-on-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>`;
 
     // Inline Click-to-Edit Structure Name on Map
     const createEditableStructureLabel = (s, onSave, onSelect) => {
@@ -213,9 +213,9 @@ const UnifiedMap = forwardRef(function UnifiedMap({
         label.title = "Click to rename directly";
         label.style.fontSize = "11px";
         label.style.fontWeight = "700";
-        label.style.color = "#ffffff";
+        label.style.color = "var(--color-text-primary)";
         label.style.backgroundColor = "rgba(15, 23, 42, 0.95)";
-        label.style.border = "1px solid rgba(255, 255, 255, 0.25)";
+        label.style.border = "1px solid var(--color-border-emphasized)";
         label.style.borderRadius = "4px";
         label.style.padding = "2px 6px";
         label.style.marginTop = "3px";
@@ -244,7 +244,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
             pencilSpan.style.opacity = "1";
         });
         label.addEventListener("mouseleave", () => {
-            label.style.borderColor = "rgba(255, 255, 255, 0.25)";
+            label.style.borderColor = "var(--color-border-emphasized)";
             label.style.backgroundColor = "rgba(15, 23, 42, 0.95)";
             pencilSpan.style.opacity = "0.7";
         });
@@ -261,7 +261,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
             input.className = "unified-inline-map-input";
             input.style.fontSize = "11px";
             input.style.fontWeight = "700";
-            input.style.color = "#ffffff";
+            input.style.color = "var(--color-text-primary)";
             input.style.backgroundColor = "#0f172a";
             input.style.border = "1.5px solid #6366f1";
             input.style.borderRadius = "4px";
@@ -1099,7 +1099,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
                 const el = document.createElement("div");
                 el.className = "unified-map-area-badge";
                 el.style.backgroundColor = isActive ? "rgba(49, 46, 129, 0.95)" : "rgba(15, 23, 42, 0.9)";
-                el.style.color = "#ffffff";
+                el.style.color = "var(--color-text-primary)";
                 el.style.border = `1.5px solid ${color}`;
                 el.style.borderRadius = "8px";
                 el.style.padding = "4px 10px";
@@ -1540,7 +1540,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
                     badge.style.height = "36px";
                     badge.style.borderRadius = "50%";
                     badge.style.backgroundColor = isSelected ? "#312e81" : "#4f46e5";
-                    badge.style.border = "2.5px solid #ffffff";
+                    badge.style.border = "2.5px solid var(--color-text-primary)";
                     badge.style.boxShadow = isSelected ? "0 0 16px rgba(99, 102, 241, 0.9)" : "0 6px 20px rgba(79, 70, 229, 0.65)";
                     badge.style.display = "flex";
                     badge.style.alignItems = "center";
@@ -1601,7 +1601,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
                 badge.style.height = "36px";
                 badge.style.borderRadius = "50%";
                 badge.style.backgroundColor = isSelected ? "#312e81" : "#4f46e5";
-                badge.style.border = "2.5px solid #ffffff";
+                badge.style.border = "2.5px solid var(--color-text-primary)";
                 badge.style.boxShadow = isSelected ? "0 0 16px rgba(99, 102, 241, 0.9)" : "0 6px 20px rgba(79, 70, 229, 0.65)";
                 badge.style.display = "flex";
                 badge.style.alignItems = "center";

@@ -215,7 +215,7 @@ export default function StructureNotesModal({
                 <div className="unified-modal-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '13px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {typeTitle}
                             </span>
                             {areaName && effectiveType !== "area" && (
@@ -265,7 +265,7 @@ export default function StructureNotesModal({
                         </div>
                         <button
                             onClick={onClose}
-                            style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+                            style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
                             title="Close"
                         >
                             <X size={20} />
@@ -280,7 +280,7 @@ export default function StructureNotesModal({
                                 height: '40px',
                                 borderRadius: '8px',
                                 backgroundColor: itemColor,
-                                border: '2px solid rgba(255, 255, 255, 0.3)',
+                                border: '2px solid var(--color-text-primary)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -316,10 +316,10 @@ export default function StructureNotesModal({
                             style={{
                                 flex: 1,
                                 background: '#1e293b',
-                                border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                                border: '1.5px solid var(--color-border-emphasized)',
                                 borderRadius: '6px',
                                 padding: '8px 12px',
-                                color: '#f8fafc',
+                                color: 'var(--color-text-primary)',
                                 fontSize: '15px',
                                 fontWeight: 600,
                                 outline: 'none'
@@ -334,7 +334,7 @@ export default function StructureNotesModal({
                                 alignItems: 'center',
                                 gap: '4px',
                                 background: '#4f46e5',
-                                color: '#ffffff',
+                                color: 'var(--color-on-accent)',
                                 border: 'none',
                                 borderRadius: '6px',
                                 padding: '8px 12px',
@@ -357,11 +357,11 @@ export default function StructureNotesModal({
                             gap: '6px',
                             padding: '6px 10px',
                             background: 'rgba(15, 23, 42, 0.6)',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '6px',
                             flexWrap: 'wrap'
                         }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', marginRight: '4px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', marginRight: '4px' }}>
                                 Choose Icon:
                             </span>
                             {(effectiveType === "feature" ? FEATURE_ICONS : STRUCTURE_ICONS).map(emoji => (
@@ -372,7 +372,7 @@ export default function StructureNotesModal({
                                     style={{
                                         fontSize: '15px',
                                         background: itemIcon === emoji ? '#4f46e5' : 'rgba(30, 41, 59, 0.8)',
-                                        border: itemIcon === emoji ? '1.5px solid #818cf8' : '1px solid rgba(255, 255, 255, 0.12)',
+                                        border: itemIcon === emoji ? '1.5px solid #818cf8' : '1px solid var(--color-border)',
                                         borderRadius: '5px',
                                         width: '28px',
                                         height: '28px',
@@ -399,11 +399,11 @@ export default function StructureNotesModal({
                             gap: '8px',
                             padding: '6px 10px',
                             background: 'rgba(15, 23, 42, 0.6)',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            border: '1px solid var(--color-border)',
                             borderRadius: '6px',
                             flexWrap: 'wrap'
                         }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 <Palette size={12} /> Theme Color:
                             </span>
                             {COLOR_PALETTE.map(col => (
@@ -416,7 +416,7 @@ export default function StructureNotesModal({
                                         height: '22px',
                                         borderRadius: '50%',
                                         backgroundColor: col,
-                                        border: itemColor.toLowerCase() === col.toLowerCase() ? '2px solid #ffffff' : '1.5px solid rgba(0,0,0,0.4)',
+                                        border: itemColor.toLowerCase() === col.toLowerCase() ? '2px solid var(--color-text-primary)' : '1.5px solid rgba(0,0,0,0.4)',
                                         cursor: 'pointer',
                                         boxShadow: itemColor.toLowerCase() === col.toLowerCase() ? `0 0 8px ${col}` : 'none',
                                         transform: itemColor.toLowerCase() === col.toLowerCase() ? 'scale(1.2)' : 'scale(1)',
@@ -443,10 +443,10 @@ export default function StructureNotesModal({
                             marginBottom: '20px'
                         }}>
                             <div>
-                                <div style={{ fontWeight: 600, fontSize: '14px', color: '#f8fafc' }}>
+                                <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-text-primary)' }}>
                                     2D Floorplan & 3D WebGL Studio
                                 </div>
-                                <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '2px' }}>
+                                <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
                                     Drill into interior walls, furniture placement, and 3D walkthrough
                                 </div>
                             </div>
@@ -463,7 +463,7 @@ export default function StructureNotesModal({
                                     alignItems: 'center',
                                     gap: '6px',
                                     background: '#6366f1',
-                                    color: '#ffffff',
+                                    color: 'var(--color-on-accent)',
                                     border: 'none',
                                     borderRadius: '6px',
                                     padding: '8px 14px',
@@ -483,12 +483,12 @@ export default function StructureNotesModal({
                     {/* Fast Note Creation Form */}
                     <form onSubmit={handleAddNote} style={{
                         background: 'rgba(30, 41, 59, 0.5)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '8px',
                         padding: '12px 14px',
                         marginBottom: '20px'
                     }}>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#e2e8f0', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
                             Add Note / Work Order to this {effectiveType === "area" ? "Boundary" : effectiveType === "feature" ? "Feature" : "Structure"}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
@@ -500,10 +500,10 @@ export default function StructureNotesModal({
                                 style={{
                                     gridColumn: '1 / -1',
                                     background: '#1e293b',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '6px',
                                     padding: '7px 10px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '12px'
                                 }}
                             />
@@ -512,10 +512,10 @@ export default function StructureNotesModal({
                                 onChange={e => setCategory(e.target.value)}
                                 style={{
                                     background: '#1e293b',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '6px',
                                     padding: '6px 10px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '12px'
                                 }}
                             >
@@ -526,7 +526,7 @@ export default function StructureNotesModal({
                                 <option value="general">General</option>
                             </select>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '8px', color: '#94a3b8', fontSize: '12px' }}>$</span>
+                                <span style={{ position: 'absolute', left: '8px', color: 'var(--color-text-secondary)', fontSize: '12px' }}>$</span>
                                 <input
                                     type="number"
                                     placeholder="Cost Est."
@@ -535,10 +535,10 @@ export default function StructureNotesModal({
                                     style={{
                                         width: '100%',
                                         background: '#1e293b',
-                                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                                        border: '1px solid var(--color-border)',
                                         borderRadius: '6px',
                                         padding: '6px 10px 6px 20px',
-                                        color: '#f8fafc',
+                                        color: 'var(--color-text-primary)',
                                         fontSize: '12px'
                                     }}
                                 />
@@ -552,10 +552,10 @@ export default function StructureNotesModal({
                             style={{
                                 width: '100%',
                                 background: '#1e293b',
-                                border: '1px solid rgba(255, 255, 255, 0.15)',
+                                border: '1px solid var(--color-border)',
                                 borderRadius: '6px',
                                 padding: '7px 10px',
-                                color: '#f8fafc',
+                                color: 'var(--color-text-primary)',
                                 fontSize: '12px',
                                 resize: 'vertical',
                                 marginBottom: '8px',
@@ -571,7 +571,7 @@ export default function StructureNotesModal({
                                     alignItems: 'center',
                                     gap: '6px',
                                     background: '#3b82f6',
-                                    color: '#ffffff',
+                                    color: 'var(--color-on-accent)',
                                     border: 'none',
                                     borderRadius: '6px',
                                     padding: '6px 12px',
@@ -589,7 +589,7 @@ export default function StructureNotesModal({
 
                     {/* Existing Notes List */}
                     <div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>
                             Attached Notes ({targetNotes.length})
                         </div>
                         {targetNotes.length === 0 ? (
@@ -635,7 +635,7 @@ export default function StructureNotesModal({
                                                 </button>
                                             </div>
                                         </div>
-                                        <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                                             {n.content}
                                         </div>
                                         <div style={{ fontSize: '10px', color: '#64748b' }}>
@@ -652,8 +652,8 @@ export default function StructureNotesModal({
                     <button
                         onClick={onClose}
                         style={{
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            color: '#e2e8f0',
+                            background: 'var(--color-overlay-hover)',
+                            color: 'var(--color-text-secondary)',
                             border: 'none',
                             borderRadius: '6px',
                             padding: '6px 14px',

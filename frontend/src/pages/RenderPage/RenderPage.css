@@ -189,11 +189,11 @@
 }
 .tool-item:hover {
     background: var(--active-bg);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 .tool-item-active {
     background: var(--active-bg);
-    color: #fff;
+    color: var(--color-on-accent);
     box-shadow: inset 2px 0 0 var(--accent);
 }
 .tool-item-muted {
@@ -337,7 +337,7 @@
 
 .objects-category-row .tb-btn.active {
     background: var(--active-bg);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 
 .objects-catalog-list {
@@ -395,7 +395,7 @@
     padding: 8px;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-overlay-hover);
     color: var(--text-main);
     font-size: 12px;
 }
@@ -661,7 +661,7 @@
 }
 .stage-btn.active {
     background: var(--accent);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 .stage-btn.disabled {
     opacity: 0.35;
@@ -715,7 +715,7 @@
 }
 .tb-btn-active {
     background: var(--active-bg);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 .tb-btn:disabled {
     opacity: 0.35;
@@ -726,7 +726,7 @@
 }
 .tb-danger:hover {
     background: var(--danger);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 .tb-sep {
     width: 1px;
@@ -803,7 +803,7 @@
 .settings-toggle.active {
     background: var(--accent);
     border-color: var(--accent);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 
 .settings-input {
@@ -868,7 +868,7 @@
 }
 .render-tools button.active {
     background: var(--active-bg);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 
 #render-tool-settings {

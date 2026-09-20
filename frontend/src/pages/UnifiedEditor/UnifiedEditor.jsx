@@ -1095,7 +1095,7 @@ export default function UnifiedEditor() {
                                                         style={{
                                                             background: 'transparent',
                                                             border: 'none',
-                                                            color: '#94a3b8',
+                                                            color: 'var(--color-text-secondary)',
                                                             fontSize: '10px',
                                                             cursor: 'pointer',
                                                             textDecoration: 'underline',
@@ -1181,7 +1181,7 @@ export default function UnifiedEditor() {
                                                     style={{
                                                         background: 'transparent',
                                                         border: 'none',
-                                                        color: '#94a3b8',
+                                                        color: 'var(--color-text-secondary)',
                                                         fontSize: '10px',
                                                         cursor: 'pointer',
                                                         textDecoration: 'underline',
@@ -1212,10 +1212,10 @@ export default function UnifiedEditor() {
                                                         }}
                                                     />
                                                     <div style={{ overflow: 'hidden' }}>
-                                                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#f8fafc', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                                                             {activeArea.name}
                                                         </div>
-                                                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                                                        <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
                                                             {activeArea.area_sqft ? `${Math.round(activeArea.area_sqft).toLocaleString()} sq ft • Active Parcel` : "Active Parcel"}
                                                         </div>
                                                     </div>
@@ -1385,7 +1385,7 @@ export default function UnifiedEditor() {
                                                     alignItems: 'center',
                                                     gap: '4px',
                                                     background: '#6366f1',
-                                                    color: '#fff',
+                                                    color: 'var(--color-on-accent)',
                                                     border: 'none',
                                                     borderRadius: '4px',
                                                     padding: '2px 6px',
@@ -1533,7 +1533,7 @@ export default function UnifiedEditor() {
                     {workspaceMode === "2d" && (
                         <div className="unified-floating-bar">
                             <div className="unified-floating-search" ref={searchRef}>
-                                <Search size={14} color="#94a3b8" className="unified-floating-search-icon" />
+                                <Search size={14} color="var(--color-text-secondary)" className="unified-floating-search-icon" />
                                 <input
                                     type="text"
                                     className="unified-floating-search-input"

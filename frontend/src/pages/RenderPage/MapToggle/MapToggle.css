@@ -65,7 +65,7 @@
 }
 .map-toggle-item.active {
     background: var(--accent);
-    color: #fff;
+    color: var(--color-on-accent);
 }
 
 /* Top-bars container holds StageBar + MapToggle, centered */

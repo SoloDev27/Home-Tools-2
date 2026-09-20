@@ -755,7 +755,7 @@ export default function Unified3DCanvas({
                                     <div className="unified-step-header">
                                         <span className="unified-step-title">Building</span>
                                     </div>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: "#f8fafc" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text-primary)" }}>
                                         {selectedStructure.name}
                                     </div>
                                     <div className="u3d-hint">

@@ -49,7 +49,7 @@ export default function AreaSectionModal({
                     </h3>
                     <button
                         onClick={onClose}
-                        style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer' }}
                     >
                         <X size={18} />
                     </button>
@@ -58,7 +58,7 @@ export default function AreaSectionModal({
                 <form onSubmit={handleSubmit}>
                     <div className="unified-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#cbd5e1', marginBottom: '6px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
                                 Area / Parcel Name
                             </label>
                             <input
@@ -70,10 +70,10 @@ export default function AreaSectionModal({
                                 style={{
                                     width: '100%',
                                     background: '#1e293b',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '6px',
                                     padding: '8px 10px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '13px',
                                     boxSizing: 'border-box'
                                 }}
@@ -81,7 +81,7 @@ export default function AreaSectionModal({
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#cbd5e1', marginBottom: '6px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
                                 Zone Type
                             </label>
                             <select
@@ -90,10 +90,10 @@ export default function AreaSectionModal({
                                 style={{
                                     width: '100%',
                                     background: '#1e293b',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '6px',
                                     padding: '8px 10px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '13px',
                                     boxSizing: 'border-box'
                                 }}
@@ -107,7 +107,7 @@ export default function AreaSectionModal({
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#cbd5e1', marginBottom: '6px' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
                                 Boundary Accent Color
                             </label>
                             <div style={{ display: 'flex', gap: '10px' }}>
@@ -121,7 +121,7 @@ export default function AreaSectionModal({
                                             height: '28px',
                                             borderRadius: '50%',
                                             backgroundColor: c.hex,
-                                            border: color === c.hex ? '2px solid #ffffff' : '2px solid transparent',
+                                            border: color === c.hex ? '2px solid var(--color-text-primary)' : '2px solid transparent',
                                             boxShadow: color === c.hex ? `0 0 10px ${c.hex}` : 'none',
                                             cursor: 'pointer',
                                             display: 'flex',
@@ -130,7 +130,7 @@ export default function AreaSectionModal({
                                             padding: 0
                                         }}
                                     >
-                                        {color === c.hex && <Check size={14} color="#ffffff" />}
+                                        {color === c.hex && <Check size={14} color="var(--color-on-accent)" />}
                                     </button>
                                 ))}
                             </div>
@@ -142,9 +142,9 @@ export default function AreaSectionModal({
                                 padding: '10px 12px',
                                 borderRadius: '6px',
                                 fontSize: '12px',
-                                color: '#94a3b8'
+                                color: 'var(--color-text-secondary)'
                             }}>
-                                📐 Calculated Size: <strong style={{ color: '#f8fafc' }}>{Math.round(initialData.area_sqft).toLocaleString()} sq ft</strong> ({initialData.area_acres?.toFixed(2)} acres)
+                                📐 Calculated Size: <strong style={{ color: 'var(--color-text-primary)' }}>{Math.round(initialData.area_sqft).toLocaleString()} sq ft</strong> ({initialData.area_acres?.toFixed(2)} acres)
                             </div>
                         )}
                     </div>
@@ -155,7 +155,7 @@ export default function AreaSectionModal({
                             onClick={onClose}
                             style={{
                                 background: 'transparent',
-                                color: '#94a3b8',
+                                color: 'var(--color-text-secondary)',
                                 border: 'none',
                                 padding: '6px 12px',
                                 fontSize: '12px',
@@ -168,7 +168,7 @@ export default function AreaSectionModal({
                             type="submit"
                             style={{
                                 background: '#6366f1',
-                                color: '#ffffff',
+                                color: 'var(--color-on-accent)',
                                 border: 'none',
                                 borderRadius: '6px',
                                 padding: '6px 16px',

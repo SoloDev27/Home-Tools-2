@@ -132,20 +132,20 @@ export default function UnifiedRightDrawer({
                         {mode === "view" ? (
                             <>
                                 <Eye size={17} color="#6366f1" />
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#f8fafc' }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                                     Boundary & Layer View
                                 </h3>
                             </>
                         ) : (
                             <>
                                 <FileText size={17} color="#6366f1" />
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#f8fafc' }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                                     Project Notes & Log
                                 </h3>
                             </>
                         )}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '3px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '3px' }}>
                         {mode === "view"
                             ? `${areas.length} Boundaries • ${structures.length} Structures • ${features.length} Features`
                             : `${notes.length} total • ${openCount} open issues`}
@@ -157,7 +157,7 @@ export default function UnifiedRightDrawer({
                     <div style={{
                         display: 'flex',
                         background: 'rgba(30, 41, 59, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '6px',
                         padding: '2px'
                     }}>
@@ -165,7 +165,7 @@ export default function UnifiedRightDrawer({
                             onClick={() => onSwitchMode?.("view")}
                             style={{
                                 background: mode === "view" ? '#6366f1' : 'transparent',
-                                color: mode === "view" ? '#ffffff' : '#94a3b8',
+                                color: mode === "view" ? 'var(--color-on-accent)' : 'var(--color-text-secondary)',
                                 border: 'none',
                                 borderRadius: '4px',
                                 padding: '3px 8px',
@@ -180,7 +180,7 @@ export default function UnifiedRightDrawer({
                             onClick={() => onSwitchMode?.("notes")}
                             style={{
                                 background: mode === "notes" ? '#6366f1' : 'transparent',
-                                color: mode === "notes" ? '#ffffff' : '#94a3b8',
+                                color: mode === "notes" ? 'var(--color-on-accent)' : 'var(--color-text-secondary)',
                                 border: 'none',
                                 borderRadius: '4px',
                                 padding: '3px 8px',
@@ -195,7 +195,7 @@ export default function UnifiedRightDrawer({
 
                     <button
                         onClick={onClose}
-                        style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
                         title="Close sidebar"
                     >
                         <X size={18} />
@@ -206,8 +206,8 @@ export default function UnifiedRightDrawer({
             {/* TAB 1: BOUNDARY & LAYER HIERARCHY TREE */}
             {mode === "view" && (
                 <div className="unified-drawer-content" style={{ padding: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 8px 4px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 8px 4px', borderBottom: '1px solid var(--color-border)', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
                             Boundaries & Child Overlays
                         </span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -276,7 +276,7 @@ export default function UnifiedRightDrawer({
                                             <span className="unified-color-dot" style={{ backgroundColor: area.color || '#3b82f6' }} />
                                             <span style={{ fontWeight: 600 }}>{area.name}</span>
                                             {area.area_sqft && (
-                                                <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                                                <span style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
                                                     ({Math.round(area.area_sqft).toLocaleString()} sq ft)
                                                 </span>
                                             )}
@@ -364,7 +364,7 @@ export default function UnifiedRightDrawer({
 
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                             {sec.area_sqft && (
-                                                                <span style={{ fontSize: '10px', color: '#94a3b8' }}>
+                                                                <span style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
                                                                     {Math.round(sec.area_sqft).toLocaleString()} sq ft
                                                                 </span>
                                                             )}
@@ -438,7 +438,7 @@ export default function UnifiedRightDrawer({
                                                                 onClick={(e) => onDeleteStructure?.(e, struct.id)}
                                                                 title="Delete structure"
                                                             >
-                                                                <Trash2 size={11} color="#94a3b8" />
+                                                                <Trash2 size={11} color="var(--color-text-secondary)" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -503,7 +503,7 @@ export default function UnifiedRightDrawer({
                                                                     onClick={(e) => onDeleteFeature?.(e, feat.id)}
                                                                     title="Delete feature"
                                                                 >
-                                                                    <Trash2 size={11} color="#94a3b8" />
+                                                                    <Trash2 size={11} color="var(--color-text-secondary)" />
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -535,7 +535,7 @@ export default function UnifiedRightDrawer({
                                                                     </div>
                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                         {sec.area_sqft && (
-                                                                            <span style={{ fontSize: '9px', color: '#94a3b8' }}>
+                                                                            <span style={{ fontSize: '9px', color: 'var(--color-text-secondary)' }}>
                                                                                 {Math.round(sec.area_sqft).toLocaleString()} sq ft
                                                                             </span>
                                                                         )}
@@ -584,7 +584,7 @@ export default function UnifiedRightDrawer({
                         alignItems: 'center',
                         justifyContent: 'space-between'
                     }}>
-                        <span style={{ fontSize: '12px', color: '#cbd5e1' }}>Total Cost Estimate:</span>
+                        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Total Cost Estimate:</span>
                         <span style={{ fontSize: '14px', fontWeight: 700, color: '#34d399' }}>
                             ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                         </span>
@@ -603,8 +603,8 @@ export default function UnifiedRightDrawer({
                                         fontSize: '11px',
                                         border: 'none',
                                         cursor: 'pointer',
-                                        background: filterStatus === st ? '#6366f1' : 'rgba(255, 255, 255, 0.08)',
-                                        color: '#ffffff',
+                                        background: filterStatus === st ? '#6366f1' : 'var(--color-overlay-hover)',
+                                        color: 'var(--color-text-primary)',
                                         textTransform: 'capitalize',
                                         whiteSpace: 'nowrap'
                                     }}
@@ -621,10 +621,10 @@ export default function UnifiedRightDrawer({
                                 style={{
                                     flex: 1,
                                     background: '#1e293b',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '4px 8px',
-                                    color: '#e2e8f0',
+                                    color: 'var(--color-text-secondary)',
                                     fontSize: '11px'
                                 }}
                             >
@@ -643,7 +643,7 @@ export default function UnifiedRightDrawer({
                                     alignItems: 'center',
                                     gap: '4px',
                                     background: showAddForm ? '#475569' : '#3b82f6',
-                                    color: '#ffffff',
+                                    color: 'var(--color-on-accent)',
                                     border: 'none',
                                     borderRadius: '4px',
                                     padding: '4px 10px',
@@ -681,10 +681,10 @@ export default function UnifiedRightDrawer({
                                 onChange={e => setTitle(e.target.value)}
                                 style={{
                                     background: '#0f172a',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '6px 8px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '11px'
                                 }}
                             />
@@ -695,10 +695,10 @@ export default function UnifiedRightDrawer({
                                 rows={2}
                                 style={{
                                     background: '#0f172a',
-                                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid var(--color-border)',
                                     borderRadius: '4px',
                                     padding: '6px 8px',
-                                    color: '#f8fafc',
+                                    color: 'var(--color-text-primary)',
                                     fontSize: '11px',
                                     resize: 'vertical'
                                 }}
@@ -712,10 +712,10 @@ export default function UnifiedRightDrawer({
                                     }}
                                     style={{
                                         background: '#0f172a',
-                                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                                        border: '1px solid var(--color-border)',
                                         borderRadius: '4px',
                                         padding: '4px 6px',
-                                        color: '#f8fafc',
+                                        color: 'var(--color-text-primary)',
                                         fontSize: '11px'
                                     }}
                                 >
@@ -731,10 +731,10 @@ export default function UnifiedRightDrawer({
                                         onChange={e => setTargetId(e.target.value)}
                                         style={{
                                             background: '#0f172a',
-                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            border: '1px solid var(--color-border)',
                                             borderRadius: '4px',
                                             padding: '4px 6px',
-                                            color: '#f8fafc',
+                                            color: 'var(--color-text-primary)',
                                             fontSize: '11px'
                                         }}
                                     >
@@ -749,10 +749,10 @@ export default function UnifiedRightDrawer({
                                         onChange={e => setTargetId(e.target.value)}
                                         style={{
                                             background: '#0f172a',
-                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            border: '1px solid var(--color-border)',
                                             borderRadius: '4px',
                                             padding: '4px 6px',
-                                            color: '#f8fafc',
+                                            color: 'var(--color-text-primary)',
                                             fontSize: '11px'
                                         }}
                                     >
@@ -767,10 +767,10 @@ export default function UnifiedRightDrawer({
                                         onChange={e => setTargetId(e.target.value)}
                                         style={{
                                             background: '#0f172a',
-                                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                                            border: '1px solid var(--color-border)',
                                             borderRadius: '4px',
                                             padding: '4px 6px',
-                                            color: '#f8fafc',
+                                            color: 'var(--color-text-primary)',
                                             fontSize: '11px'
                                         }}
                                     >
@@ -786,10 +786,10 @@ export default function UnifiedRightDrawer({
                                     onChange={e => setCategory(e.target.value)}
                                     style={{
                                         background: '#0f172a',
-                                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                                        border: '1px solid var(--color-border)',
                                         borderRadius: '4px',
                                         padding: '4px 6px',
-                                        color: '#f8fafc',
+                                        color: 'var(--color-text-primary)',
                                         fontSize: '11px'
                                     }}
                                 >
@@ -806,10 +806,10 @@ export default function UnifiedRightDrawer({
                                     onChange={e => setCostEstimate(e.target.value)}
                                     style={{
                                         background: '#0f172a',
-                                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                                        border: '1px solid var(--color-border)',
                                         borderRadius: '4px',
                                         padding: '4px 6px',
-                                        color: '#f8fafc',
+                                        color: 'var(--color-text-primary)',
                                         fontSize: '11px'
                                     }}
                                 />
@@ -820,7 +820,7 @@ export default function UnifiedRightDrawer({
                                 disabled={!title.trim() || !content.trim() || isSubmitting}
                                 style={{
                                     background: '#22c55e',
-                                    color: '#ffffff',
+                                    color: 'var(--color-on-accent)',
                                     border: 'none',
                                     borderRadius: '4px',
                                     padding: '6px 12px',
@@ -886,7 +886,7 @@ export default function UnifiedRightDrawer({
                                             </div>
                                         </div>
 
-                                        <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: '1.4' }}>
+                                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
                                             {note.content}
                                         </div>
 
