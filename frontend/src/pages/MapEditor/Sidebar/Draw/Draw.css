@@ -104,3 +104,13 @@
         transform: scale(1);
     }
 }
+
+.draw-type-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.draw-type-emoji {
+    font-size: var(--font-size-lg);
+}

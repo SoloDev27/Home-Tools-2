@@ -271,9 +271,9 @@ export default function DrawTab({ canvasSelect, savedTypesStore, selectCanvasAdd
                                     title=""
                                 >
                                     {type.type.length > 5 ? (
-                                        <img src={type.type} alt="" style={{ width: 18, height: 18, objectFit: 'contain' }} />
+                                        <img src={type.type} alt="" className="draw-type-img" />
                                     ) : (
-                                        <span style={{ fontSize: 16 }}>{type.type}</span>
+                                        <span className="draw-type-emoji">{type.type}</span>
                                     )}
                                 </button>
                             );

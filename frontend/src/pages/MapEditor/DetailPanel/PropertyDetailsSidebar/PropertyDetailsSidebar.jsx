@@ -114,8 +114,7 @@ const NodeRenderer = ({ node, style, dragHandle, tree }) => {
                     onKeyDown={(e) => { if (e.key === 'Enter') { setIsEditing(false); handleRenameNode(node.id, tempName); } }}
                     autoFocus
                     onClick={(e) => e.stopPropagation()}
-                    className="sidebar-input"
-                    style={{ height: '28px', fontSize: '13px', padding: '2px 6px' }}
+                    className="sidebar-input sidebar-input--compact"
                 />
             ) : (
                 <div className="node-text-wrapper">
@@ -627,7 +626,7 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                     </div>
                 </header>
 
-                <div style={{ padding: '8px 16px 0 16px' }}>
+                <div className="sidebar-tabs">
                     <SegmentedControl
                         value={activeTab}
                         onChange={(val) => setActiveTab(val)}
@@ -642,7 +641,7 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
 
                 <div className="sidebar-form" ref={containerRef}>
                     {activeTab === "general" && (
-                        <div className="sidebar-pane" style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div className="sidebar-pane is-fill">
                             <div className="sidebar-group">
                                 <label className="sidebar-label">Name</label>
                                 <input className="sidebar-input" value={name} onChange={(e) => { 
@@ -690,11 +689,11 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                             {(point.area || point.extra_info?.area) && (
                                 <div className="sidebar-group">
                                     <label className="sidebar-label">Calculated Area</label>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px 10px', background: 'var(--color-background-card)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                    <div className="sidebar-info-card">
+                                        <span className="sidebar-info-value">
                                             {Number(point.area ?? point.extra_info?.area ?? 0).toLocaleString(undefined, { maximumFractionDigits: 1 })} sq ft
                                         </span>
-                                        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                                        <span className="sidebar-info-sub">
                                             {(Number(point.area ?? point.extra_info?.area ?? 0) / 43560).toFixed(2)} acres
                                         </span>
                                     </div>
@@ -706,8 +705,8 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                                     <label className="sidebar-label">
                                         {point.perimeter || point.extra_info?.perimeter ? "Perimeter / Boundary" : "Linear Distance"}
                                     </label>
-                                    <div style={{ padding: '8px 10px', background: 'var(--color-background-card)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                    <div className="sidebar-info-card--plain">
+                                        <span className="sidebar-info-value">
                                             {Number(point.distance ?? point.extra_info?.distance ?? point.perimeter ?? point.extra_info?.perimeter ?? 0).toLocaleString(undefined, { maximumFractionDigits: 1 })} ft
                                         </span>
                                     </div>
@@ -715,29 +714,11 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                             )}
 
                             {(point.type === "structure" || point.type === "home" || point.type === "apartment") && (
-                                <div className="sidebar-group" style={{ marginTop: '8px' }}>
+                                <div className="sidebar-group sidebar-group--spaced">
                                     <button
                                         type="button"
                                         onClick={() => navigate("/render")}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '8px',
-                                            width: '100%',
-                                            padding: '10px 14px',
-                                            background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                            color: 'var(--color-on-accent)',
-                                            border: 'none',
-                                            borderRadius: '8px',
-                                            fontWeight: 600,
-                                            fontSize: '13px',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)',
-                                            transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-                                        }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(99, 102, 241, 0.4)'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3)'; }}
+                                        className="sidebar-cta"
                                     >
                                         <Box size={16} />
                                         <span>Open Interior Floorplan Studio</span>
@@ -748,11 +729,11 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                             <div className="sidebar-footer-push"></div>
                             <div className="sidebar-footer-anchor">
                                 {!confirmingDelete ? (
-                                    <Button variant="destructive" label="Delete Point" size="small" style={{ width: '100%' }} onClick={() => setConfirmingDelete(true)}>Delete Point</Button>
+                                    <Button variant="destructive" label="Delete Point" size="small" width="100%" onClick={() => setConfirmingDelete(true)}>Delete Point</Button>
                                 ) : (
                                     <div className="delete-confirm">
                                         <span>Confirm Deletion?</span>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                        <div className="delete-confirm-actions">
                                             <Button variant="destructive" label="Confirm" size="small" onClick={() => onDelete(point.id)}>Confirm</Button>
                                             <Button variant="ghost" label="Cancel" size="small" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
                                         </div>
@@ -763,7 +744,7 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                     )}
 
                     {activeTab === "structure" && (
-                        <div className="sidebar-pane flex-pane" style={{ padding: '16px' }}>
+                        <div className="sidebar-pane flex-pane">
                             <div className="tree-scroll-container" style={{ height: `${splitHeight}px` }}>
                                 <Tree
                                     ref={treeRef}
@@ -797,7 +778,7 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                     )}
 
                     {activeTab === "editor" && (
-                        <div className="sidebar-pane editor-pane" style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div className="sidebar-pane editor-pane is-fill">
                             {!selectedDetailNoteId ? (
                                 <>
                                     <PersonaMenu />
