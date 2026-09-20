@@ -1,7 +1,9 @@
+import "./ObjectProperties.css";
+
 export default function ObjectProperties({ selectedObject, onUpdateObject, rooms }) {
     if (!selectedObject) {
         return (
-            <p style={{ fontSize: 13, color: "var(--text-dim)", textAlign: "center", padding: 20 }}>
+            <p className="object-props-empty">
                 Select an object to edit properties
             </p>
         );
@@ -17,7 +19,7 @@ export default function ObjectProperties({ selectedObject, onUpdateObject, rooms
         <>
             <h4 className="render-props-title">{selectedObject.name || "Object"}</h4>
 
-            <div className="props-section" style={{ border: "none" }}>
+            <div className="props-section props-section-flush">
                 <label>Name</label>
                 <input type="text" className="input" value={selectedObject.name || ""}
                     onChange={e => update({ name: e.target.value })} />
@@ -60,17 +62,17 @@ export default function ObjectProperties({ selectedObject, onUpdateObject, rooms
 
             <div className="props-section">
                 <label>Rotation</label>
-                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                    <button className="tb-btn" style={{ width: 24, height: 24, fontSize: 12 }}
+                <div className="props-rotation-row">
+                    <button className="tb-btn props-rotate-btn"
                         onClick={() => update({ rotation: ((selectedObject.rotation || 0) - 90 + 360) % 360 })}>↺</button>
                     <input type="number" min={0} max={360} value={round(selectedObject.rotation || 0)}
-                        onChange={e => update({ rotation: Number(e.target.value) % 360 })} style={{ width: 60 }} />
-                    <button className="tb-btn" style={{ width: 24, height: 24, fontSize: 12 }}
+                        onChange={e => update({ rotation: Number(e.target.value) % 360 })} className="props-rotation-input" />
+                    <button className="tb-btn props-rotate-btn"
                         onClick={() => update({ rotation: ((selectedObject.rotation || 0) + 90) % 360 })}>↻</button>
                 </div>
             </div>
 
-            <div className="props-section" style={{ border: "none" }}>
+            <div className="props-section props-section-flush">
                 <label>Color</label>
                 <input type="color" value={selectedObject.fill || "#888"}
                     onChange={e => update({ fill: e.target.value })} />
@@ -90,9 +92,9 @@ export default function ObjectProperties({ selectedObject, onUpdateObject, rooms
             )}
 
             {selectedObject.modelUrl && (
-                <div className="props-section" style={{ border: "none" }}>
+                <div className="props-section props-section-flush">
                     <label>Model</label>
-                    <span style={{ fontSize: 11, color: "var(--text-dim)", wordBreak: "break-all" }}>
+                    <span className="props-model-url">
                         {selectedObject.modelUrl.startsWith("data:") ? "Custom GLB loaded" : selectedObject.modelUrl}
                     </span>
                 </div>

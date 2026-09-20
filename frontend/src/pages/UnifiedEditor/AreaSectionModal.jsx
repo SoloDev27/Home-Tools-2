@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Check } from "lucide-react";
+import "./AreaSectionModal.css";
 
 export default function AreaSectionModal({
     isOpen,
@@ -42,23 +43,23 @@ export default function AreaSectionModal({
 
     return (
         <div className="unified-modal-overlay" onClick={onClose}>
-            <div className="unified-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '440px' }}>
+            <div className="unified-modal area-modal-sm" onClick={e => e.stopPropagation()}>
                 <div className="unified-modal-header">
-                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>
+                    <h3 className="area-modal-title">
                         {initialData?.id ? "Edit Area Details" : "Section New Area"}
                     </h3>
                     <button
                         onClick={onClose}
-                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer' }}
+                        className="area-modal-close-btn"
                     >
                         <X size={18} />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="unified-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div className="unified-modal-body area-modal-body">
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
+                            <label className="area-modal-label">
                                 Area / Parcel Name
                             </label>
                             <input
@@ -67,36 +68,18 @@ export default function AreaSectionModal({
                                 onChange={e => setName(e.target.value)}
                                 placeholder="e.g., Primary Lot Boundary, Back Parcel..."
                                 autoFocus
-                                style={{
-                                    width: '100%',
-                                    background: '#1e293b',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '6px',
-                                    padding: '8px 10px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '13px',
-                                    boxSizing: 'border-box'
-                                }}
+                                className="area-modal-input"
                             />
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
+                            <label className="area-modal-label">
                                 Zone Type
                             </label>
                             <select
                                 value={type}
                                 onChange={e => setType(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    background: '#1e293b',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '6px',
-                                    padding: '8px 10px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '13px',
-                                    boxSizing: 'border-box'
-                                }}
+                                className="area-modal-input"
                             >
                                 <option value="lot">Residential Lot / Parcel</option>
                                 <option value="boundary">Site Boundary</option>
@@ -107,27 +90,19 @@ export default function AreaSectionModal({
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)', marginBottom: '6px' }}>
+                            <label className="area-modal-label">
                                 Boundary Accent Color
                             </label>
-                            <div style={{ display: 'flex', gap: '10px' }}>
+                            <div className="area-modal-colors">
                                 {colors.map(c => (
                                     <button
                                         type="button"
                                         key={c.hex}
                                         onClick={() => setColor(c.hex)}
+                                        className={`area-modal-swatch${color === c.hex ? " is-selected" : ""}`}
                                         style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '50%',
                                             backgroundColor: c.hex,
-                                            border: color === c.hex ? '2px solid var(--color-text-primary)' : '2px solid transparent',
-                                            boxShadow: color === c.hex ? `0 0 10px ${c.hex}` : 'none',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            padding: 0
+                                            boxShadow: color === c.hex ? `0 0 10px ${c.hex}` : 'none'
                                         }}
                                     >
                                         {color === c.hex && <Check size={14} color="var(--color-on-accent)" />}
@@ -137,14 +112,8 @@ export default function AreaSectionModal({
                         </div>
 
                         {initialData?.area_sqft && (
-                            <div style={{
-                                background: 'rgba(30, 41, 59, 0.5)',
-                                padding: '10px 12px',
-                                borderRadius: '6px',
-                                fontSize: '12px',
-                                color: 'var(--color-text-secondary)'
-                            }}>
-                                📐 Calculated Size: <strong style={{ color: 'var(--color-text-primary)' }}>{Math.round(initialData.area_sqft).toLocaleString()} sq ft</strong> ({initialData.area_acres?.toFixed(2)} acres)
+                            <div className="area-modal-size-box">
+                                📐 Calculated Size: <strong className="area-modal-strong">{Math.round(initialData.area_sqft).toLocaleString()} sq ft</strong> ({initialData.area_acres?.toFixed(2)} acres)
                             </div>
                         )}
                     </div>
@@ -153,29 +122,13 @@ export default function AreaSectionModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            style={{
-                                background: 'transparent',
-                                color: 'var(--color-text-secondary)',
-                                border: 'none',
-                                padding: '6px 12px',
-                                fontSize: '12px',
-                                cursor: 'pointer'
-                            }}
+                            className="area-modal-cancel-btn"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            style={{
-                                background: '#6366f1',
-                                color: 'var(--color-on-accent)',
-                                border: 'none',
-                                borderRadius: '6px',
-                                padding: '6px 16px',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                cursor: 'pointer'
-                            }}
+                            className="area-modal-save-btn"
                         >
                             Save Area
                         </button>

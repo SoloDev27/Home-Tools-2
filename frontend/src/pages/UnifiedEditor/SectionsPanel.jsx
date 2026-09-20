@@ -6,6 +6,7 @@ import {
     Move, Sliders, Info, CheckCircle2, ChevronRight
 } from "lucide-react";
 import { DEFAULT_SECTION_TYPES, SECTION_PALETTE } from "../../functions/sectionGeometry";
+import "./SectionsPanel.css";
 
 export default function SectionsPanel({
     target, // { type: "area" | "feature", item: Area | Feature } | null
@@ -61,7 +62,7 @@ export default function SectionsPanel({
         <div className="unified-sections-panel">
             {/* 1. Header */}
             <div className="unified-panel-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="sections-header-title">
                     <Scissors size={15} color="#8b5cf6" />
                     <h2 className="unified-panel-title">Sections</h2>
                 </div>
@@ -80,15 +81,7 @@ export default function SectionsPanel({
                     {target && (
                         <button
                             onClick={onDeselectTarget}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'var(--color-text-secondary)',
-                                fontSize: '10px',
-                                cursor: 'pointer',
-                                textDecoration: 'underline',
-                                padding: 0
-                            }}
+                            className="sections-link-btn"
                             title="Deselect active target"
                         >
                             Deselect
@@ -97,33 +90,30 @@ export default function SectionsPanel({
                 </div>
 
                 {!target ? (
-                    <div className="unified-locked-banner" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px', padding: '10px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f87171', fontWeight: 600, fontSize: '12px' }}>
+                    <div className="unified-locked-banner sections-locked-banner">
+                        <div className="sections-locked-title">
                             <Lock size={14} />
                             <span>Select a Boundary or Feature</span>
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                        <div className="sections-hint">
                             You must either have a Boundary or a Feature selected to section it into rooms, zones, and building parcels.
                         </div>
                     </div>
                 ) : (
-                    <div className="unified-active-parcel-card" style={{ borderColor: 'rgba(139, 92, 246, 0.4)' }}>
+                    <div className="unified-active-parcel-card sections-active-parcel">
                         <div className="unified-active-parcel-info">
                             <span
+                                className="sections-color-dot"
                                 style={{
-                                    width: '9px',
-                                    height: '9px',
-                                    borderRadius: '50%',
-                                    backgroundColor: targetItem?.color || targetItem?.properties_data?.color || '#8b5cf6',
-                                    flexShrink: 0
+                                    backgroundColor: targetItem?.color || targetItem?.properties_data?.color || '#8b5cf6'
                                 }}
                             />
-                            <div style={{ overflow: 'hidden' }}>
-                                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                            <div className="sections-clip">
+                                <div className="sections-item-name">
                                     {target.type === "area" ? "📐 " : "🧱 "}
                                     {targetItem?.name}
                                 </div>
-                                <div style={{ fontSize: '10px', color: '#a5b4fc', marginTop: '1px' }}>
+                                <div className="sections-item-sub">
                                     {targetAreaSqFt ? `${Math.round(targetAreaSqFt).toLocaleString()} sq ft` : ""}
                                     {` • ${target.type === "area" ? "Boundary Parcel" : "Site Feature"}`}
                                 </div>
@@ -137,46 +127,44 @@ export default function SectionsPanel({
             {!target && (
                 <div className="unified-sidebar-section">
                     <div className="unified-step-header">
-                        <span className="unified-step-title" style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                        <span className="unified-step-title sections-step-title-muted">
                             Choose Target to Section:
                         </span>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                    <div className="sections-target-list">
                         {areas.map(area => (
                             <div
                                 key={`area-${area.id}`}
-                                className="unified-boundary-select-item"
+                                className="unified-boundary-select-item sections-select-item"
                                 onClick={() => onSelectTarget("area", area)}
                                 title="Click to section this boundary"
-                                style={{ padding: '6px 8px' }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: area.color || '#3b82f6', flexShrink: 0 }} />
-                                    <span className="unified-boundary-name" style={{ fontSize: '11px' }}>📐 {area.name}</span>
+                                <div className="sections-row sections-row--clip">
+                                    <span className="sections-swatch-dot" style={{ backgroundColor: area.color || '#3b82f6' }} />
+                                    <span className="unified-boundary-name sections-item-name-sm">📐 {area.name}</span>
                                 </div>
-                                <span style={{ fontSize: '10px', color: '#818cf8', fontWeight: 600 }}>Section</span>
+                                <span className="sections-tag-indigo">Section</span>
                             </div>
                         ))}
 
                         {polygonFeatures.map(feat => (
                             <div
                                 key={`feat-${feat.id}`}
-                                className="unified-boundary-select-item"
+                                className="unified-boundary-select-item sections-select-item"
                                 onClick={() => onSelectTarget("feature", feat)}
                                 title="Click to section this feature"
-                                style={{ padding: '6px 8px' }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: feat.properties_data?.color || '#10b981', flexShrink: 0 }} />
-                                    <span className="unified-boundary-name" style={{ fontSize: '11px' }}>🧱 {feat.name}</span>
+                                <div className="sections-row sections-row--clip">
+                                    <span className="sections-swatch-dot" style={{ backgroundColor: feat.properties_data?.color || '#10b981' }} />
+                                    <span className="unified-boundary-name sections-item-name-sm">🧱 {feat.name}</span>
                                 </div>
-                                <span style={{ fontSize: '10px', color: '#10b981', fontWeight: 600 }}>Section</span>
+                                <span className="sections-tag-green">Section</span>
                             </div>
                         ))}
 
                         {areas.length === 0 && polygonFeatures.length === 0 && (
-                            <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic', padding: '6px 4px' }}>
+                            <div className="sections-empty-note">
                                 No boundaries or features available. Draw a boundary first in the Boundaries tab.
                             </div>
                         )}
@@ -221,40 +209,36 @@ export default function SectionsPanel({
                         </div>
 
                         {/* Subdivide Presets */}
-                        <div style={{ marginTop: '8px' }}>
-                            <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div className="sections-block">
+                            <div className="sections-group-label">
                                 Subdivide Grid
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
+                            <div className="sections-split-grid">
                                 <button
-                                    className="unified-cad-tool"
+                                    className="unified-cad-tool sections-tool-compact"
                                     onClick={() => onSubdivide("grid_2h")}
                                     title="Split horizontally with a movable divider line"
-                                    style={{ padding: '6px' }}
                                 >
                                     <span>2 Split (Horiz)</span>
                                 </button>
                                 <button
-                                    className="unified-cad-tool"
+                                    className="unified-cad-tool sections-tool-compact"
                                     onClick={() => onSubdivide("grid_2v")}
                                     title="Split vertically with a movable divider line"
-                                    style={{ padding: '6px' }}
                                 >
                                     <span>2 Split (Vert)</span>
                                 </button>
                                 <button
-                                    className="unified-cad-tool"
+                                    className="unified-cad-tool sections-tool-compact"
                                     onClick={() => onSubdivide("grid_4")}
                                     title="Subdivide into 4 quadrants with movable divider lines"
-                                    style={{ padding: '6px' }}
                                 >
                                     <span>4 Grid (2×2)</span>
                                 </button>
                                 <button
-                                    className="unified-cad-tool"
+                                    className="unified-cad-tool sections-tool-compact"
                                     onClick={() => onSubdivide("grid_9")}
                                     title="Subdivide into 9 zones (3x3)"
-                                    style={{ padding: '6px' }}
                                 >
                                     <span>9 Grid (3×3)</span>
                                 </button>
@@ -262,16 +246,15 @@ export default function SectionsPanel({
                         </div>
 
                         {/* Perimeter & Setback Inset */}
-                        <div style={{ marginTop: '10px' }}>
-                            <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div className="sections-block-lg">
+                            <div className="sections-group-label">
                                 Perimeter & Core Buffer
                             </div>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <div className="sections-inline-row">
                                 <select
-                                    className="unified-filter-select"
+                                    className="unified-filter-select sections-select-compact"
                                     value={setbackDist}
                                     onChange={(e) => setSetbackDist(Number(e.target.value))}
-                                    style={{ flex: 1, padding: '5px 8px', fontSize: '11px' }}
                                 >
                                     <option value={10}>10 ft Setback</option>
                                     <option value={15}>15 ft Setback</option>
@@ -279,9 +262,8 @@ export default function SectionsPanel({
                                     <option value={50}>50 ft Setback</option>
                                 </select>
                                 <button
-                                    className="unified-btn-primary"
+                                    className="unified-btn-primary sections-btn-compact"
                                     onClick={() => onInsetCore(setbackDist * 0.3048)}
-                                    style={{ padding: '5px 10px', fontSize: '11px' }}
                                     title="Create interior core and perimeter setback zone"
                                 >
                                     Inset Core
@@ -291,40 +273,34 @@ export default function SectionsPanel({
 
                         {/* ACTIVE DIVIDER LINES LIST */}
                         {dividers.length > 0 && (
-                            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--color-border)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                    <span style={{ fontSize: '10px', color: '#a78bfa', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <div className="sections-divider-block">
+                                <div className="sections-between sections-between--mb6">
+                                    <span className="sections-divider-title">
                                         ✂ Divider Lines ({dividers.length})
                                     </span>
-                                    <span style={{ fontSize: '9px', color: '#64748b' }}>
+                                    <span className="sections-tiny-muted">
                                         Drag on map to shift
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                <div className="sections-col-sm">
                                     {dividers.map((div, dIdx) => {
                                         const isDivActive = selectedDividerId === div.id;
                                         return (
                                             <div
                                                 key={div.id || dIdx}
-                                                className={`unified-boundary-select-item ${isDivActive ? "active" : ""}`}
+                                                className={`unified-boundary-select-item sections-divider-item ${isDivActive ? "is-active" : ""}`}
                                                 onClick={() => onSelectDivider?.(div.id)}
-                                                style={{
-                                                    padding: '6px 8px',
-                                                    cursor: 'pointer',
-                                                    borderColor: isDivActive ? '#8b5cf6' : 'var(--color-border)',
-                                                    background: isDivActive ? 'rgba(139, 92, 246, 0.2)' : 'rgba(30, 41, 59, 0.4)'
-                                                }}
                                                 title="Click to select divider line and show move/angle handles on map"
                                             >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                                <div className="sections-row sections-row--clip">
                                                     <Scissors size={12} color={isDivActive ? "#c084fc" : "#8b5cf6"} />
-                                                    <span style={{ fontSize: '11px', fontWeight: isDivActive ? 700 : 500, color: isDivActive ? 'var(--color-on-accent)' : 'var(--color-text-secondary)' }}>
+                                                    <span className={`sections-divider-name${isDivActive ? " is-active" : ""}`}>
                                                         {div.name || `Divider Line ${dIdx + 1}`}
                                                     </span>
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <div className="sections-row">
                                                     {isDivActive && (
-                                                        <span style={{ fontSize: '9px', color: '#a78bfa', background: 'rgba(139,92,246,0.3)', padding: '1px 5px', borderRadius: '4px' }}>
+                                                        <span className="sections-active-chip">
                                                             Active
                                                         </span>
                                                     )}
@@ -333,7 +309,7 @@ export default function SectionsPanel({
                                                             e.stopPropagation();
                                                             onMergeDivider?.(div.id);
                                                         }}
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '1px' }}
+                                                        className="sections-icon-link-btn"
                                                         title="Merge across this divider line only (rejoins the sections it separates)"
                                                     >
                                                         <RotateCcw size={11} color="#f59e0b" />
@@ -350,22 +326,14 @@ export default function SectionsPanel({
                     {/* 4. ACTIVE SECTION INSPECTOR / ZONE TYPES (DISABLED UNTIL USER CLICKS A SECTION) */}
                     <div className="unified-sidebar-section">
                         <div className="unified-step-header">
-                            <span className="unified-step-title" style={{ color: selectedSectionId ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
+                            <span className={`unified-step-title${selectedSectionId ? " is-active" : ""}`}>
                                 {selectedSectionId ? <Unlock size={12} color="#10b981" /> : <Lock size={12} color="var(--color-text-secondary)" />}
                                 2. Section Zone Types
                             </span>
                             {selectedSectionId && (
                                 <button
                                     onClick={() => onSelectSection?.(null)}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: 'var(--color-text-secondary)',
-                                        fontSize: '10px',
-                                        cursor: 'pointer',
-                                        textDecoration: 'underline',
-                                        padding: 0
-                                    }}
+                                    className="sections-link-btn"
                                     title="Deselect current section"
                                 >
                                     Deselect Section
@@ -375,68 +343,43 @@ export default function SectionsPanel({
 
                         {!selectedSectionId ? (
                             /* Disabled Locked Helper Notice */
-                            <div style={{
-                                padding: '10px 12px',
-                                background: 'rgba(30, 41, 59, 0.55)',
-                                borderRadius: '8px',
-                                border: '1px dashed var(--color-border)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '4px',
-                                marginBottom: '10px'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 600 }}>
+                            <div className="sections-disabled-box">
+                                <div className="sections-disabled-title">
                                     <Info size={13} color="#818cf8" />
                                     <span>Select a section to customize</span>
                                 </div>
-                                <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                                <div className="sections-disabled-hint">
                                     Zone types and section properties are disabled until you click on a section on the map or from the list below.
                                 </div>
                             </div>
                         ) : (
                             /* Active Section Card */
-                            <div style={{
-                                padding: '8px 10px',
-                                background: 'rgba(99, 102, 241, 0.12)',
-                                border: `1px solid ${activeSection?.color || '#6366f1'}`,
-                                borderRadius: '6px',
-                                marginBottom: '10px'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                        <span style={{ fontSize: '14px' }}>
+                            <div className="sections-active-card" style={{ border: `1px solid ${activeSection?.color || '#6366f1'}` }}>
+                                <div className="sections-between sections-between--mb6">
+                                    <div className="sections-row">
+                                        <span className="sections-icon-md">
                                             {DEFAULT_SECTION_TYPES.find(t => t.value === activeSection?.type)?.icon || "✂"}
                                         </span>
                                         <input
                                             type="text"
                                             value={activeSection?.name || ""}
                                             onChange={(e) => onUpdateSection?.(selectedSectionId, { name: e.target.value })}
-                                            style={{
-                                                background: 'rgba(15, 23, 42, 0.6)',
-                                                border: '1px solid var(--color-border-emphasized)',
-                                                borderRadius: '4px',
-                                                color: 'var(--color-text-primary)',
-                                                fontSize: '11px',
-                                                fontWeight: 700,
-                                                padding: '2px 6px',
-                                                outline: 'none',
-                                                width: '130px'
-                                            }}
+                                            className="sections-name-input"
                                             placeholder="Section Name"
                                         />
                                     </div>
                                     <button
                                         onClick={() => onDeleteSection?.(selectedSectionId)}
-                                        style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', padding: '2px' }}
+                                        className="sections-delete-btn"
                                         title="Delete section"
                                     >
                                         <Trash2 size={12} color="#f87171" />
                                     </button>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                                <div className="sections-meta-row">
                                     <span>{activeSection?.area_sqft ? `${Math.round(activeSection.area_sqft).toLocaleString()} sq ft` : ""}</span>
                                     {targetAreaSqFt > 0 && activeSection?.area_sqft && (
-                                        <span style={{ color: '#a5b4fc', fontWeight: 600 }}>
+                                        <span className="sections-pct-soft">
                                             {Math.round((activeSection.area_sqft / targetAreaSqFt) * 100)}% of parcel
                                         </span>
                                     )}
@@ -445,14 +388,7 @@ export default function SectionsPanel({
                         )}
 
                         {/* Zone Types Grid (Disabled with visual indicator if no section is active) */}
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                            gap: '4px',
-                            opacity: selectedSectionId ? 1 : 0.42,
-                            pointerEvents: selectedSectionId ? 'auto' : 'none',
-                            filter: selectedSectionId ? 'none' : 'grayscale(40%)'
-                        }}>
+                        <div className={`sections-zone-grid${selectedSectionId ? "" : " is-disabled"}`}>
                             {DEFAULT_SECTION_TYPES.map(st => {
                                 const isCurrent = activeSection?.type === st.value;
                                 return (
@@ -468,19 +404,12 @@ export default function SectionsPanel({
                                                 });
                                             }
                                         }}
-                                        className={`unified-cad-tool ${isCurrent ? "active" : ""}`}
-                                        style={{
-                                            flexDirection: 'column',
-                                            padding: '6px 4px',
-                                            gap: '2px',
-                                            height: 'auto',
-                                            borderLeft: `3px solid ${st.color}`,
-                                            cursor: selectedSectionId ? 'pointer' : 'not-allowed'
-                                        }}
+                                        className={`unified-cad-tool sections-zone-btn ${isCurrent ? "active" : ""}`}
+                                        style={{ borderLeft: `3px solid ${st.color}` }}
                                         title={selectedSectionId ? `Assign ${st.label} to active section` : "Select a section first"}
                                     >
-                                        <span style={{ fontSize: '14px' }}>{st.icon}</span>
-                                        <span style={{ fontSize: '9px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '75px' }}>
+                                        <span className="sections-icon-md">{st.icon}</span>
+                                        <span className="sections-zone-label">
                                             {st.label.split(" ")[0]}
                                         </span>
                                     </button>
@@ -498,24 +427,22 @@ export default function SectionsPanel({
                             </span>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                        <div className="sections-display-col">
+                            <div className="sections-toggle-row">
                                 <span>Auto Colors</span>
                                 <button
                                     onClick={onToggleAutoColors}
-                                    className={`unified-icon-btn ${autoColors ? "active" : "muted"}`}
-                                    style={{ padding: '3px 8px', fontSize: '10px', fontWeight: 600, width: 'auto', height: 'auto', borderRadius: '4px' }}
+                                    className={`unified-icon-btn sections-toggle-btn ${autoColors ? "active" : "muted"}`}
                                 >
                                     {autoColors ? "On" : "Off"}
                                 </button>
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                            <div className="sections-toggle-row">
                                 <span>Section Badges</span>
                                 <button
                                     onClick={onToggleShowLabels}
-                                    className={`unified-icon-btn ${showLabels ? "active" : "muted"}`}
-                                    style={{ padding: '3px 8px', fontSize: '10px', fontWeight: 600, width: 'auto', height: 'auto', borderRadius: '4px' }}
+                                    className={`unified-icon-btn sections-toggle-btn ${showLabels ? "active" : "muted"}`}
                                 >
                                     {showLabels ? "Visible" : "Hidden"}
                                 </button>
@@ -524,7 +451,7 @@ export default function SectionsPanel({
                     </div>
 
                     {/* 6. Active Sections List */}
-                    <div className="unified-sidebar-section" style={{ flex: 1 }}>
+                    <div className="unified-sidebar-section sections-flex">
                         <div className="unified-step-header">
                             <span className="unified-step-title">
                                 <LayoutGrid size={12} color="#6366f1" />
@@ -533,11 +460,11 @@ export default function SectionsPanel({
                         </div>
 
                         {sections.length === 0 ? (
-                            <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic', padding: '6px 2px' }}>
+                            <div className="sections-empty-note sections-empty-note--tight">
                                 No sections created yet. Use <strong>Divider Line (✂)</strong> or <strong>Subdivide Grid</strong> above to slice this boundary into rooms/zones.
                             </div>
                         ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '300px', overflowY: 'auto' }}>
+                            <div className="sections-list">
                                 {sections.map((sec, idx) => {
                                     const isSelected = selectedSectionId === sec.id;
                                     const typeObj = DEFAULT_SECTION_TYPES.find(t => t.value === sec.type) || DEFAULT_SECTION_TYPES[0];
@@ -546,30 +473,22 @@ export default function SectionsPanel({
                                     return (
                                         <div
                                             key={sec.id || idx}
-                                            className={`unified-boundary-select-item ${isSelected ? "active" : ""}`}
+                                            className={`unified-boundary-select-item sections-list-item ${isSelected ? "is-selected" : ""}`}
                                             onClick={() => onSelectSection?.(sec.id)}
-                                            style={{
-                                                padding: '8px 10px',
-                                                cursor: 'pointer',
-                                                borderLeft: `3px solid ${sec.color || typeObj.color}`,
-                                                flexDirection: 'column',
-                                                alignItems: 'stretch',
-                                                gap: '6px',
-                                                background: isSelected ? 'rgba(99, 102, 241, 0.15)' : 'rgba(30, 41, 59, 0.4)'
-                                            }}
+                                            style={{ borderLeft: `3px solid ${sec.color || typeObj.color}` }}
                                             title="Click to select section and customize its zone type"
                                         >
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, overflow: 'hidden' }}>
-                                                    <span style={{ fontSize: '14px' }}>{typeObj.icon}</span>
-                                                    <span style={{ fontSize: '11px', fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--color-on-accent)' : 'var(--color-text-secondary)' }}>
+                                            <div className="sections-between">
+                                                <div className="sections-row-flex">
+                                                    <span className="sections-icon-md">{typeObj.icon}</span>
+                                                    <span className={`sections-list-name${isSelected ? " is-selected" : ""}`}>
                                                         {sec.name || `Section ${idx + 1}`}
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <div className="sections-row">
                                                     {isSelected && (
-                                                        <span style={{ fontSize: '9px', color: '#10b981', fontWeight: 700, background: 'rgba(16, 185, 129, 0.2)', padding: '1px 5px', borderRadius: '4px' }}>
+                                                        <span className="sections-active-chip-green">
                                                             Active
                                                         </span>
                                                     )}
@@ -578,13 +497,7 @@ export default function SectionsPanel({
                                                             e.stopPropagation();
                                                             onDeleteSection?.(sec.id);
                                                         }}
-                                                        style={{
-                                                            background: 'transparent',
-                                                            border: 'none',
-                                                            color: 'var(--color-text-secondary)',
-                                                            cursor: 'pointer',
-                                                            padding: '2px'
-                                                        }}
+                                                        className="sections-remove-btn"
                                                         title="Delete this section"
                                                     >
                                                         <Trash2 size={11} color="#f87171" />
@@ -592,14 +505,14 @@ export default function SectionsPanel({
                                                 </div>
                                             </div>
 
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                                            <div className="sections-meta-row">
                                                 <span>{Math.round(sec.area_sqft).toLocaleString()} sq ft</span>
-                                                <span style={{ color: '#818cf8', fontWeight: 600 }}>{percent}% of parcel</span>
+                                                <span className="sections-pct-indigo">{percent}% of parcel</span>
                                             </div>
 
                                             {/* Color preset chips for this section when active */}
                                             {isSelected && (
-                                                <div style={{ display: 'flex', gap: '4px', marginTop: '2px', alignItems: 'center' }}>
+                                                <div className="sections-chip-row">
                                                     {SECTION_PALETTE.slice(0, 8).map(c => (
                                                         <span
                                                             key={c}
@@ -607,15 +520,8 @@ export default function SectionsPanel({
                                                                 e.stopPropagation();
                                                                 onUpdateSection?.(sec.id, { color: c });
                                                             }}
-                                                            style={{
-                                                                width: '12px',
-                                                                height: '12px',
-                                                                borderRadius: '50%',
-                                                                backgroundColor: c,
-                                                                cursor: 'pointer',
-                                                                border: sec.color === c ? '2px solid var(--color-text-primary)' : '1px solid rgba(0,0,0,0.3)',
-                                                                transform: sec.color === c ? 'scale(1.2)' : 'none'
-                                                            }}
+                                                            className={`sections-swatch-chip${sec.color === c ? " is-selected" : ""}`}
+                                                            style={{ backgroundColor: c }}
                                                         />
                                                     ))}
                                                 </div>

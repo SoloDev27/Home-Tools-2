@@ -1,0 +1,17 @@
+.toolbar-multi-count {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    padding: 0 var(--spacing-1);
+}
+
+.toolbar-vertex-count {
+    font-size: 11px;
+    color: var(--color-accent);
+    padding: 0 var(--spacing-1);
+}
+
+.toolbar-offset-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+}

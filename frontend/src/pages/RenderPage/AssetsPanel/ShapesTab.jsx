@@ -38,18 +38,17 @@ export default function ShapesTab({ setPendingPlacement, activeTool, selectedCou
                         const isActive = activeTool?.type === "polygon" && item.type === "polygon";
                         return (
                             <li key={item.type}
-                                className={`tool-item${isActive ? " tool-item-active" : ""}`}
+                                className={`tool-item${isActive ? " tool-item-active" : ""}${item.type === "polygon" ? " is-crosshair" : ""}`}
                                 onClick={() => handleAdd(item)}
-                                style={item.type === "polygon" ? { cursor: "crosshair" } : undefined}
                                 title="Click to select, then click on map to place">
-                                <span className="tool-icon" style={{ fontSize: 20 }}>{item.icon}</span>
+                                <span className="tool-icon tool-icon-lg">{item.icon}</span>
                                 <span>{item.label}</span>
                             </li>
                         );
                     })}
                 </ul>
             </div>
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Join</h4>
                 <ul className="tool-list">
                     {OUTLINE_TOOLS.map(tool => {
@@ -59,7 +58,7 @@ export default function ShapesTab({ setPendingPlacement, activeTool, selectedCou
                                 className={`tool-item${disabledReason ? " tool-item-disabled" : ""}`}
                                 onClick={() => { if (disabledReason) return; handleConfigure(tool.type); }}
                                 title={disabledReason || tool.desc}>
-                                <span className="tool-icon" style={{ fontSize: 18 }}>{tool.icon}</span>
+                                <span className="tool-icon tool-icon-md">{tool.icon}</span>
                                 <span>{tool.label}</span>
                             </li>
                         );

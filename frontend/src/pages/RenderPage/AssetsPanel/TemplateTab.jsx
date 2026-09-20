@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import "./TemplateTab.css";
 import { BUILTIN_TEMPLATES } from "../../../functions/outlineTemplates";
 import { BUILTIN_ROOM_TEMPLATES } from "../../../functions/roomTemplates";
 import { BUILTIN_OBJECT_TEMPLATES } from "../../../functions/objectTemplates";
@@ -147,7 +148,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                         savedTemplates.map(template => (
                             <li key={template.id} className="tool-item template-list-item" onClick={() => onLoadTemplate?.(template)}>
                                 <span className="template-list-name">
-                                    {template.name} <span style={{ color: "var(--text-dim)", fontSize: 11 }}>({template.outlines.length} outlines)</span>
+                                    {template.name} <span className="template-outline-count">({template.outlines.length} outlines)</span>
                                 </span>
                                 <button
                                     className="panel-icon-btn"
@@ -162,13 +163,13 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                 </ul>
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Import</h4>
-                <input ref={geoJsonInputRef} type="file" accept=".geojson,.json" style={{ display: "none" }} onChange={e => {
+                <input ref={geoJsonInputRef} type="file" accept=".geojson,.json" className="template-file-input" onChange={e => {
                     if (e.target.files[0]) handleFileImport(e.target.files[0], parseGeoJSON);
                     e.target.value = "";
                 }} />
-                <input ref={dxfInputRef} type="file" accept=".dxf" style={{ display: "none" }} onChange={e => {
+                <input ref={dxfInputRef} type="file" accept=".dxf" className="template-file-input" onChange={e => {
                     if (e.target.files[0]) handleFileImport(e.target.files[0], parseDXF);
                     e.target.value = "";
                 }} />
@@ -177,10 +178,10 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                     <button className="panel-btn" onClick={() => dxfInputRef.current?.click()}>DXF</button>
                     <button className="panel-btn" onClick={handlePaste}>Paste</button>
                 </div>
-                {importError && <p style={{ color: "var(--danger)", fontSize: 11, marginTop: 4 }}>{importError}</p>}
+                {importError && <p className="template-import-error">{importError}</p>}
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Export</h4>
                 <div className="panel-action-row">
                     <button className="panel-btn" onClick={() => handleExport("geojson")}>GeoJSON</button>
@@ -191,7 +192,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
             </div>
 
             {stage === "sections" && (
-                <div className="menu-tools-section" style={{ marginTop: 12 }}>
+                <div className="menu-tools-section menu-tools-section-spaced">
                     <h4>Room Templates</h4>
                     <ul className="tool-list">
                         {BUILTIN_ROOM_TEMPLATES.map(template => (
@@ -199,7 +200,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                                 className="tool-item"
                                 onClick={() => onApplyTemplate?.(template.id)}
                                 title={template.description}>
-                                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, fontSize: 18, flexShrink: 0 }}>{template.icon}</span>
+                                <span className="template-icon">{template.icon}</span>
                                 <span>{template.name}</span>
                             </li>
                         ))}
@@ -208,7 +209,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
             )}
 
             {stage === "objects" && (
-                <div className="menu-tools-section" style={{ marginTop: 12 }}>
+                <div className="menu-tools-section menu-tools-section-spaced">
                     <h4>Object Templates</h4>
                     <ul className="tool-list">
                         {BUILTIN_OBJECT_TEMPLATES.map(template => (
@@ -216,7 +217,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                                 className={`tool-item${activeObjectTemplateId === template.id ? " tool-item-active" : ""}`}
                                 onClick={() => onApplyObjectTemplate?.(template.id)}
                                 title={template.description}>
-                                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, fontSize: 18, flexShrink: 0 }}>{template.icon}</span>
+                                <span className="template-icon">{template.icon}</span>
                                 <span>{template.name}</span>
                             </li>
                         ))}
@@ -225,7 +226,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
             )}
 
             {stage === "outline" && (
-                <div className="menu-tools-section" style={{ marginTop: 12 }}>
+                <div className="menu-tools-section menu-tools-section-spaced">
                     <h4>Built-in Templates</h4>
                     <ul className="tool-list">
                         {BUILTIN_TEMPLATES.map(template => (
@@ -233,7 +234,7 @@ export default function TemplateTab({ outlines, onLoadTemplate, onLoadBuiltin, o
                                 className="tool-item"
                                 onClick={() => onLoadBuiltin?.(template.id)}
                                 title={template.description}>
-                                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, fontSize: 18, flexShrink: 0 }}>{template.icon}</span>
+                                <span className="template-icon">{template.icon}</span>
                                 <span>{template.name}</span>
                             </li>
                         ))}

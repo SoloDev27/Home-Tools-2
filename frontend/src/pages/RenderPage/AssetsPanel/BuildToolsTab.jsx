@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./BuildToolsTab.css";
 
 const PRIMITIVES = [
     { id: "primitive-cube", label: "Cube", icon: "□", widthMeters: 1, heightMeters: 1, heightMeters3d: 1, fill: "#38bdf8" },
@@ -105,13 +106,12 @@ export default function BuildToolsTab({
                 <h4>Wall Height</h4>
                 <input
                     type="number"
-                    className="input"
+                    className="input build-wall-height-input"
                     min={0.5}
                     max={10}
                     step={0.1}
                     value={wallHeight ?? 2.4}
                     onChange={e => onWallHeightChange?.(Math.max(0.5, Math.min(10, parseFloat(e.target.value) || 2.4)))}
-                    style={{ width: "100%" }}
                 />
 
                 <h4>Block Size</h4>
@@ -129,8 +129,8 @@ export default function BuildToolsTab({
                 </div>
 
                 <h4>Snapping</h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
+                <div className="build-snap-list">
+                    <label className="build-snap-option">
                         <input
                             type="checkbox"
                             checked={gridSnap}
@@ -138,7 +138,7 @@ export default function BuildToolsTab({
                         />
                         <span>Grid Snap</span>
                     </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
+                    <label className="build-snap-option">
                         <input
                             type="checkbox"
                             checked={surfaceSnap}

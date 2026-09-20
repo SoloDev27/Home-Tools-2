@@ -158,6 +158,12 @@
     padding: 10px;
     box-sizing: border-box;
 }
+.menu-tools-section-spaced {
+    margin-top: var(--spacing-3);
+}
+.menu-spacer {
+    flex-grow: 1;
+}
 .menu-tools-section h4 {
     margin: 10px 0;
     color: var(--text-dim);
@@ -218,6 +224,15 @@
     width: 28px;
     height: 28px;
     flex-shrink: 0;
+}
+.tool-icon-lg {
+    font-size: var(--font-size-xl);
+}
+.tool-icon-md {
+    font-size: 18px;
+}
+.tool-item.is-crosshair {
+    cursor: crosshair;
 }
 
 .render3d-view-row {

@@ -1,0 +1,24 @@
+.template-outline-count {
+    color: var(--color-text-secondary);
+    font-size: 11px;
+}
+
+.template-file-input {
+    display: none;
+}
+
+.template-import-error {
+    color: var(--color-error);
+    font-size: 11px;
+    margin-top: var(--spacing-1);
+}
+
+.template-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    flex-shrink: 0;
+}

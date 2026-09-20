@@ -704,7 +704,7 @@ export default function Unified3DCanvas({
 
                 <div className="unified-sidebar-panel">
                     <div className="unified-panel-header">
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div className="u3d-panel-title-row">
                             {menu === "objects" && <Layers size={15} color="#8b5cf6" />}
                             {menu === "controls" && <SlidersHorizontal size={15} color="#06b6d4" />}
                             {menu === "shapes" && <BoxIcon size={15} color="#6366f1" />}
@@ -755,7 +755,7 @@ export default function Unified3DCanvas({
                                     <div className="unified-step-header">
                                         <span className="unified-step-title">Building</span>
                                     </div>
-                                    <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text-primary)" }}>
+                                    <div className="u3d-section-title">
                                         {selectedStructure.name}
                                     </div>
                                     <div className="u3d-hint">
@@ -839,7 +839,7 @@ export default function Unified3DCanvas({
                                 </div>
                             )}
 
-                            <div className="unified-sidebar-section" style={{ flex: 1 }}>
+                            <div className="unified-sidebar-section u3d-flex">
                                 <div className="unified-step-header">
                                     <span className="unified-step-title">Objects ({objects.length})</span>
                                     <span className="u3d-hint">Shift-click to multi-select</span>
@@ -964,7 +964,7 @@ export default function Unified3DCanvas({
                                 ))}
                             </div>
 
-                            <div className="u3d-field" style={{ marginTop: 10 }}>
+                            <div className="u3d-field u3d-field--offset">
                                 <label>New shape height · {buildHeightFeet} ft</label>
                                 <input
                                     type="range" min="4" max="60" step="1"
@@ -989,7 +989,7 @@ export default function Unified3DCanvas({
                             <div className="unified-sidebar-section">
                                 <div className="unified-step-header">
                                     <span className="unified-step-title">Operands</span>
-                                    <span style={{ display: "flex", gap: 8 }}>
+                                    <span className="u3d-inline-row">
                                         <button className="u3d-link" onClick={() => setSelectedIds(objects.map((o) => o.id))}>
                                             All
                                         </button>
@@ -1262,11 +1262,11 @@ export default function Unified3DCanvas({
                         <BoxIcon size={34} color="#475569" />
                         <strong>Choose a parcel to build on</strong>
                         <span>The parcel is the only buildable surface in this workspace.</span>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", pointerEvents: "auto", maxWidth: 460 }}>
+                        <div className="u3d-empty-areas">
                             {areas.map((a) => (
-                                <button key={a.id} className="u3d-btn" style={{ flex: "0 0 auto" }}
+                                <button key={a.id} className="u3d-btn u3d-btn--fixed"
                                     onClick={() => onSelectArea?.(a)}>
-                                    <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: a.color || "#3b82f6", display: "inline-block" }} />
+                                    <span className="u3d-area-dot" style={{ backgroundColor: a.color || "#3b82f6" }} />
                                     {a.name}
                                     {a.area_sqft ? ` · ${Math.round(a.area_sqft).toLocaleString()} sq ft` : ""}
                                 </button>

@@ -1,3 +1,5 @@
+import "./Toolbar.css";
+
 export default function Toolbar({
     stage,
     selectedShape, updateShape, deleteShape, duplicateShape,
@@ -68,7 +70,7 @@ export default function Toolbar({
             {hasMultiSelect && (
                 <>
                     <span className="tb-sep" />
-                    <span style={{ fontSize: 11, color: "var(--text-dim)", padding: "0 4px" }}>{multiSelectIds.length} selected</span>
+                    <span className="toolbar-multi-count">{multiSelectIds.length} selected</span>
                     <button className="tb-btn" onClick={() => onBooleanOp?.("union")} title="Union">⊕</button>
                     <button className="tb-btn" onClick={() => onBooleanOp?.("subtract")} title="Subtract">⊖</button>
                     <button className="tb-btn" onClick={() => onBooleanOp?.("intersect")} title="Intersect">⊗</button>
@@ -85,7 +87,7 @@ export default function Toolbar({
             {isPolygon && !isObject && vertexMode && (
                 <>
                     <span className="tb-sep" />
-                    <span style={{ fontSize: 11, color: "var(--accent)", padding: "0 4px" }}>Vertices: {vertexCount}</span>
+                    <span className="toolbar-vertex-count">Vertices: {vertexCount}</span>
                     <button className="tb-btn" onClick={onAddVertex} title="Add Vertex (click edge)">＋</button>
                     <button className="tb-btn" onClick={onRemoveVertex} disabled={!hasSelectedVertex || vertexCount <= 3} title="Remove Vertex">－</button>
                     <button className="tb-btn" onClick={onChamfer} disabled={!hasSelectedVertex} title="Chamfer">⌐</button>
@@ -96,7 +98,7 @@ export default function Toolbar({
             {showOffset && (
                 <>
                     <span className="tb-sep" />
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <div className="toolbar-offset-row">
                         <input
                             type="number"
                             className="toolbar-number-input"

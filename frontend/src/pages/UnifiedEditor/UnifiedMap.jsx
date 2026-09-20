@@ -2616,7 +2616,7 @@ const UnifiedMap = forwardRef(function UnifiedMap({
     }, [areas, features, selectedItemId, activeArea, selectedDividerId, selectedSectionId, isLoaded, onSelectDivider, onSelectSection, onMoveDivider, onSelectArea, onSelectFeature]);
 
     return (
-        <div ref={mapContainerRef} style={{ width: "100%", height: "100%", position: "relative" }} />
+        <div ref={mapContainerRef} className="unified-map-root" />
     );
 });
 

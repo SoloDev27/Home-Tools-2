@@ -6,6 +6,7 @@ import {
     ChevronRight, ChevronDown, Check, Home, Zap, Grid3X3, Trees, Droplets, Scissors
 } from "lucide-react";
 import { thunkCreateNote, thunkEditNote, thunkDeleteNote } from "../../redux/notes";
+import "./UnifiedRightDrawer.css";
 
 export default function UnifiedRightDrawer({
     mode, // null | 'view' | 'notes'
@@ -128,66 +129,42 @@ export default function UnifiedRightDrawer({
             {/* Drawer Header with Dual-Tab Switcher */}
             <div className="unified-drawer-header">
                 <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="u-drawer-title-row">
                         {mode === "view" ? (
                             <>
                                 <Eye size={17} color="#6366f1" />
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                <h3 className="u-drawer-title">
                                     Boundary & Layer View
                                 </h3>
                             </>
                         ) : (
                             <>
                                 <FileText size={17} color="#6366f1" />
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                                <h3 className="u-drawer-title">
                                     Project Notes & Log
                                 </h3>
                             </>
                         )}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '3px' }}>
+                    <div className="u-drawer-subtitle">
                         {mode === "view"
                             ? `${areas.length} Boundaries • ${structures.length} Structures • ${features.length} Features`
                             : `${notes.length} total • ${openCount} open issues`}
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="u-drawer-title-row">
                     {/* Compact Mode Switcher inside Drawer */}
-                    <div style={{
-                        display: 'flex',
-                        background: 'rgba(30, 41, 59, 0.7)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '6px',
-                        padding: '2px'
-                    }}>
+                    <div className="u-drawer-switcher">
                         <button
                             onClick={() => onSwitchMode?.("view")}
-                            style={{
-                                background: mode === "view" ? '#6366f1' : 'transparent',
-                                color: mode === "view" ? 'var(--color-on-accent)' : 'var(--color-text-secondary)',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '3px 8px',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                cursor: 'pointer'
-                            }}
+                            className={`u-drawer-switch-btn${mode === "view" ? " is-active" : ""}`}
                         >
                             View ({areas.length})
                         </button>
                         <button
                             onClick={() => onSwitchMode?.("notes")}
-                            style={{
-                                background: mode === "notes" ? '#6366f1' : 'transparent',
-                                color: mode === "notes" ? 'var(--color-on-accent)' : 'var(--color-text-secondary)',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '3px 8px',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                cursor: 'pointer'
-                            }}
+                            className={`u-drawer-switch-btn${mode === "notes" ? " is-active" : ""}`}
                         >
                             Notes ({notes.length})
                         </button>
@@ -195,7 +172,7 @@ export default function UnifiedRightDrawer({
 
                     <button
                         onClick={onClose}
-                        style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
+                        className="u-drawer-close-btn"
                         title="Close sidebar"
                     >
                         <X size={18} />
@@ -205,40 +182,32 @@ export default function UnifiedRightDrawer({
 
             {/* TAB 1: BOUNDARY & LAYER HIERARCHY TREE */}
             {mode === "view" && (
-                <div className="unified-drawer-content" style={{ padding: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 8px 4px', borderBottom: '1px solid var(--color-border)', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase' }}>
+                <div className="unified-drawer-content u-drawer-content--tight">
+                    <div className="u-drawer-list-head">
+                        <span className="u-drawer-list-title">
                             Boundaries & Child Overlays
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="u-drawer-title-row">
                             {activeArea && (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         onDeselectArea?.();
                                     }}
-                                    style={{
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#f87171',
-                                        fontSize: '10px',
-                                        cursor: 'pointer',
-                                        textDecoration: 'underline',
-                                        padding: 0
-                                    }}
+                                    className="u-drawer-link-btn--danger"
                                     title="Deselect active boundary"
                                 >
                                     Deselect Active
                                 </button>
                             )}
-                            <span style={{ fontSize: '10px', color: '#64748b' }}>
+                            <span className="u-drawer-tiny-muted">
                                 Click to fly to on map
                             </span>
                         </div>
                     </div>
 
                     {areas.length === 0 ? (
-                        <div style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', padding: '32px 16px', textAlign: 'center' }}>
+                        <div className="u-drawer-empty">
                             No boundaries sectioned yet.<br />Use <strong>Freehand Poly</strong> or <strong>Lot Box</strong> on the left to section your site.
                         </div>
                     ) : (
@@ -256,11 +225,10 @@ export default function UnifiedRightDrawer({
                                 <div key={area.id} className="unified-tree-group">
                                     {/* Area Tree Node */}
                                     <div
-                                        className={`unified-tree-node ${isActive ? "active-area" : ""}`}
                                         onClick={() => onSelectArea?.(area)}
                                         onDoubleClick={() => onOpenItemModal?.("area", area)}
                                         title="Click to select & fly to boundary (double click for Edit & Notes)"
-                                        style={{ cursor: 'pointer' }}
+                                        className={`unified-tree-node u-drawer-clickable ${isActive ? "active-area" : ""}`}
                                     >
                                         <span
                                             className="unified-tree-arrow"
@@ -274,9 +242,9 @@ export default function UnifiedRightDrawer({
 
                                         <div className="unified-tree-node-label">
                                             <span className="unified-color-dot" style={{ backgroundColor: area.color || '#3b82f6' }} />
-                                            <span style={{ fontWeight: 600 }}>{area.name}</span>
+                                            <span className="u-drawer-strong">{area.name}</span>
                                             {area.area_sqft && (
-                                                <span style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                                                <span className="u-drawer-meta">
                                                     ({Math.round(area.area_sqft).toLocaleString()} sq ft)
                                                 </span>
                                             )}
@@ -284,7 +252,7 @@ export default function UnifiedRightDrawer({
 
                                         <div className="unified-tree-node-actions">
                                             {areaNotes.length > 0 && (
-                                                <span style={{ fontSize: '10px', color: '#a5b4fc', background: 'rgba(99, 102, 241, 0.25)', padding: '1px 5px', borderRadius: '4px' }}>
+                                                <span className="u-drawer-note-chip">
                                                     📝 {areaNotes.length}
                                                 </span>
                                             )}
@@ -342,40 +310,31 @@ export default function UnifiedRightDrawer({
                                                 return (
                                                     <div
                                                         key={`sec-${sec.id || idx}`}
-                                                        className={`unified-tree-child-node ${isSecSelected ? "active" : ""}`}
+                                                        className={`unified-tree-child-node u-drawer-section-child ${isSecSelected ? "active" : ""}`}
                                                         onClick={() => {
                                                             onSelectArea?.(area);
                                                             onSelectSection?.(sec.id);
                                                         }}
                                                         title="Click to view section in editor"
-                                                        style={{
-                                                            cursor: 'pointer',
-                                                            borderLeft: `2px solid ${sec.color || '#8b5cf6'}`,
-                                                            paddingLeft: '8px'
-                                                        }}
+                                                        style={{ borderLeft: `2px solid ${sec.color || '#8b5cf6'}` }}
                                                     >
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                                        <div className="u-drawer-row-clip">
                                                             <Scissors size={12} color={sec.color || "#8b5cf6"} />
-                                                            <span style={{ fontSize: '13px' }}>{sec.icon || "✂"}</span>
-                                                            <span style={{ fontWeight: 500, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                            <span className="u-drawer-icon-md">{sec.icon || "✂"}</span>
+                                                            <span className="u-drawer-item-label">
                                                                 {sec.name || `Section ${idx + 1}`}
                                                             </span>
                                                         </div>
 
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <div className="u-drawer-row">
                                                             {sec.area_sqft && (
-                                                                <span style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                                                                <span className="u-drawer-meta">
                                                                     {Math.round(sec.area_sqft).toLocaleString()} sq ft
                                                                 </span>
                                                             )}
                                                             <span
-                                                                style={{
-                                                                    width: '8px',
-                                                                    height: '8px',
-                                                                    borderRadius: '50%',
-                                                                    backgroundColor: sec.color || '#8b5cf6',
-                                                                    display: 'inline-block'
-                                                                }}
+                                                                className="u-drawer-dot"
+                                                                style={{ backgroundColor: sec.color || '#8b5cf6' }}
                                                             />
                                                         </div>
                                                     </div>
@@ -390,22 +349,21 @@ export default function UnifiedRightDrawer({
                                                 return (
                                                     <div
                                                         key={`s-${struct.id}`}
-                                                        className={`unified-tree-child-node ${isSelected ? "active" : ""}`}
                                                         onClick={() => onSelectStructure?.(struct, false)}
                                                         onDoubleClick={() => onOpenItemModal?.("structure", struct)}
                                                         title="Click to focus on map (double click for Edit & Notes)"
-                                                        style={{ cursor: 'pointer' }}
+                                                        className={`unified-tree-child-node u-drawer-clickable ${isSelected ? "active" : ""}`}
                                                     >
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                                            <span style={{ fontSize: '13px' }}>{struct.icon || "🏠"}</span>
-                                                            <span style={{ fontWeight: 500, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                        <div className="u-drawer-row-clip">
+                                                            <span className="u-drawer-icon-md">{struct.icon || "🏠"}</span>
+                                                            <span className="u-drawer-item-label">
                                                                 {struct.name}
                                                             </span>
                                                         </div>
 
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <div className="u-drawer-row-tight">
                                                             {structNotes.length > 0 && (
-                                                                <span style={{ fontSize: '10px', color: '#a5b4fc', background: 'rgba(99, 102, 241, 0.25)', padding: '1px 5px', borderRadius: '4px' }}>
+                                                                <span className="u-drawer-note-chip">
                                                                     📝 {structNotes.length}
                                                                 </span>
                                                             )}
@@ -455,29 +413,28 @@ export default function UnifiedRightDrawer({
                                                 return (
                                                     <React.Fragment key={`f-${feat.id}`}>
                                                         <div
-                                                            className={`unified-tree-child-node ${isSelected ? "active" : ""} ${isFeatHidden ? "hidden-item" : ""}`}
+                                                            className={`unified-tree-child-node u-drawer-clickable ${isSelected ? "active" : ""} ${isFeatHidden ? "hidden-item" : ""}`}
                                                             onClick={() => {
                                                                 onSelectItem?.({ type: "feature", id: feat.id });
                                                                 onSelectFeature?.(feat);
                                                             }}
                                                             onDoubleClick={() => onOpenItemModal?.("feature", feat)}
                                                             title="Click to focus & fly to feature on map (double click for Edit & Notes)"
-                                                            style={{ cursor: 'pointer' }}
                                                         >
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                                            <div className="u-drawer-row-clip">
                                                                 {feat.type === "valve" ? <Droplets size={13} color="#06b6d4" /> :
                                                                 feat.type === "flora" ? <Trees size={13} color="#10b981" /> :
                                                                 feat.type === "utility" ? <Zap size={13} color="#0284c7" /> :
                                                                 feat.type === "material" ? <Grid3X3 size={13} color="#8b5cf6" /> :
                                                                 <Layers size={13} color="#3b82f6" />}
-                                                                <span style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                                <span className="u-drawer-ellipsis">
                                                                     {feat.name}
                                                                 </span>
                                                             </div>
 
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                            <div className="u-drawer-row-tight">
                                                                 {featNotes.length > 0 && (
-                                                                    <span style={{ fontSize: '10px', color: '#a5b4fc', background: 'rgba(99, 102, 241, 0.25)', padding: '1px 5px', borderRadius: '4px' }}>
+                                                                    <span className="u-drawer-note-chip">
                                                                         📝 {featNotes.length}
                                                                     </span>
                                                                 )}
@@ -512,41 +469,31 @@ export default function UnifiedRightDrawer({
                                                             return (
                                                                 <div
                                                                     key={`fsec-${sec.id || sIdx}`}
-                                                                    className={`unified-tree-child-node ${isSecSelected ? "active" : ""}`}
+                                                                    className={`unified-tree-child-node u-drawer-subsection-child ${isSecSelected ? "active" : ""}`}
                                                                     onClick={() => {
                                                                         onSelectItem?.({ type: "feature", id: feat.id });
                                                                         onSelectFeature?.(feat);
                                                                         onSelectSection?.(sec.id);
                                                                     }}
                                                                     title="Click to view section in editor"
-                                                                    style={{
-                                                                        cursor: 'pointer',
-                                                                        borderLeft: `2px solid ${sec.color || '#8b5cf6'}`,
-                                                                        paddingLeft: '16px',
-                                                                        opacity: 0.9
-                                                                    }}
+                                                                    style={{ borderLeft: `2px solid ${sec.color || '#8b5cf6'}` }}
                                                                 >
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                                                    <div className="u-drawer-row-clip">
                                                                         <Scissors size={11} color={sec.color || "#8b5cf6"} />
-                                                                        <span style={{ fontSize: '12px' }}>{sec.icon || "✂"}</span>
-                                                                        <span style={{ fontSize: '11px', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                                        <span className="u-drawer-icon-sm">{sec.icon || "✂"}</span>
+                                                                        <span className="u-drawer-sub-label">
                                                                             {sec.name || `Section ${sIdx + 1}`}
                                                                         </span>
                                                                     </div>
-                                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <div className="u-drawer-row">
                                                                         {sec.area_sqft && (
-                                                                            <span style={{ fontSize: '9px', color: 'var(--color-text-secondary)' }}>
+                                                                            <span className="u-drawer-tiny">
                                                                                 {Math.round(sec.area_sqft).toLocaleString()} sq ft
                                                                             </span>
                                                                         )}
                                                                         <span
-                                                                            style={{
-                                                                                width: '6px',
-                                                                                height: '6px',
-                                                                                borderRadius: '50%',
-                                                                                backgroundColor: sec.color || '#8b5cf6',
-                                                                                display: 'inline-block'
-                                                                            }}
+                                                                            className="u-drawer-dot-sm"
+                                                                            style={{ backgroundColor: sec.color || '#8b5cf6' }}
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -557,7 +504,7 @@ export default function UnifiedRightDrawer({
                                             })}
 
                                             {areaStructures.length === 0 && areaFeatures.length === 0 && areaSections.length === 0 && (
-                                                <div style={{ fontSize: '10px', color: '#64748b', fontStyle: 'italic', padding: '4px 6px' }}>
+                                                <div className="u-drawer-empty-sm">
                                                     Empty area. Use tools on the left to add elements or sections.
                                                 </div>
                                             )}
@@ -574,59 +521,32 @@ export default function UnifiedRightDrawer({
             {mode === "notes" && (
                 <>
                     {/* Total Estimated Cost Banner */}
-                    <div style={{
-                        margin: '12px 16px 0 16px',
-                        padding: '10px 14px',
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        border: '1px solid rgba(16, 185, 129, 0.25)',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}>
-                        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Total Cost Estimate:</span>
-                        <span style={{ fontSize: '14px', fontWeight: 700, color: '#34d399' }}>
+                    <div className="u-drawer-cost-banner">
+                        <span className="u-drawer-summary-label">Total Cost Estimate:</span>
+                        <span className="u-drawer-cost-value">
                             ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                         </span>
                     </div>
 
                     {/* Quick Filters */}
-                    <div style={{ padding: '12px 16px 0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+                    <div className="u-drawer-filters">
+                        <div className="u-drawer-filter-status">
                             {["all", "open", "in_progress", "completed"].map(st => (
                                 <button
                                     key={st}
                                     onClick={() => setFilterStatus(st)}
-                                    style={{
-                                        padding: '3px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '11px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        background: filterStatus === st ? '#6366f1' : 'var(--color-overlay-hover)',
-                                        color: 'var(--color-text-primary)',
-                                        textTransform: 'capitalize',
-                                        whiteSpace: 'nowrap'
-                                    }}
+                                    className={`u-drawer-filter-btn${filterStatus === st ? " is-active" : ""}`}
                                 >
                                     {st === "in_progress" ? "In Progress" : st}
                                 </button>
                             ))}
                         </div>
 
-                        <div style={{ display: 'flex', gap: '8px' }}>
+                        <div className="u-drawer-filter-row">
                             <select
                                 value={filterCategory}
                                 onChange={e => setFilterCategory(e.target.value)}
-                                style={{
-                                    flex: 1,
-                                    background: '#1e293b',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '4px 8px',
-                                    color: 'var(--color-text-secondary)',
-                                    fontSize: '11px'
-                                }}
+                                className="u-drawer-select"
                             >
                                 <option value="all">All Categories</option>
                                 <option value="inspection">Inspection</option>
@@ -638,20 +558,7 @@ export default function UnifiedRightDrawer({
 
                             <button
                                 onClick={() => setShowAddForm(!showAddForm)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    background: showAddForm ? '#475569' : '#3b82f6',
-                                    color: 'var(--color-on-accent)',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    padding: '4px 10px',
-                                    fontSize: '11px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    whiteSpace: 'nowrap'
-                                }}
+                                className={`u-drawer-add-btn${showAddForm ? " is-open" : ""}`}
                             >
                                 <Plus size={13} />
                                 {showAddForm ? "Cancel" : "New Note"}
@@ -661,17 +568,8 @@ export default function UnifiedRightDrawer({
 
                     {/* Add Note Collapsible Form */}
                     {showAddForm && (
-                        <form onSubmit={handleCreateNote} style={{
-                            margin: '12px 16px 0 16px',
-                            padding: '12px',
-                            background: 'rgba(30, 41, 59, 0.8)',
-                            border: '1px solid rgba(99, 102, 241, 0.3)',
-                            borderRadius: '8px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '8px'
-                        }}>
-                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#a5b4fc', textTransform: 'uppercase' }}>
+                        <form onSubmit={handleCreateNote} className="u-drawer-note-form">
+                            <div className="u-drawer-form-title">
                                 Create Project Note
                             </div>
                             <input
@@ -679,45 +577,23 @@ export default function UnifiedRightDrawer({
                                 placeholder="Title..."
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
-                                style={{
-                                    background: '#0f172a',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '6px 8px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '11px'
-                                }}
+                                className="u-drawer-input"
                             />
                             <textarea
                                 placeholder="Details or action items..."
                                 value={content}
                                 onChange={e => setContent(e.target.value)}
                                 rows={2}
-                                style={{
-                                    background: '#0f172a',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '6px 8px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '11px',
-                                    resize: 'vertical'
-                                }}
+                                className="u-drawer-textarea"
                             />
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                            <div className="u-drawer-form-grid">
                                 <select
                                     value={targetType}
                                     onChange={e => {
                                         setTargetType(e.target.value);
                                         setTargetId("");
                                     }}
-                                    style={{
-                                        background: '#0f172a',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '4px',
-                                        padding: '4px 6px',
-                                        color: 'var(--color-text-primary)',
-                                        fontSize: '11px'
-                                    }}
+                                    className="u-drawer-select-sm"
                                 >
                                     <option value="map">Map General</option>
                                     <option value="area">Attach to Area</option>
@@ -729,14 +605,7 @@ export default function UnifiedRightDrawer({
                                     <select
                                         value={targetId}
                                         onChange={e => setTargetId(e.target.value)}
-                                        style={{
-                                            background: '#0f172a',
-                                            border: '1px solid var(--color-border)',
-                                            borderRadius: '4px',
-                                            padding: '4px 6px',
-                                            color: 'var(--color-text-primary)',
-                                            fontSize: '11px'
-                                        }}
+                                        className="u-drawer-select-sm"
                                     >
                                         <option value="">Select Area...</option>
                                         {areas.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -747,14 +616,7 @@ export default function UnifiedRightDrawer({
                                     <select
                                         value={targetId}
                                         onChange={e => setTargetId(e.target.value)}
-                                        style={{
-                                            background: '#0f172a',
-                                            border: '1px solid var(--color-border)',
-                                            borderRadius: '4px',
-                                            padding: '4px 6px',
-                                            color: 'var(--color-text-primary)',
-                                            fontSize: '11px'
-                                        }}
+                                        className="u-drawer-select-sm"
                                     >
                                         <option value="">Select Structure...</option>
                                         {structures.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -765,14 +627,7 @@ export default function UnifiedRightDrawer({
                                     <select
                                         value={targetId}
                                         onChange={e => setTargetId(e.target.value)}
-                                        style={{
-                                            background: '#0f172a',
-                                            border: '1px solid var(--color-border)',
-                                            borderRadius: '4px',
-                                            padding: '4px 6px',
-                                            color: 'var(--color-text-primary)',
-                                            fontSize: '11px'
-                                        }}
+                                        className="u-drawer-select-sm"
                                     >
                                         <option value="">Select Feature...</option>
                                         {features.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
@@ -780,18 +635,11 @@ export default function UnifiedRightDrawer({
                                 )}
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                            <div className="u-drawer-form-grid">
                                 <select
                                     value={category}
                                     onChange={e => setCategory(e.target.value)}
-                                    style={{
-                                        background: '#0f172a',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '4px',
-                                        padding: '4px 6px',
-                                        color: 'var(--color-text-primary)',
-                                        fontSize: '11px'
-                                    }}
+                                    className="u-drawer-select-sm"
                                 >
                                     <option value="general">General</option>
                                     <option value="inspection">Inspection</option>
@@ -804,32 +652,15 @@ export default function UnifiedRightDrawer({
                                     placeholder="Cost Est. ($)"
                                     value={costEstimate}
                                     onChange={e => setCostEstimate(e.target.value)}
-                                    style={{
-                                        background: '#0f172a',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '4px',
-                                        padding: '4px 6px',
-                                        color: 'var(--color-text-primary)',
-                                        fontSize: '11px'
-                                    }}
+                                    className="u-drawer-select-sm"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={!title.trim() || !content.trim() || isSubmitting}
-                                style={{
-                                    background: '#22c55e',
-                                    color: 'var(--color-on-accent)',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    padding: '6px 12px',
-                                    fontSize: '11px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    marginTop: '4px',
-                                    opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1
-                                }}
+                                className="u-drawer-save-btn"
+                                style={{ opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1 }}
                             >
                                 {isSubmitting ? "Saving..." : "Save Note"}
                             </button>
@@ -839,7 +670,7 @@ export default function UnifiedRightDrawer({
                     {/* Notes List */}
                     <div className="unified-drawer-content">
                         {filteredNotes.length === 0 ? (
-                            <div style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', marginTop: '40px' }}>
+                            <div className="u-drawer-empty-notes">
                                 No notes found for this filter.
                             </div>
                         ) : (
@@ -851,11 +682,11 @@ export default function UnifiedRightDrawer({
                                 return (
                                     <div key={note.id} className="unified-note-card">
                                         <div className="unified-note-header">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div className="u-drawer-title-row">
                                                 <button
                                                     onClick={() => handleToggleStatus(note)}
                                                     title={`Status: ${note.status}. Click to change.`}
-                                                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    className="u-drawer-bare-btn"
                                                 >
                                                     {note.status === 'completed' ? (
                                                         <CheckCircle size={16} color="#4ade80" />
@@ -867,7 +698,7 @@ export default function UnifiedRightDrawer({
                                                 </button>
                                                 <span className="unified-note-title">{note.title}</span>
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div className="u-drawer-row">
                                                 {note.cost_estimate && (
                                                     <span className="unified-cost-badge">
                                                         ${parseFloat(note.cost_estimate).toLocaleString()}
@@ -878,7 +709,7 @@ export default function UnifiedRightDrawer({
                                                 </span>
                                                 <button
                                                     onClick={() => handleDeleteNote(note.id)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}
+                                                    className="u-drawer-delete-note"
                                                     title="Delete note"
                                                 >
                                                     <Trash2 size={13} />
@@ -886,11 +717,11 @@ export default function UnifiedRightDrawer({
                                             </div>
                                         </div>
 
-                                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                                        <div className="u-drawer-note-content">
                                             {note.content}
                                         </div>
 
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: '#64748b', marginTop: '4px' }}>
+                                        <div className="u-drawer-note-meta">
                                             <span
                                                 onClick={() => {
                                                     if (targetProp) onSelectStructure?.(targetProp);

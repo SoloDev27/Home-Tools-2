@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { X, Plus, Filter, CheckCircle, Clock, AlertCircle, DollarSign, Trash2, FileText, ChevronRight } from "lucide-react";
 import { thunkCreateNote, thunkEditNote, thunkDeleteNote } from "../../redux/notes";
+import "./MapNotesDrawer.css";
 
 export default function MapNotesDrawer({
     isOpen,
@@ -97,76 +98,49 @@ export default function MapNotesDrawer({
         <div className={`unified-drawer ${isOpen ? "open" : ""}`}>
             <div className="unified-drawer-header">
                 <div>
-                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 className="map-notes-title">
                         <FileText size={17} color="#6366f1" />
                         Project Notes & Log
                     </h3>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: '3px' }}>
+                    <div className="map-notes-subtitle">
                         {notes.length} total • {openCount} open issues
                     </div>
                 </div>
                 <button
                     onClick={onClose}
-                    style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
+                    className="map-notes-close-btn"
                 >
                     <X size={20} />
                 </button>
             </div>
 
             {/* Total Estimated Cost Banner */}
-            <div style={{
-                margin: '12px 16px 0 16px',
-                padding: '10px 14px',
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-            }}>
-                <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Total Cost Estimate:</span>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#34d399' }}>
+            <div className="map-notes-cost-banner">
+                <span className="map-notes-summary-label">Total Cost Estimate:</span>
+                <span className="map-notes-cost-value">
                     ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                 </span>
             </div>
 
             {/* Quick Filters */}
-            <div style={{ padding: '12px 16px 0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+            <div className="map-notes-filters">
+                <div className="map-notes-filter-status">
                     {["all", "open", "in_progress", "completed"].map(st => (
                         <button
                             key={st}
                             onClick={() => setFilterStatus(st)}
-                            style={{
-                                padding: '3px 8px',
-                                borderRadius: '4px',
-                                fontSize: '11px',
-                                border: 'none',
-                                cursor: 'pointer',
-                                background: filterStatus === st ? '#6366f1' : 'var(--color-overlay-hover)',
-                                color: 'var(--color-text-primary)',
-                                textTransform: 'capitalize',
-                                whiteSpace: 'nowrap'
-                            }}
+                            className={`map-notes-filter-btn${filterStatus === st ? " is-active" : ""}`}
                         >
                             {st === "in_progress" ? "In Progress" : st}
                         </button>
                     ))}
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="map-notes-filter-row">
                     <select
                         value={filterCategory}
                         onChange={e => setFilterCategory(e.target.value)}
-                        style={{
-                            flex: 1,
-                            background: '#1e293b',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '4px',
-                            padding: '4px 8px',
-                            color: 'var(--color-text-secondary)',
-                            fontSize: '11px'
-                        }}
+                        className="map-notes-select"
                     >
                         <option value="all">All Categories</option>
                         <option value="inspection">Inspection</option>
@@ -178,20 +152,7 @@ export default function MapNotesDrawer({
 
                     <button
                         onClick={() => setShowAddForm(!showAddForm)}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            background: showAddForm ? '#475569' : '#3b82f6',
-                            color: 'var(--color-on-accent)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '4px 10px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap'
-                        }}
+                        className={`map-notes-add-btn${showAddForm ? " is-open" : ""}`}
                     >
                         <Plus size={13} />
                         {showAddForm ? "Cancel" : "New Note"}
@@ -201,17 +162,8 @@ export default function MapNotesDrawer({
 
             {/* Add Note Collapsible Form */}
             {showAddForm && (
-                <form onSubmit={handleCreateNote} style={{
-                    margin: '12px 16px 0 16px',
-                    padding: '12px',
-                    background: 'rgba(30, 41, 59, 0.8)',
-                    border: '1px solid rgba(99, 102, 241, 0.3)',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                }}>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#a5b4fc', textTransform: 'uppercase' }}>
+                <form onSubmit={handleCreateNote} className="map-notes-note-form">
+                    <div className="map-notes-form-title">
                         Create Project Note
                     </div>
                     <input
@@ -219,45 +171,23 @@ export default function MapNotesDrawer({
                         placeholder="Title..."
                         value={title}
                         onChange={e => setTitle(e.target.value)}
-                        style={{
-                            background: '#0f172a',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '4px',
-                            padding: '6px 8px',
-                            color: 'var(--color-text-primary)',
-                            fontSize: '11px'
-                        }}
+                        className="map-notes-input"
                     />
                     <textarea
                         placeholder="Details or action items..."
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         rows={2}
-                        style={{
-                            background: '#0f172a',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '4px',
-                            padding: '6px 8px',
-                            color: 'var(--color-text-primary)',
-                            fontSize: '11px',
-                            resize: 'vertical'
-                        }}
+                        className="map-notes-textarea"
                     />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                    <div className="map-notes-form-grid">
                         <select
                             value={targetType}
                             onChange={e => {
                                 setTargetType(e.target.value);
                                 setTargetId("");
                             }}
-                            style={{
-                                background: '#0f172a',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: '4px',
-                                padding: '4px 6px',
-                                color: 'var(--color-text-primary)',
-                                fontSize: '11px'
-                            }}
+                            className="map-notes-select-sm"
                         >
                             <option value="map">Map General</option>
                             <option value="area">Attach to Area</option>
@@ -269,14 +199,7 @@ export default function MapNotesDrawer({
                             <select
                                 value={targetId}
                                 onChange={e => setTargetId(e.target.value)}
-                                style={{
-                                    background: '#0f172a',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '4px 6px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '11px'
-                                }}
+                                className="map-notes-select-sm"
                             >
                                 <option value="">Select Area...</option>
                                 {areas.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -287,14 +210,7 @@ export default function MapNotesDrawer({
                             <select
                                 value={targetId}
                                 onChange={e => setTargetId(e.target.value)}
-                                style={{
-                                    background: '#0f172a',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '4px 6px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '11px'
-                                }}
+                                className="map-notes-select-sm"
                             >
                                 <option value="">Select Structure...</option>
                                 {structures.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -305,14 +221,7 @@ export default function MapNotesDrawer({
                             <select
                                 value={targetId}
                                 onChange={e => setTargetId(e.target.value)}
-                                style={{
-                                    background: '#0f172a',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '4px',
-                                    padding: '4px 6px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '11px'
-                                }}
+                                className="map-notes-select-sm"
                             >
                                 <option value="">Select Feature...</option>
                                 {features.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
@@ -320,18 +229,11 @@ export default function MapNotesDrawer({
                         )}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                    <div className="map-notes-form-grid">
                         <select
                             value={category}
                             onChange={e => setCategory(e.target.value)}
-                            style={{
-                                background: '#0f172a',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: '4px',
-                                padding: '4px 6px',
-                                color: 'var(--color-text-primary)',
-                                fontSize: '11px'
-                            }}
+                            className="map-notes-select-sm"
                         >
                             <option value="general">General</option>
                             <option value="inspection">Inspection</option>
@@ -344,32 +246,15 @@ export default function MapNotesDrawer({
                             placeholder="Cost Est. ($)"
                             value={costEstimate}
                             onChange={e => setCostEstimate(e.target.value)}
-                            style={{
-                                background: '#0f172a',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: '4px',
-                                padding: '4px 6px',
-                                color: 'var(--color-text-primary)',
-                                fontSize: '11px'
-                            }}
+                            className="map-notes-select-sm"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={!title.trim() || !content.trim() || isSubmitting}
-                        style={{
-                            background: '#22c55e',
-                            color: 'var(--color-on-accent)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            padding: '6px 12px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            marginTop: '4px',
-                            opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1
-                        }}
+                        className="map-notes-save-btn"
+                        style={{ opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1 }}
                     >
                         {isSubmitting ? "Saving..." : "Save Note"}
                     </button>
@@ -379,7 +264,7 @@ export default function MapNotesDrawer({
             {/* Notes List */}
             <div className="unified-drawer-content">
                 {filteredNotes.length === 0 ? (
-                    <div style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', marginTop: '40px' }}>
+                    <div className="map-notes-empty-notes">
                         No notes found for this filter.
                     </div>
                 ) : (
@@ -391,11 +276,11 @@ export default function MapNotesDrawer({
                         return (
                             <div key={note.id} className="unified-note-card">
                                 <div className="unified-note-header">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div className="map-notes-row">
                                         <button
                                             onClick={() => handleToggleStatus(note)}
                                             title={`Status: ${note.status}. Click to change.`}
-                                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                                            className="map-notes-bare-btn"
                                         >
                                             {note.status === 'completed' ? (
                                                 <CheckCircle size={16} color="#4ade80" />
@@ -407,7 +292,7 @@ export default function MapNotesDrawer({
                                         </button>
                                         <span className="unified-note-title">{note.title}</span>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <div className="map-notes-row-tight">
                                         {note.cost_estimate && (
                                             <span className="unified-cost-badge">
                                                 ${parseFloat(note.cost_estimate).toLocaleString()}
@@ -418,7 +303,7 @@ export default function MapNotesDrawer({
                                         </span>
                                         <button
                                             onClick={() => handleDeleteNote(note.id)}
-                                            style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}
+                                            className="map-notes-delete-btn"
                                             title="Delete note"
                                         >
                                             <Trash2 size={13} />
@@ -426,11 +311,11 @@ export default function MapNotesDrawer({
                                     </div>
                                 </div>
 
-                                <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                                <div className="map-notes-note-content">
                                     {note.content}
                                 </div>
 
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '10px', color: '#64748b', marginTop: '4px' }}>
+                                <div className="map-notes-note-meta">
                                     <span>
                                         {targetProp ? `🏠 ${targetProp.name}` : targetArea ? `📐 ${targetArea.name}` : targetFeat ? `⚡ ${targetFeat.name}` : "🗺️ Map General"}
                                     </span>

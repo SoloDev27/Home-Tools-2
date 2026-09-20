@@ -6,6 +6,7 @@ import { thunkCreateNote, thunkEditNote, thunkDeleteNote } from "../../redux/not
 import { thunkEditProperty } from "../../redux/properties";
 import { thunkEditArea } from "../../redux/areas";
 import { thunkEditFeature } from "../../redux/features";
+import "./StructureNotesModal.css";
 
 const COLOR_PALETTE = [
     "#6366f1", "#3b82f6", "#06b6d4", "#10b981", "#84cc16",
@@ -211,61 +212,38 @@ export default function StructureNotesModal({
 
     return (
         <div className="unified-modal-overlay" onClick={onClose}>
-            <div className="unified-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
-                <div className="unified-modal-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div className="unified-modal item-modal-wide" onClick={e => e.stopPropagation()}>
+                <div className="unified-modal-header item-modal-header">
+                    <div className="item-modal-header-row">
+                        <div className="item-modal-title-row">
+                            <span className="item-modal-type-title">
                                 {typeTitle}
                             </span>
                             {areaName && effectiveType !== "area" && (
-                                <span style={{
-                                    fontSize: '11px',
-                                    background: 'rgba(99, 102, 241, 0.2)',
-                                    color: '#a5b4fc',
-                                    border: '1px solid rgba(99, 102, 241, 0.4)',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px'
-                                }}>
+                                <span className="item-modal-badge-indigo">
                                     Area: {areaName}
                                 </span>
                             )}
                             {effectiveType === "area" && targetItem.area_sqft && (
-                                <span style={{
-                                    fontSize: '11px',
-                                    background: 'rgba(16, 185, 129, 0.2)',
-                                    color: '#6ee7b7',
-                                    border: '1px solid rgba(16, 185, 129, 0.4)',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px',
-                                    fontWeight: 600
-                                }}>
+                                <span className="item-modal-badge-green">
                                     {Math.round(targetItem.area_sqft).toLocaleString()} sq ft
                                     {targetItem.area_acres ? ` (${targetItem.area_acres} acres)` : ''}
                                 </span>
                             )}
                             {effectiveType === "structure" && targetItem.lat && targetItem.lng && (
-                                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                                <span className="item-modal-muted">
                                     {Number(targetItem.lat).toFixed(5)}, {Number(targetItem.lng).toFixed(5)}
                                 </span>
                             )}
                             {effectiveType === "feature" && (
-                                <span style={{
-                                    fontSize: '11px',
-                                    background: 'rgba(59, 130, 246, 0.2)',
-                                    color: '#93c5fd',
-                                    border: '1px solid rgba(59, 130, 246, 0.4)',
-                                    padding: '2px 8px',
-                                    borderRadius: '12px',
-                                    textTransform: 'capitalize'
-                                }}>
+                                <span className="item-modal-badge-blue">
                                     Type: {targetItem.type}
                                 </span>
                             )}
                         </div>
                         <button
                             onClick={onClose}
-                            style={{ background: 'transparent', border: 'none', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '4px' }}
+                            className="item-modal-close-btn"
                             title="Close"
                         >
                             <X size={20} />
@@ -273,35 +251,13 @@ export default function StructureNotesModal({
                     </div>
 
                     {/* Editable Title Input & Icon/Swatch Preview */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="item-modal-name-row">
                         {effectiveType === "area" ? (
-                            <div style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '8px',
-                                backgroundColor: itemColor,
-                                border: '2px solid var(--color-text-primary)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                fontSize: '18px'
-                            }}>
+                            <div className="item-modal-swatch-box" style={{ backgroundColor: itemColor }}>
                                 📐
                             </div>
                         ) : (
-                            <div style={{
-                                fontSize: '22px',
-                                background: 'rgba(99, 102, 241, 0.25)',
-                                border: '1.5px solid #6366f1',
-                                borderRadius: '8px',
-                                width: '40px',
-                                height: '40px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0
-                            }}>
+                            <div className="item-modal-icon-box">
                                 {itemIcon}
                             </div>
                         )}
@@ -313,37 +269,14 @@ export default function StructureNotesModal({
                             onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); }}
                             placeholder={`${effectiveType} title / name...`}
                             autoFocus
-                            style={{
-                                flex: 1,
-                                background: '#1e293b',
-                                border: '1.5px solid var(--color-border-emphasized)',
-                                borderRadius: '6px',
-                                padding: '8px 12px',
-                                color: 'var(--color-text-primary)',
-                                fontSize: '15px',
-                                fontWeight: 600,
-                                outline: 'none'
-                            }}
+                            className="item-modal-title-input"
                         />
                         <button
                             type="button"
                             onClick={handleSaveName}
                             disabled={isSavingName || !itemName.trim() || itemName.trim() === targetItem.name}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                background: '#4f46e5',
-                                color: 'var(--color-on-accent)',
-                                border: 'none',
-                                borderRadius: '6px',
-                                padding: '8px 12px',
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                opacity: (!itemName.trim() || itemName.trim() === targetItem.name) ? 0.5 : 1,
-                                whiteSpace: 'nowrap'
-                            }}
+                            className="item-modal-save-btn"
+                            style={{ opacity: (!itemName.trim() || itemName.trim() === targetItem.name) ? 0.5 : 1 }}
                         >
                             <Check size={14} /> {isSavingName ? "Saved" : "Save Title"}
                         </button>
@@ -351,17 +284,8 @@ export default function StructureNotesModal({
 
                     {/* Icon Selection Palette (Structures & Features) */}
                     {(effectiveType === "structure" || effectiveType === "feature") && (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '6px 10px',
-                            background: 'rgba(15, 23, 42, 0.6)',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '6px',
-                            flexWrap: 'wrap'
-                        }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', marginRight: '4px' }}>
+                        <div className="item-modal-palette">
+                            <span className="item-modal-palette-label">
                                 Choose Icon:
                             </span>
                             {(effectiveType === "feature" ? FEATURE_ICONS : STRUCTURE_ICONS).map(emoji => (
@@ -369,20 +293,7 @@ export default function StructureNotesModal({
                                     key={emoji}
                                     type="button"
                                     onClick={() => handleSelectIcon(emoji)}
-                                    style={{
-                                        fontSize: '15px',
-                                        background: itemIcon === emoji ? '#4f46e5' : 'rgba(30, 41, 59, 0.8)',
-                                        border: itemIcon === emoji ? '1.5px solid #818cf8' : '1px solid var(--color-border)',
-                                        borderRadius: '5px',
-                                        width: '28px',
-                                        height: '28px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.15s ease',
-                                        transform: itemIcon === emoji ? 'scale(1.1)' : 'scale(1)'
-                                    }}
+                                    className={`item-modal-icon-choice${itemIcon === emoji ? " is-selected" : ""}`}
                                     title={`Set icon to ${emoji}`}
                                 >
                                     {emoji}
@@ -393,17 +304,8 @@ export default function StructureNotesModal({
 
                     {/* Color Palette (Area Boundaries & Features) */}
                     {(effectiveType === "area" || effectiveType === "feature") && (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '6px 10px',
-                            background: 'rgba(15, 23, 42, 0.6)',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: '6px',
-                            flexWrap: 'wrap'
-                        }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div className="item-modal-palette item-modal-palette--colors">
+                            <span className="item-modal-color-label">
                                 <Palette size={12} /> Theme Color:
                             </span>
                             {COLOR_PALETTE.map(col => (
@@ -411,17 +313,8 @@ export default function StructureNotesModal({
                                     key={col}
                                     type="button"
                                     onClick={() => handleSelectColor(col)}
-                                    style={{
-                                        width: '22px',
-                                        height: '22px',
-                                        borderRadius: '50%',
-                                        backgroundColor: col,
-                                        border: itemColor.toLowerCase() === col.toLowerCase() ? '2px solid var(--color-text-primary)' : '1.5px solid rgba(0,0,0,0.4)',
-                                        cursor: 'pointer',
-                                        boxShadow: itemColor.toLowerCase() === col.toLowerCase() ? `0 0 8px ${col}` : 'none',
-                                        transform: itemColor.toLowerCase() === col.toLowerCase() ? 'scale(1.2)' : 'scale(1)',
-                                        transition: 'transform 0.15s ease'
-                                    }}
+                                    className={`item-modal-swatch${itemColor.toLowerCase() === col.toLowerCase() ? " is-selected" : ""}`}
+                                    style={{ backgroundColor: col }}
                                     title={`Select ${col}`}
                                 />
                             ))}
@@ -432,21 +325,12 @@ export default function StructureNotesModal({
                 <div className="unified-modal-body">
                     {/* Drill-down Callout to 2D & 3D Floorplan Studio (For Structures) */}
                     {effectiveType === "structure" && (
-                        <div style={{
-                            background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.2))',
-                            border: '1px solid rgba(99, 102, 241, 0.4)',
-                            borderRadius: '10px',
-                            padding: '14px 16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '20px'
-                        }}>
+                        <div className="item-modal-studio-cta">
                             <div>
-                                <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-text-primary)' }}>
+                                <div className="item-modal-studio-title">
                                     2D Floorplan & 3D WebGL Studio
                                 </div>
-                                <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                                <div className="item-modal-studio-sub">
                                     Drill into interior walls, furniture placement, and 3D walkthrough
                                 </div>
                             </div>
@@ -458,21 +342,7 @@ export default function StructureNotesModal({
                                         navigate(`/render/${targetItem.id}`);
                                     }
                                 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    background: '#6366f1',
-                                    color: 'var(--color-on-accent)',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    padding: '8px 14px',
-                                    fontSize: '12px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
-                                    whiteSpace: 'nowrap'
-                                }}
+                                className="item-modal-studio-btn"
                             >
                                 <Layers size={15} />
                                 Enter Studio
@@ -481,43 +351,22 @@ export default function StructureNotesModal({
                     )}
 
                     {/* Fast Note Creation Form */}
-                    <form onSubmit={handleAddNote} style={{
-                        background: 'rgba(30, 41, 59, 0.5)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        padding: '12px 14px',
-                        marginBottom: '20px'
-                    }}>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
+                    <form onSubmit={handleAddNote} className="item-modal-note-form">
+                        <div className="item-modal-form-title">
                             Add Note / Work Order to this {effectiveType === "area" ? "Boundary" : effectiveType === "feature" ? "Feature" : "Structure"}
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                        <div className="item-modal-form-grid">
                             <input
                                 type="text"
                                 placeholder="Note title (e.g., Annual Inspection, Repair, Specification)..."
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
-                                style={{
-                                    gridColumn: '1 / -1',
-                                    background: '#1e293b',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '6px',
-                                    padding: '7px 10px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '12px'
-                                }}
+                                className="item-modal-input-full"
                             />
                             <select
                                 value={category}
                                 onChange={e => setCategory(e.target.value)}
-                                style={{
-                                    background: '#1e293b',
-                                    border: '1px solid var(--color-border)',
-                                    borderRadius: '6px',
-                                    padding: '6px 10px',
-                                    color: 'var(--color-text-primary)',
-                                    fontSize: '12px'
-                                }}
+                                className="item-modal-input"
                             >
                                 <option value="inspection">Inspection</option>
                                 <option value="maintenance">Maintenance</option>
@@ -525,22 +374,14 @@ export default function StructureNotesModal({
                                 <option value="estimate">Cost Estimate</option>
                                 <option value="general">General</option>
                             </select>
-                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '8px', color: 'var(--color-text-secondary)', fontSize: '12px' }}>$</span>
+                            <div className="item-modal-cost-wrap">
+                                <span className="item-modal-cost-symbol">$</span>
                                 <input
                                     type="number"
                                     placeholder="Cost Est."
                                     value={costEstimate}
                                     onChange={e => setCostEstimate(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        background: '#1e293b',
-                                        border: '1px solid var(--color-border)',
-                                        borderRadius: '6px',
-                                        padding: '6px 10px 6px 20px',
-                                        color: 'var(--color-text-primary)',
-                                        fontSize: '12px'
-                                    }}
+                                    className="item-modal-cost-input"
                                 />
                             </div>
                         </div>
@@ -549,37 +390,14 @@ export default function StructureNotesModal({
                             value={content}
                             onChange={e => setContent(e.target.value)}
                             rows={2}
-                            style={{
-                                width: '100%',
-                                background: '#1e293b',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: '6px',
-                                padding: '7px 10px',
-                                color: 'var(--color-text-primary)',
-                                fontSize: '12px',
-                                resize: 'vertical',
-                                marginBottom: '8px',
-                                boxSizing: 'border-box'
-                            }}
+                            className="item-modal-textarea"
                         />
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <div className="item-modal-submit-row">
                             <button
                                 type="submit"
                                 disabled={!title.trim() || !content.trim() || isSubmitting}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    background: '#3b82f6',
-                                    color: 'var(--color-on-accent)',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    padding: '6px 12px',
-                                    fontSize: '12px',
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                    opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1
-                                }}
+                                className="item-modal-submit-btn"
+                                style={{ opacity: (!title.trim() || !content.trim() || isSubmitting) ? 0.5 : 1 }}
                             >
                                 <Plus size={14} />
                                 {isSubmitting ? "Adding..." : "Add Note"}
@@ -589,23 +407,23 @@ export default function StructureNotesModal({
 
                     {/* Existing Notes List */}
                     <div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                        <div className="item-modal-notes-title">
                             Attached Notes ({targetNotes.length})
                         </div>
                         {targetNotes.length === 0 ? (
-                            <div style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic', padding: '12px 0', textAlign: 'center' }}>
+                            <div className="item-modal-notes-empty">
                                 No notes recorded for this {effectiveType} yet.
                             </div>
                         ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div className="item-modal-notes-list">
                                 {targetNotes.map(n => (
                                     <div key={n.id} className="unified-note-card">
                                         <div className="unified-note-header">
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div className="item-modal-name-row">
                                                 <button
                                                     onClick={() => handleToggleStatus(n)}
                                                     title={`Status: ${n.status}. Click to cycle.`}
-                                                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    className="item-modal-bare-btn"
                                                 >
                                                     {n.status === 'completed' ? (
                                                         <CheckCircle size={16} color="#4ade80" />
@@ -617,7 +435,7 @@ export default function StructureNotesModal({
                                                 </button>
                                                 <span className="unified-note-title">{n.title}</span>
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div className="item-modal-row">
                                                 {n.cost_estimate && (
                                                     <span className="unified-cost-badge">
                                                         ${Number(n.cost_estimate).toLocaleString()}
@@ -628,17 +446,17 @@ export default function StructureNotesModal({
                                                 </span>
                                                 <button
                                                     onClick={() => handleDeleteNote(n.id)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', padding: '2px' }}
+                                                    className="item-modal-delete-btn"
                                                     title="Delete note"
                                                 >
                                                     <Trash2 size={13} />
                                                 </button>
                                             </div>
                                         </div>
-                                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                                        <div className="item-modal-note-content">
                                             {n.content}
                                         </div>
-                                        <div style={{ fontSize: '10px', color: '#64748b' }}>
+                                        <div className="item-modal-note-meta">
                                             Category: {n.category} • Priority: {n.priority}
                                         </div>
                                     </div>
@@ -651,15 +469,7 @@ export default function StructureNotesModal({
                 <div className="unified-modal-footer">
                     <button
                         onClick={onClose}
-                        style={{
-                            background: 'var(--color-overlay-hover)',
-                            color: 'var(--color-text-secondary)',
-                            border: 'none',
-                            borderRadius: '6px',
-                            padding: '6px 14px',
-                            fontSize: '12px',
-                            cursor: 'pointer'
-                        }}
+                        className="item-modal-footer-close"
                     >
                         Close
                     </button>

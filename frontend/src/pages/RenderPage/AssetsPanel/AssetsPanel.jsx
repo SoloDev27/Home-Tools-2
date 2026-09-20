@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./AssetsPanel.css";
 import ShapesTab from "./ShapesTab";
 import CanvasTab from "./CanvasTab";
 import SectionsTab from "./SectionsTab";
@@ -70,27 +71,27 @@ export default function AssetsPanel({
                 <ul className="menu">
                     <li className={`user-select-none ${activeTab === "catalog" ? "menu-active" : ""}`}
                         onClick={() => setTab("catalog")} title="Furniture Catalog">
-                        <span style={{ fontSize: 20 }}>🪑</span>
+                        <span className="assets-menu-icon">🪑</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "templates" ? "menu-active" : ""}`}
                         onClick={() => setTab("templates")} title="Templates">
-                        <span style={{ fontSize: 20 }}>📋</span>
+                        <span className="assets-menu-icon">📋</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "doorswalls" ? "menu-active" : ""}`}
                         onClick={() => setTab("doorswalls")} title="Doors & Walls">
-                        <span style={{ fontSize: 20 }}>🚪</span>
+                        <span className="assets-menu-icon">🚪</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "imports" ? "menu-active" : ""}`}
                         onClick={() => setTab("imports")} title="Imports">
-                        <span style={{ fontSize: 20 }}>📥</span>
+                        <span className="assets-menu-icon">📥</span>
                     </li>
-                    <div className="menu-spacer" style={{ flexGrow: 1 }}></div>
+                    <div className="menu-spacer"></div>
                     <li className={`user-select-none ${activeTab === "settings" ? "menu-active" : ""}`}
                         onClick={() => setTab("settings")} title="Settings">
-                        <span style={{ fontSize: 20 }}>⚙️</span>
+                        <span className="assets-menu-icon">⚙️</span>
                     </li>
                 </ul>
-                <ul id="menu-tools" style={{ width: 220 }}>
+                <ul id="menu-tools">
                     {activeTab === "catalog" && <ObjectsTab onSelectCatalogItem={onSelectCatalogItem} activeItemId={pendingPlacement?.kind === "object" ? pendingPlacement.item?.id : null} />}
                     {activeTab === "templates" && <TemplateTab outlines={outlines} onLoadTemplate={onLoadTemplate} onLoadBuiltin={onLoadBuiltin} onImport={onImport} stage={stage} onApplyTemplate={onApplyTemplate} onApplyObjectTemplate={onApplyObjectTemplate} activeObjectTemplateId={pendingPlacement?.kind === "object-template" ? pendingPlacement.templateId : null} />}
                     {activeTab === "doorswalls" && <DoorsWallsTab selectedElement={selectedShape} onApplyElementStyle={onApplyArchitecturalStyle} wallHeight={wallHeight} onWallHeightChange={onWallHeightChange} />}
@@ -108,22 +109,22 @@ export default function AssetsPanel({
                 <ul className="menu">
                     <li className={`user-select-none ${activeTab === "build" ? "menu-active" : ""}`}
                         onClick={() => setTab("build")} title="Build Tools">
-                        <span style={{ fontSize: 20 }}>🔧</span>
+                        <span className="assets-menu-icon">🔧</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "objects" ? "menu-active" : ""}`}
                         onClick={() => setTab("objects")} title="3D Objects">
-                        <span style={{ fontSize: 20 }}>🪑</span>
+                        <span className="assets-menu-icon">🪑</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "imports" ? "menu-active" : ""}`}
                         onClick={() => setTab("imports")} title="Imports">
-                        <span style={{ fontSize: 20 }}>📥</span>
+                        <span className="assets-menu-icon">📥</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "exports" ? "menu-active" : ""}`}
                         onClick={() => setTab("exports")} title="Exports">
-                        <span style={{ fontSize: 20 }}>💾</span>
+                        <span className="assets-menu-icon">💾</span>
                     </li>
                 </ul>
-                <ul id="menu-tools" style={{ width: 220 }}>
+                <ul id="menu-tools">
                     {activeTab === "build" && (
                         <BuildToolsTab
                             onSelectCatalogItem={onSelectCatalogItem}
@@ -158,19 +159,19 @@ export default function AssetsPanel({
                 <ul className="menu">
                     <li className={`user-select-none ${activeTab === "tools" ? "menu-active" : ""}`}
                         onClick={() => setTab("tools")} title="Room Tools">
-                        <span style={{ fontSize: 20 }}>🔨</span>
+                        <span className="assets-menu-icon">🔨</span>
                     </li>
                     <li className={`user-select-none ${activeTab === "templates" ? "menu-active" : ""}`}
                         onClick={() => setTab("templates")} title="Templates">
-                        <span style={{ fontSize: 20 }}>📋</span>
+                        <span className="assets-menu-icon">📋</span>
                     </li>
-                    <div className="menu-spacer" style={{ flexGrow: 1 }}></div>
+                    <div className="menu-spacer"></div>
                     <li className={`user-select-none ${activeTab === "settings" ? "menu-active" : ""}`}
                         onClick={() => setTab("settings")} title="Settings">
-                        <span style={{ fontSize: 20 }}>⚙️</span>
+                        <span className="assets-menu-icon">⚙️</span>
                     </li>
                 </ul>
-                <ul id="menu-tools" style={{ width: 220 }}>
+                <ul id="menu-tools">
                     {activeTab === "tools" && <SectionsTab activeTool={activeTool} onSelectTool={onSelectTool} canCombine={canCombine} canSelect={canSelect} onBatchMerge={onBatchMerge} onBatchDelete={onBatchDelete} onBatchChangeType={onBatchChangeType} onBatchFullWall={onBatchFullWall} multiSelectIds={multiSelectIds} selectedShape={selectedShape} onUpdateShape={onUpdateShape} canvasSettings={canvasSettings} setCanvasSettings={setCanvasSettings} />}
                     {activeTab === "templates" && <TemplateTab outlines={outlines} onLoadTemplate={onLoadTemplate} onLoadBuiltin={onLoadBuiltin} onImport={onImport} stage={stage} onApplyTemplate={onApplyTemplate} />}
                     {activeTab === "settings" && <CanvasTab canvasSettings={canvasSettings} setCanvasSettings={setCanvasSettings} mapDistance={mapDistance} setMapDistance={setMapDistance} />}
@@ -186,19 +187,19 @@ export default function AssetsPanel({
             <ul className="menu">
                 <li className={`user-select-none ${activeTab === "shapes" ? "menu-active" : ""}`}
                     onClick={() => setTab("shapes")} title="Outlines">
-                    <span style={{ fontSize: 20 }}>▲</span>
+                    <span className="assets-menu-icon">▲</span>
                 </li>
                 <li className={`user-select-none ${activeTab === "templates" ? "menu-active" : ""}`}
                     onClick={() => setTab("templates")} title="Templates">
-                    <span style={{ fontSize: 20 }}>📋</span>
+                    <span className="assets-menu-icon">📋</span>
                 </li>
-                <div className="menu-spacer" style={{ flexGrow: 1 }}></div>
+                <div className="menu-spacer"></div>
                 <li className={`user-select-none ${activeTab === "settings" ? "menu-active" : ""}`}
                     onClick={() => setTab("settings")} title="Canvas Settings">
-                    <span style={{ fontSize: 20 }}>⚙️</span>
+                    <span className="assets-menu-icon">⚙️</span>
                 </li>
             </ul>
-            <ul id="menu-tools" style={{ width: 220 }}>
+            <ul id="menu-tools">
                 {activeTab === "shapes" && <ShapesTab setPendingPlacement={setPendingPlacement} activeTool={activeTool} selectedCount={selectedCount} onBooleanOp={onBooleanOp} />}
                 {activeTab === "templates" && <TemplateTab outlines={outlines} onLoadTemplate={onLoadTemplate} onLoadBuiltin={onLoadBuiltin} onImport={onImport} stage={stage} onApplyTemplate={onApplyTemplate} />}
                 {activeTab === "settings" && <CanvasTab canvasSettings={canvasSettings} setCanvasSettings={setCanvasSettings} mapDistance={mapDistance} setMapDistance={setMapDistance} />}

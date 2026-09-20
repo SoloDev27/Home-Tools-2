@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./DoorsWallsTab.css";
 
 const DOOR_TYPES = [
     { id: "door-single", name: "Single Door", icon: "🚪", width: 90, height: 210, height3d: 210 },
@@ -89,7 +90,7 @@ export default function DoorsWallsTab({ selectedElement, onApplyElementStyle, wa
                     ))}
                 </ul>
 
-                <div className="menu-tools-section" style={{ marginTop: 12 }}>
+                <div className="menu-tools-section menu-tools-section-spaced">
                     <h4>Wall Height</h4>
                     <div className="settings-row stacked">
                         <input
@@ -111,7 +112,7 @@ export default function DoorsWallsTab({ selectedElement, onApplyElementStyle, wa
                                 }
                             }}
                         />
-                        <span style={{ fontSize: 11, color: "var(--text-dim)" }}>
+                        <span className="doors-walls-height-value">
                             {wallHeight || 2.4}m
                         </span>
                     </div>

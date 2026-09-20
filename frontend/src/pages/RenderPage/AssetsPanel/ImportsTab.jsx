@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import "./ImportsTab.css";
 
 export default function ImportsTab({ onSelectCatalogItem, activeItemId = null, importedObjects = [], onDeleteImport, onUploadImport }) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -61,13 +62,13 @@ export default function ImportsTab({ onSelectCatalogItem, activeItemId = null, i
                     onDragLeave={handleDragLeave}
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    <span style={{ fontSize: 24 }}>📎</span>
+                    <span className="imports-upload-icon">📎</span>
                     <span>Drop GLB/GLTF here or click to upload</span>
                     <input
                         ref={fileInputRef}
                         type="file"
                         accept=".glb,.gltf"
-                        style={{ display: "none" }}
+                        className="imports-file-input"
                         onChange={(e) => {
                             if (e.target.files[0]) handleFileUpload(e.target.files[0]);
                             e.target.value = "";
@@ -77,11 +78,10 @@ export default function ImportsTab({ onSelectCatalogItem, activeItemId = null, i
 
                 <input
                     type="text"
-                    className="input objects-catalog-search"
+                    className="input objects-catalog-search imports-search-input"
                     placeholder="Search imports..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginTop: 8 }}
                 />
 
                 <ul className="tool-list objects-catalog-list">

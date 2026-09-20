@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./ExportsTab.css";
 
 const FORMATS = [
     { value: "gltf", label: "GLTF", description: "JSON format" },
@@ -40,26 +41,17 @@ export default function ExportsTab({
     };
 
     return (
-        <div style={{ padding: "8px 12px" }}>
+        <div className="exports-tab">
             {/* Format Selection */}
-            <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "var(--text-dim)", marginBottom: 6, fontWeight: "bold" }}>
+            <div className="exports-section">
+                <div className="exports-section-title">
                     FORMAT
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div className="exports-options">
                     {FORMATS.map(f => (
                         <label
                             key={f.value}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                padding: "6px 8px",
-                                fontSize: 12,
-                                cursor: "pointer",
-                                background: format === f.value ? "var(--active-bg)" : "transparent",
-                                borderRadius: "var(--radius-sm)",
-                            }}
+                            className={`exports-option${format === f.value ? " is-active" : ""}`}
                         >
                             <input
                                 type="radio"
@@ -69,31 +61,22 @@ export default function ExportsTab({
                                 onChange={() => setFormat(f.value)}
                             />
                             <span>{f.label}</span>
-                            <span style={{ fontSize: 10, color: "var(--text-dim)" }}>({f.description})</span>
+                            <span className="exports-option-desc">({f.description})</span>
                         </label>
                     ))}
                 </div>
             </div>
 
             {/* Quality Selection */}
-            <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "var(--text-dim)", marginBottom: 6, fontWeight: "bold" }}>
+            <div className="exports-section">
+                <div className="exports-section-title">
                     QUALITY
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div className="exports-options">
                     {QUALITY.map(q => (
                         <label
                             key={q.value}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                padding: "6px 8px",
-                                fontSize: 12,
-                                cursor: "pointer",
-                                background: quality === q.value ? "var(--active-bg)" : "transparent",
-                                borderRadius: "var(--radius-sm)",
-                            }}
+                            className={`exports-option${quality === q.value ? " is-active" : ""}`}
                         >
                             <input
                                 type="radio"
@@ -109,12 +92,12 @@ export default function ExportsTab({
             </div>
 
             {/* Include Options */}
-            <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "var(--text-dim)", marginBottom: 6, fontWeight: "bold" }}>
+            <div className="exports-section">
+                <div className="exports-section-title">
                     INCLUDE
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
+                <div className="exports-options">
+                    <label className="exports-option">
                         <input
                             type="checkbox"
                             checked={includeCamera}
@@ -122,7 +105,7 @@ export default function ExportsTab({
                         />
                         <span>Camera Position</span>
                     </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
+                    <label className="exports-option">
                         <input
                             type="checkbox"
                             checked={includeLighting}
@@ -130,7 +113,7 @@ export default function ExportsTab({
                         />
                         <span>Lighting</span>
                     </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", fontSize: 12, cursor: "pointer" }}>
+                    <label className="exports-option">
                         <input
                             type="checkbox"
                             checked={includeMaterials}
@@ -142,28 +125,26 @@ export default function ExportsTab({
             </div>
 
             {/* Export Buttons */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="exports-actions">
                 <button
-                    className="tool-item"
+                    className="tool-item exports-action"
                     onClick={() => handleExport("scene")}
-                    style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px" }}
                 >
-                    <span style={{ fontSize: 16 }}>📦</span>
+                    <span className="exports-action-icon">📦</span>
                     <span>Export Entire Scene</span>
                 </button>
                 {selectedObjectId && (
                     <button
-                        className="tool-item"
+                        className="tool-item exports-action"
                         onClick={() => handleExport("selected")}
-                        style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px" }}
                     >
-                        <span style={{ fontSize: 16 }}>🎯</span>
+                        <span className="exports-action-icon">🎯</span>
                         <span>Export Selected Object</span>
                     </button>
                 )}
             </div>
 
-            <div style={{ fontSize: 10, color: "var(--text-dim)", marginTop: 12 }}>
+            <div className="exports-note">
                 Downloads as .{format} file
             </div>
         </div>

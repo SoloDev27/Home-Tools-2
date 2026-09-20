@@ -1,0 +1,32 @@
+.object-props-empty {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: var(--spacing-5);
+}
+
+.props-section-flush {
+    border: none;
+}
+
+.props-rotation-row {
+    display: flex;
+    gap: var(--spacing-1);
+    align-items: center;
+}
+
+.props-rotate-btn {
+    width: 24px;
+    height: 24px;
+    font-size: var(--font-size-sm);
+}
+
+.props-rotation-input {
+    width: 60px;
+}
+
+.props-model-url {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    word-break: break-all;
+}

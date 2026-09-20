@@ -36,7 +36,7 @@ function ToolItem({ tool, activeTool, disabled, disabledReason, onClick }) {
             onClick={() => { if (!disabled) onClick?.(); }}
             title={disabled ? disabledReason : tool.desc}
         >
-            <span className="tool-icon" style={{ fontSize: 18 }}>{tool.icon}</span>
+            <span className="tool-icon tool-icon-md">{tool.icon}</span>
             <span>{tool.label}</span>
         </li>
     );

@@ -1019,7 +1019,7 @@ export default function UnifiedEditor() {
                             <span className="unified-icon-tab-label">Sections</span>
                         </li>
 
-                        <div style={{ flexGrow: 1 }} />
+                        <div className="unified-icon-strip-spacer" />
 
                         <li
                             className="unified-icon-tab collapse-btn"
@@ -1037,7 +1037,7 @@ export default function UnifiedEditor() {
                             {sidebarTab === "boundaries" && (
                                 <>
                                     <div className="unified-panel-header">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div className="unified-panel-title-row">
                                             <Layers size={15} color="#3b82f6" />
                                             <h2 className="unified-panel-title">Boundaries</h2>
                                         </div>
@@ -1088,19 +1088,11 @@ export default function UnifiedEditor() {
                                                 <Layers size={12} color="#3b82f6" />
                                                 2. Boundaries
                                             </span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <div className="unified-step-actions">
                                                 {activeArea && (
                                                     <button
                                                         onClick={handleDeselectArea}
-                                                        style={{
-                                                            background: 'transparent',
-                                                            border: 'none',
-                                                            color: 'var(--color-text-secondary)',
-                                                            fontSize: '10px',
-                                                            cursor: 'pointer',
-                                                            textDecoration: 'underline',
-                                                            padding: 0
-                                                        }}
+                                                        className="unified-text-link-btn"
                                                         title="Deselect active boundary"
                                                     >
                                                         Deselect
@@ -1113,7 +1105,7 @@ export default function UnifiedEditor() {
                                         </div>
 
                                         {areas.length === 0 ? (
-                                            <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic', padding: '6px 2px' }}>
+                                            <div className="unified-empty-note">
                                                 No boundaries yet. Draw one using the tools above.
                                             </div>
                                         ) : (
@@ -1127,14 +1119,11 @@ export default function UnifiedEditor() {
                                                             onClick={() => isActive ? handleDeselectArea() : handleSelectArea(area, true)}
                                                             title={isActive ? "Active boundary (Click to deselect)" : "Click to select and make active"}
                                                         >
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                                                            <div className="unified-row-clip">
                                                                 <span
+                                                                    className="unified-color-dot--sm"
                                                                     style={{
-                                                                        width: '8px',
-                                                                        height: '8px',
-                                                                        borderRadius: '50%',
-                                                                        backgroundColor: area.color || '#3b82f6',
-                                                                        flexShrink: 0
+                                                                        backgroundColor: area.color || '#3b82f6'
                                                                     }}
                                                                 />
                                                                 <span className="unified-boundary-name">{area.name}</span>
@@ -1159,7 +1148,7 @@ export default function UnifiedEditor() {
                             {sidebarTab === "features" && (
                                 <>
                                     <div className="unified-panel-header">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div className="unified-panel-title-row">
                                             <Building2 size={15} color="#10b981" />
                                             <h2 className="unified-panel-title">Features</h2>
                                         </div>
@@ -1178,15 +1167,7 @@ export default function UnifiedEditor() {
                                             {activeArea && (
                                                 <button
                                                     onClick={handleDeselectArea}
-                                                    style={{
-                                                        background: 'transparent',
-                                                        border: 'none',
-                                                        color: 'var(--color-text-secondary)',
-                                                        fontSize: '10px',
-                                                        cursor: 'pointer',
-                                                        textDecoration: 'underline',
-                                                        padding: 0
-                                                    }}
+                                                    className="unified-text-link-btn"
                                                     title="Deselect active boundary"
                                                 >
                                                     Deselect
@@ -1196,26 +1177,22 @@ export default function UnifiedEditor() {
 
                                         {activeArea ? (
                                             <div
-                                                className="unified-active-parcel-card"
+                                                className="unified-active-parcel-card unified-clickable"
                                                 onClick={() => handleSelectArea(activeArea, true)}
-                                                style={{ cursor: 'pointer' }}
                                                 title="Click to zoom & frame boundary on map"
                                             >
                                                 <div className="unified-active-parcel-info">
                                                     <span
+                                                        className="unified-color-dot--md"
                                                         style={{
-                                                            width: '9px',
-                                                            height: '9px',
-                                                            borderRadius: '50%',
-                                                            backgroundColor: activeArea.color || '#3b82f6',
-                                                            flexShrink: 0
+                                                            backgroundColor: activeArea.color || '#3b82f6'
                                                         }}
                                                     />
-                                                    <div style={{ overflow: 'hidden' }}>
-                                                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                                    <div className="unified-clip">
+                                                        <div className="unified-item-name">
                                                             {activeArea.name}
                                                         </div>
-                                                        <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                                                        <div className="unified-item-sub">
                                                             {activeArea.area_sqft ? `${Math.round(activeArea.area_sqft).toLocaleString()} sq ft • Active Parcel` : "Active Parcel"}
                                                         </div>
                                                     </div>
@@ -1223,7 +1200,7 @@ export default function UnifiedEditor() {
                                             </div>
                                         ) : (
                                             <div className="unified-locked-banner">
-                                                <Lock size={14} color="#f87171" style={{ flexShrink: 0 }} />
+                                                <Lock size={14} color="#f87171" className="unified-no-shrink" />
                                                 <span>Select an active boundary in the Boundaries menu to place features.</span>
                                             </div>
                                         )}
@@ -1380,19 +1357,7 @@ export default function UnifiedEditor() {
                                         {inspectedItem.type === "structure" && (
                                             <button
                                                 onClick={() => navigate(`/render/${inspectedItem.data.id}`)}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px',
-                                                    background: '#6366f1',
-                                                    color: 'var(--color-on-accent)',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    padding: '2px 6px',
-                                                    fontSize: '10px',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer'
-                                                }}
+                                                className="unified-inspector-studio-btn"
                                             >
                                                 <Layers size={11} /> 3D Studio
                                             </button>
@@ -1465,7 +1430,7 @@ export default function UnifiedEditor() {
                                             </div>
                                             <div className="unified-inspector-row">
                                                 <span className="label">Zone Type</span>
-                                                <span style={{ textTransform: 'capitalize' }}>{inspectedItem.data.type || "Lot"}</span>
+                                                <span className="unified-capitalize">{inspectedItem.data.type || "Lot"}</span>
                                             </div>
                                             <div className="unified-inspector-row">
                                                 <span className="label">Boundary Details</span>
@@ -1505,7 +1470,7 @@ export default function UnifiedEditor() {
                                         <>
                                             <div className="unified-inspector-row">
                                                 <span className="label">Type</span>
-                                                <span style={{ textTransform: 'capitalize' }}>{inspectedItem.data.type}</span>
+                                                <span className="unified-capitalize">{inspectedItem.data.type}</span>
                                             </div>
                                             <div className="unified-inspector-row">
                                                 <span className="label">Feature Details</span>
@@ -1624,7 +1589,7 @@ export default function UnifiedEditor() {
                             {/* Boundary Constraint Toast Warning */}
                             {warningToast && (
                                 <div className="unified-warning-toast">
-                                    <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
+                                    <AlertTriangle size={15} className="unified-warning-icon" />
                                     {warningToast}
                                 </div>
                             )}

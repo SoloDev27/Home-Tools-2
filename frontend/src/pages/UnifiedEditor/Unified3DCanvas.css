@@ -386,3 +386,49 @@
     color: var(--color-text-secondary);
     font-size: 15px;
 }
+
+/* Panel utilities extracted from inline styles. */
+.u3d-panel-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.u3d-section-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.u3d-menu .u3d-flex {
+    flex: 1;
+}
+
+.u3d-field--offset {
+    margin-top: 10px;
+}
+
+.u3d-inline-row {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+.u3d-empty-areas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    justify-content: center;
+    pointer-events: auto;
+    max-width: 460px;
+}
+
+.u3d-btn--fixed {
+    flex: 0 0 auto;
+}
+
+.u3d-area-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+}

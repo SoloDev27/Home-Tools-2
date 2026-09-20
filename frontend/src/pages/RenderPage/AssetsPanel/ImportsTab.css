@@ -1,0 +1,11 @@
+.imports-upload-icon {
+    font-size: 24px;
+}
+
+.imports-file-input {
+    display: none;
+}
+
+.imports-search-input {
+    margin-top: var(--spacing-2);
+}

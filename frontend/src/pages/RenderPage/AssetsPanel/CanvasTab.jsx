@@ -35,7 +35,7 @@ export default function CanvasTab({
 
     return (
         <li className="menu-item-container">
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Theme</h4>
                 <div className="settings-button-grid">
                     {themes.map(t => (
@@ -105,7 +105,7 @@ export default function CanvasTab({
                 </div>
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Snapping</h4>
                 {toggleBtn("gridSnap", "Grid Snap", "G")}
                 {toggleBtn("edgeSnap", "Edge Snap", "E")}
@@ -116,7 +116,7 @@ export default function CanvasTab({
                 </div>
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Measurements</h4>
                 {toggleBtn("showMeasurements", "Show Measurements", "M")}
                 <div className="settings-row stacked">
@@ -130,7 +130,7 @@ export default function CanvasTab({
                 </div>
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Section Walls</h4>
                 <div className="settings-row stacked">
                     {label("Wall Padding")}
@@ -146,7 +146,7 @@ export default function CanvasTab({
                 </div>
             </div>
 
-            <div className="menu-tools-section" style={{ marginTop: 12 }}>
+            <div className="menu-tools-section menu-tools-section-spaced">
                 <h4>Rooms</h4>
                 {toggleBtn("roomAutoColors", "Room Auto-Colors")}
             </div>
