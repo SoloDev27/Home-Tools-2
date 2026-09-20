@@ -32,6 +32,18 @@
   --input-bg: var(--color-background-surface);
   --input-border: var(--color-border-emphasized);
   --input-focus: var(--color-accent);
+
+  /* shadcn-era names a few older stylesheets still reference. These were left
+     undefined when shadcn was removed, so those borders and radii silently
+     disappeared. Aliased here rather than editing every call site. */
+  --border: var(--color-border);
+  --accent: var(--color-accent);
+  --accent-bg: var(--color-accent-muted);
+  --radius-sm: var(--radius-element);
+  --radius-md: var(--radius-element);
+  --radius-lg: var(--radius-container);
+  --radius-xl: var(--radius-page);
+  --bg-card: var(--color-background-card);
 }
 
 html.dark {
