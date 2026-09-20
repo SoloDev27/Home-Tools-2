@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { thunkAddWorkspace, thunkRemoveWorkspace, thunkToggleVisibility } from "../../../../redux/overlays";
 import { Eye, EyeOff, Layers, Map as MapIcon, Plus, Trash2 } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
+import "./LayersTab.css";
 
 export default function LayersTab() {
     const { mapId } = useParams();
@@ -24,33 +25,25 @@ export default function LayersTab() {
     const workspaceMaps = allMaps.filter(m => workspaceMapIds.includes(m.id));
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--color-background-surface)', color: 'var(--color-text-primary)' }}>
-            <div style={{ padding: '12px 12px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="layers-tab">
+            <div className="layers-tab-header">
                 <Layers size={16} />
-                <h2 style={{ fontSize: '13px', fontWeight: 600, margin: 0 }}>Map Workspace</h2>
+                <h2 className="layers-tab-title">Map Workspace</h2>
             </div>
             
-            <div style={{ flex: 1, overflowY: 'auto', padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div className="layers-tab-body">
                 
                 {/* CURRENT WORKSPACE SECTION */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <h3 style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Current Workspace</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div className="layers-section">
+                    <h3 className="layers-section-title">Current Workspace</h3>
+                    <div className="layers-list">
                         {/* The base map */}
                         {currentMap && (
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '8px 10px',
-                                borderRadius: '6px',
-                                border: '1px solid var(--color-border)',
-                                backgroundColor: 'var(--color-background-card)'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                    <MapIcon size={14} style={{ flexShrink: 0, opacity: 0.8 }} />
-                                    <span style={{ fontSize: '12px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {currentMap.name} <span style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>(Current)</span>
+                            <div className="layers-row">
+                                <div className="layers-row-main">
+                                    <MapIcon size={14} className="layers-row-icon" />
+                                    <span className="layers-row-name">
+                                        {currentMap.name} <span className="layers-row-tag">(Current)</span>
                                     </span>
                                 </div>
                             </div>
@@ -60,25 +53,16 @@ export default function LayersTab() {
                         {workspaceMaps.map(m => {
                             const isVisible = visibleMapIds.includes(m.id);
                             return (
-                                <div 
-                                    key={`ws-${m.id}`} 
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        padding: '8px 10px',
-                                        borderRadius: '6px',
-                                        border: '1px solid var(--color-border)',
-                                        backgroundColor: isVisible ? 'var(--color-background-card)' : 'transparent',
-                                        opacity: isVisible ? 1 : 0.6
-                                    }}
+                                <div
+                                    key={`ws-${m.id}`}
+                                    className={`layers-row${isVisible ? "" : " is-muted"}`}
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                        <MapIcon size={14} style={{ flexShrink: 0 }} />
-                                        <span style={{ fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: isVisible ? 500 : 400 }}>{m.name}</span>
+                                    <div className="layers-row-main">
+                                        <MapIcon size={14} className="layers-row-icon" />
+                                        <span className={`layers-row-name${isVisible ? "" : " is-regular"}`}>{m.name}</span>
                                     </div>
                                     
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                                    <div className="layers-row-actions">
                                         <Button 
                                             variant="ghost" 
                                             size="small"
@@ -97,7 +81,7 @@ export default function LayersTab() {
                         })}
                         
                         {workspaceMaps.length === 0 && (
-                            <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontStyle: 'italic', paddingLeft: '2px' }}>
+                            <div className="layers-note">
                                 No additional layers.
                             </div>
                         )}
@@ -105,31 +89,23 @@ export default function LayersTab() {
                 </div>
 
                 {/* AVAILABLE LAYERS SECTION */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <h3 style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>Available Layers</h3>
+                <div className="layers-section">
+                    <h3 className="layers-section-title">Available Layers</h3>
                     
                     {availableMaps.length === 0 ? (
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontStyle: 'italic', textAlign: 'center', padding: '12px', border: '1px dashed var(--color-border)', borderRadius: '6px' }}>
+                        <div className="layers-empty">
                             No other maps.
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div className="layers-list">
                             {availableMaps.map(m => (
-                                <div 
-                                    key={`avail-${m.id}`} 
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        padding: '8px 10px',
-                                        borderRadius: '6px',
-                                        border: '1px solid var(--color-border)',
-                                        backgroundColor: 'var(--color-background-card)'
-                                    }}
+                                <div
+                                    key={`avail-${m.id}`}
+                                    className="layers-row"
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                                        <MapIcon size={14} style={{ flexShrink: 0, opacity: 0.6 }} />
-                                        <span style={{ fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+                                    <div className="layers-row-main">
+                                        <MapIcon size={14} className="layers-row-icon is-dim" />
+                                        <span className="layers-row-name">{m.name}</span>
                                     </div>
                                     
                                     <Button 

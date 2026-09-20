@@ -1,0 +1,123 @@
+.layers-tab {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--color-background-surface);
+    color: var(--color-text-primary);
+}
+
+.layers-tab-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.layers-tab-title {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+}
+
+.layers-tab-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+}
+
+.layers-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.layers-section-title {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+}
+
+.layers-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.layers-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    background: var(--color-background-card);
+}
+
+.layers-row.is-muted {
+    background: transparent;
+    opacity: 0.6;
+}
+
+.layers-row-main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    overflow: hidden;
+}
+
+.layers-row-icon {
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+.layers-row-icon.is-dim {
+    opacity: 0.6;
+}
+
+.layers-row-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.layers-row-name.is-regular {
+    font-weight: var(--font-weight-normal);
+}
+
+.layers-row-tag {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.layers-row-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    flex-shrink: 0;
+}
+
+.layers-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    padding-left: var(--spacing-1);
+}
+
+.layers-empty {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: var(--spacing-3);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-element);
+}
