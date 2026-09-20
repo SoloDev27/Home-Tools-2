@@ -436,8 +436,15 @@ export default function Unified3DCanvas({
 
     // ---- objects (persisted on the parcel) ----
     const [objects, setObjects] = useState(() => readObjects(activeArea));
+    // Mirror of `objects` so callbacks can read the latest list without being
+    // re-created on every edit.
+    const objectsRef = useRef(objects);
+    useEffect(() => { objectsRef.current = objects; }, [objects]);
+
     useEffect(() => {
-        setObjects(readObjects(activeArea));
+        const restored = readObjects(activeArea);
+        objectsRef.current = restored;
+        setObjects(restored);
         setSelectedId(null);
         setSelectedStructure(null);
         // Resync only when the parcel changes; object edits stay local until committed.
@@ -445,6 +452,7 @@ export default function Unified3DCanvas({
     }, [activeArea?.id]);
 
     const commit = useCallback((next) => {
+        objectsRef.current = next;
         setObjects(next);
         if (activeArea && onUpdateArea) {
             onUpdateArea(activeArea.id, { extra_info: withObjects(activeArea, next) });
@@ -564,10 +572,23 @@ export default function Unified3DCanvas({
         selectObject(clamped.id);
     }, [selected, objects, boundaryPoints, commit, activeArea, selectObject]);
 
+    // Inspector edits update the scene immediately but coalesce their write:
+    // typing a name should not PUT once per keystroke.
+    const patchTimer = useRef(null);
+    useEffect(() => () => window.clearTimeout(patchTimer.current), []);
+
     const patchSelected = useCallback((patch) => {
         if (!selectedId) return;
-        commit(updateObject(objects, selectedId, patch));
-    }, [objects, selectedId, commit]);
+        const next = updateObject(objectsRef.current, selectedId, patch);
+        objectsRef.current = next;
+        setObjects(next);
+        window.clearTimeout(patchTimer.current);
+        patchTimer.current = window.setTimeout(() => {
+            if (activeArea && onUpdateArea) {
+                onUpdateArea(activeArea.id, { extra_info: withObjects(activeArea, objectsRef.current) });
+            }
+        }, 450);
+    }, [selectedId, activeArea, onUpdateArea]);
 
     // ---- keyboard shortcuts ----
     useEffect(() => {
