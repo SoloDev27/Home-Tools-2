@@ -1,0 +1,157 @@
+.data-tab {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    height: 100%;
+    overflow-y: auto;
+    padding: var(--spacing-3);
+}
+
+.data-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.data-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--spacing-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    background: var(--color-background-surface);
+    color: var(--color-text-primary);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+}
+
+.data-group-titles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+    overflow: hidden;
+}
+
+.data-group-name {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.data-group-badge {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+}
+
+.data-group-chevron {
+    flex-shrink: 0;
+    transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.data-group-chevron.is-open {
+    transform: rotate(180deg);
+}
+
+.data-dropzone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    min-height: 40px;
+    margin-top: var(--spacing-1);
+    padding: var(--spacing-1);
+    border: 1px dashed transparent;
+    border-radius: var(--radius-element);
+}
+
+.data-empty {
+    padding: var(--spacing-3);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    text-align: center;
+}
+
+.data-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    background: var(--color-background-card);
+    cursor: pointer;
+    z-index: 1;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.data-item-main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex: 1;
+    overflow: hidden;
+}
+
+.data-item-handle {
+    display: flex;
+    align-items: center;
+    cursor: grab;
+    opacity: 0.6;
+}
+
+.data-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.data-item-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex: 1;
+    overflow: hidden;
+}
+
+.data-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.data-item-dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: var(--radius-full);
+    background: var(--color-warning);
+}
+
+.data-item-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.data-item-emoji {
+    font-size: var(--font-size-lg);
+}
+
+/* Only the bundled point SVGs are dark and need inverting, and only on a dark
+   theme — user-supplied icons must keep their own colours. */
+.dark .data-item-img.is-mono {
+    filter: invert(1);
+}
