@@ -21,6 +21,7 @@
     left: 16px;
     right: 16px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
@@ -64,6 +65,8 @@
 .u3d-segmented {
     pointer-events: auto;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 3px;
     padding: 3px;
     border-radius: 10px;
@@ -254,6 +257,48 @@
 .u3d-swatch.active {
     outline: 2px solid #ffffff;
     outline-offset: 1px;
+}
+
+.u3d-object-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 190px;
+    overflow-y: auto;
+}
+
+.u3d-object-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(2, 6, 16, 0.45);
+    color: #cbd5e1;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.u3d-object-row:hover {
+    border-color: rgba(99, 102, 241, 0.6);
+    color: #f8fafc;
+}
+
+.u3d-object-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.u3d-object-meta {
+    flex-shrink: 0;
+    color: #64748b;
+    font-variant-numeric: tabular-nums;
 }
 
 .u3d-inspector-actions {

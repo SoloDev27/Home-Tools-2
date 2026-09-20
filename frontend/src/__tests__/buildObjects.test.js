@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
     PRIMITIVES, findPrimitive, createBuildObject, nextName, snap,
     pointInPolygon, footprintInside, clampIntoPolygon, polygonRadius,
-    readObjects, withObjects, cameraPositionFor, updateObject, removeObject,
-    applyScaleToObject, metersToFeet, feetToMeters
+    readObjects, withObjects, cameraPositionFor, azimuthFromPosition,
+    updateObject, removeObject, applyScaleToObject, metersToFeet, feetToMeters
 } from "../functions/buildObjects";
 
 // 20m x 20m square parcel centred on the origin (local metres).
@@ -166,6 +166,24 @@ describe("buildObjects", () => {
             const dist = (p) => Math.hypot(...p);
             expect(dist(far)).toBeGreaterThan(dist(near));
             expect(cameraPositionFor("top", 10)[0]).toBe(0);
+        });
+
+        it("orbits the elevation views around a settable front", () => {
+            // Front at azimuth 0 looks from +Z; back from -Z; right from +X.
+            expect(cameraPositionFor("front", 10, 0)[2]).toBeGreaterThan(0);
+            expect(cameraPositionFor("back", 10, 0)[2]).toBeLessThan(0);
+            expect(cameraPositionFor("right", 10, 0)[0]).toBeGreaterThan(0);
+
+            // Rotating front by 90 degrees moves the camera to +X.
+            const turned = cameraPositionFor("front", 10, Math.PI / 2);
+            expect(turned[0]).toBeGreaterThan(0);
+            expect(turned[2]).toBeCloseTo(0, 6);
+        });
+
+        it("reads the front azimuth from a camera position", () => {
+            expect(azimuthFromPosition({ x: 0, z: 5 })).toBeCloseTo(0, 6);
+            expect(azimuthFromPosition({ x: 5, z: 0 })).toBeCloseTo(Math.PI / 2, 6);
+            expect(azimuthFromPosition(null)).toBe(0);
         });
     });
 });

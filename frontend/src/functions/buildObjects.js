@@ -172,19 +172,42 @@ export const CAMERA_PRESETS = [
     { id: "front", label: "Front", icon: "Square" }
 ];
 
+/** Camera azimuth (radians about +Y) that the elevation presets are measured from. */
+export function azimuthFromPosition(position) {
+    if (!position) return 0;
+    return Math.atan2(position.x ?? 0, position.z ?? 0);
+}
+
 /**
  * Camera position for a preset, framed to a scene radius.
- * `orbit` is a high three-quarter view that shows the parcel edge clearly.
+ *
+ * `orbit` is a free three-quarter view that shows the parcel edge clearly; the
+ * elevation presets (`front`, `right`, `back`, `left`) orbit the scene at
+ * `azimuth`, which the user sets from the current view — without that, "front"
+ * has no meaning on a plan of a parcel.
  */
-export function cameraPositionFor(preset, radius) {
+export function cameraPositionFor(preset, radius, azimuth = 0) {
     const r = Math.max(6, radius);
+    const dist = r * 2.05;
+    const height = r * 0.4;
+    const at = (theta) => [
+        dist * Math.sin(theta),
+        height,
+        dist * Math.cos(theta)
+    ];
     switch (preset) {
         case "top":
             return [0, r * 2.1, 0.01];
         case "iso":
             return [r * 1.5, r * 1.5, r * 1.5];
         case "front":
-            return [0, r * 0.45, r * 2.1];
+            return at(azimuth);
+        case "right":
+            return at(azimuth + Math.PI / 2);
+        case "back":
+            return at(azimuth + Math.PI);
+        case "left":
+            return at(azimuth - Math.PI / 2);
         case "orbit":
         default:
             return [r * 1.25, r * 0.95, r * 1.6];

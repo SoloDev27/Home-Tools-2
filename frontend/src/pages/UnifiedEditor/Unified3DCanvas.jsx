@@ -15,7 +15,7 @@ import {
     PALETTE, findPrimitive, createBuildObject, nextName,
     footprintInside, clampIntoPolygon, polygonRadius, readObjects, withObjects,
     cameraPositionFor, updateObject, removeObject, applyScaleToObject, snap,
-    metersToFeet, feetToMeters, SNAP_METERS, CAMERA_PRESETS
+    metersToFeet, feetToMeters, SNAP_METERS, CAMERA_PRESETS, azimuthFromPosition
 } from "../../functions/buildObjects";
 import "./Unified3DCanvas.css";
 
@@ -78,15 +78,26 @@ function ringToShape(points) {
     return shape;
 }
 
+/**
+ * A build object's group origin is its vertical CENTRE, so a gizmo attached to
+ * the group sits in the middle of the shape. `obj.y` still means the base
+ * elevation; this converts between them.
+ */
+function groupCenterY(obj) {
+    return (obj.y || 0) + obj.h / 2;
+}
+
+/** Local offset from the group origin (the centre) to the mesh. */
 function meshOffsetY(obj) {
-    // Roof and slab rest their base on the group origin; the rest are centred.
-    if (obj.kind === "roof") return 0;
-    return obj.h / 2;
+    // The roof wedge is built spanning 0..h from its base, so its centre is h/2
+    // above the group origin; everything else is modelled centred on the origin.
+    if (obj.kind === "roof") return -obj.h / 2;
+    return 0;
 }
 
 // ---------------------------------------------------------------- scene parts
 
-function ParcelGround({ points, color = "#6366f1" }) {
+function ParcelGround({ points, color = "#6366f1", onMove, onPlace }) {
     const { slab, outline } = useMemo(() => {
         if (!points || points.length < 3) return { slab: null, outline: null };
         const shape = ringToShape(points);
@@ -97,12 +108,39 @@ function ParcelGround({ points, color = "#6366f1" }) {
         return { slab: geo, outline: pts };
     }, [points]);
 
+    // The pad is the placement surface: the ray lands on its top face, and a
+    // separate invisible plane behind it would be occluded.
+    const downRef = useRef(null);
+    const DRAG_SLOP = 6; // px
+
     if (!slab || !outline) return null;
 
     return (
         <group>
             {/* Buildable pad — the only surface that accepts objects. */}
-            <mesh geometry={slab} position={[0, -FLOOR_DEPTH, 0]} receiveShadow>
+            <mesh
+                geometry={slab}
+                position={[0, -FLOOR_DEPTH, 0]}
+                receiveShadow
+                onPointerDown={(e) => { downRef.current = { x: e.clientX, y: e.clientY }; }}
+                onPointerMove={(e) => {
+                    if (!onPlace) return;
+                    e.stopPropagation();
+                    onMove?.(e.point.x, e.point.z);
+                }}
+                onPointerOut={() => { downRef.current = null; onMove?.(null, null); }}
+                onClick={(e) => {
+                    if (!onPlace) return;
+                    e.stopPropagation();
+                    const down = downRef.current;
+                    downRef.current = null;
+                    if (down) {
+                        const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+                        if (moved > DRAG_SLOP) return; // an orbit/pan, not a click
+                    }
+                    onPlace(e.point.x, e.point.z);
+                }}
+            >
                 <meshStandardMaterial color="#0e1a2e" roughness={0.95} metalness={0.02} />
             </mesh>
 
@@ -294,7 +332,7 @@ function BuildObjectMesh({ obj, isSelected, materialStyle, onSelect, onReady }) 
     return (
         <group
             ref={groupRef}
-            position={[obj.x, obj.y || 0, obj.z]}
+            position={[obj.x, groupCenterY(obj), obj.z]}
             rotation={[0, obj.rot || 0, 0]}
         >
             <mesh
@@ -325,7 +363,7 @@ function BuildObjectMesh({ obj, isSelected, materialStyle, onSelect, onReady }) 
 function GhostPreview({ obj, valid }) {
     const color = valid ? "#4ade80" : "#f87171";
     return (
-        <group position={[obj.x, obj.y || 0, obj.z]} rotation={[0, obj.rot || 0, 0]}>
+        <group position={[obj.x, groupCenterY(obj), obj.z]} rotation={[0, obj.rot || 0, 0]}>
             <mesh position={[0, meshOffsetY(obj), 0]}>
                 <PrimitiveGeometry kind={obj.kind} w={obj.w} d={obj.d} h={obj.h} />
                 <meshStandardMaterial color={color} transparent opacity={0.4} depthWrite={false} />
@@ -335,34 +373,47 @@ function GhostPreview({ obj, valid }) {
     );
 }
 
-/** Invisible catcher for placement: gives the ground point under the cursor. */
-function GroundCatcher({ size, onMove, onClick }) {
+/**
+ * Extrude handle, anchored to the TOP face so dragging it raises the shape
+ * instead of moving the whole object. During the drag the object's height is
+ * updated live; the release commits it.
+ */
+function TopExtrudeGizmo({ obj, onLive, onCommit }) {
+    const pivot = useMemo(() => new THREE.Object3D(), []);
+
+    useEffect(() => {
+        pivot.position.set(obj.x, (obj.y || 0) + obj.h, obj.z);
+    }, [pivot, obj.x, obj.y, obj.h, obj.z]);
+
     return (
-        <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -0.01, 0]}
-            onPointerMove={(e) => { e.stopPropagation(); onMove(e.point.x, e.point.z); }}
-            onPointerOut={() => onMove(null, null)}
-            onClick={(e) => { e.stopPropagation(); onClick(e.point.x, e.point.z); }}
-        >
-            <planeGeometry args={[size, size]} />
-            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-        </mesh>
+        <>
+            <primitive object={pivot} />
+            <TransformControls
+                object={pivot}
+                mode="translate"
+                showX={false}
+                showZ={false}
+                size={0.85}
+                translationSnap={SNAP_METERS}
+                onObjectChange={() => onLive(Math.max(0.2, pivot.position.y - (obj.y || 0)))}
+                onMouseUp={onCommit}
+            />
+        </>
     );
 }
 
 /** Frames the camera to the parcel; reframes on preset change or fit request. */
-function CameraRig({ preset, radius, fitNonce, controlsRef }) {
+function CameraRig({ preset, radius, azimuth, fitNonce, controlsRef }) {
     const { camera } = useThree();
     useEffect(() => {
-        const [x, y, z] = cameraPositionFor(preset, radius);
+        const [x, y, z] = cameraPositionFor(preset, radius, azimuth);
         camera.position.set(x, y, z);
         camera.lookAt(0, 0, 0);
         if (controlsRef.current) {
             controlsRef.current.target.set(0, 0, 0);
             controlsRef.current.update();
         }
-    }, [preset, radius, fitNonce, camera, controlsRef]);
+    }, [preset, radius, azimuth, fitNonce, camera, controlsRef]);
     return null;
 }
 
@@ -382,6 +433,10 @@ export default function Unified3DCanvas({
     const [tool, setTool] = useState("select");
     const [materialStyle, setMaterialStyle] = useState("solid");
     const [cameraPreset, setCameraPreset] = useState("orbit");
+    // The direction the "Front" elevation looks from. Meaningless until the
+    // user sets it: a parcel has no inherent front, so the default is +Z and
+    // the Set Front action captures the current view.
+    const [frontAzimuth, setFrontAzimuth] = useState(0);
     const [fitNonce, setFitNonce] = useState(0);
     const [showGrid, setShowGrid] = useState(true);
     const [selectedId, setSelectedId] = useState(null);
@@ -501,6 +556,17 @@ export default function Unified3DCanvas({
     }, []);
     useEffect(() => () => window.clearTimeout(noticeTimer.current), []);
 
+    // A parcel has no inherent front, so "Front" only means something once the
+    // user points at it. Capture the current viewing direction as front, then
+    // Front/Back/Left/Right elevations are measured from it.
+    const setFrontFromView = useCallback(() => {
+        const cam = controlsRef.current?.object;
+        if (!cam) return;
+        setFrontAzimuth(azimuthFromPosition(cam.position));
+        setCameraPreset("front");
+        flash("Front set to this viewing direction.");
+    }, [flash]);
+
     const placeAt = (x, z) => {
         const prim = findPrimitive(tool);
         if (!prim || !activeArea) return;
@@ -516,8 +582,11 @@ export default function Unified3DCanvas({
         const next = [...objects, candidate];
         commit(next);
         selectObject(candidate.id);
+        flash(`Placed ${candidate.name}. Click again to add another, or press V to select.`);
     };
 
+    // The gizmo is attached to the object's group, whose origin is the object's
+    // centre, so a translation has to be converted back to a base elevation.
     const handleGizmoCommit = useCallback(() => {
         const target = gizmoTarget;
         const obj = objects.find((o) => o.id === selectedId);
@@ -528,26 +597,44 @@ export default function Unified3DCanvas({
                 ...obj,
                 x: snap(target.position.x),
                 z: snap(target.position.z),
-                y: Math.max(0, snap(target.position.y))
+                y: Math.max(0, snap(target.position.y - obj.h / 2))
             };
             candidate = clampIntoPolygon(candidate, boundaryPoints);
             commit(updateObject(objects, selectedId, { x: candidate.x, z: candidate.z, y: candidate.y }));
-            target.position.set(candidate.x, candidate.y, candidate.z);
+            target.position.set(candidate.x, groupCenterY(candidate), candidate.z);
         } else if (tool === "rotate") {
             const rot = target.rotation.y;
             commit(updateObject(objects, selectedId, { rot }));
-        } else if (tool === "scale" || tool === "extrude") {
+        } else if (tool === "scale") {
             const scaled = applyScaleToObject(obj, target.scale);
             target.scale.set(1, 1, 1);
-            const next = updateObject(objects, selectedId, { w: scaled.w, d: scaled.d, h: scaled.h });
             // A scaled footprint may no longer fit; pull it back inside.
             const clamped = clampIntoPolygon(
                 { ...obj, w: scaled.w, d: scaled.d, h: scaled.h },
                 boundaryPoints
             );
-            commit(updateObject(next, selectedId, { x: clamped.x, z: clamped.z }));
+            commit(updateObject(objects, selectedId, {
+                w: scaled.w, d: scaled.d, h: scaled.h, x: clamped.x, z: clamped.z
+            }));
         }
     }, [gizmoTarget, objects, selectedId, tool, boundaryPoints, commit]);
+
+    // Live (unpersisted) edit while a gizmo is being dragged.
+    const setObjectLocal = useCallback((patch) => {
+        const next = updateObject(objectsRef.current, selectedId, patch);
+        objectsRef.current = next;
+        setObjects(next);
+    }, [selectedId]);
+
+    // Extrude drag: the handle rides the top face, so the new height is simply
+    // how far above the base it currently sits.
+    const handleExtrudeLive = useCallback((h) => {
+        setObjectLocal({ h });
+    }, [setObjectLocal]);
+
+    const handleExtrudeCommit = useCallback(() => {
+        commit(objectsRef.current);
+    }, [commit]);
 
     const handleDelete = useCallback((id = selectedId) => {
         if (!id) return;
@@ -610,9 +697,8 @@ export default function Unified3DCanvas({
 
     const transformMode = tool === "move" ? "translate"
         : tool === "rotate" ? "rotate"
-            : (tool === "scale" || tool === "extrude") ? "scale"
+            : tool === "scale" ? "scale"
                 : null;
-    const yOnly = tool === "rotate" || tool === "extrude";
 
     const activeColor = activeArea?.color || "#6366f1";
     const canBuild = Boolean(activeArea) && boundaryPoints.length >= 3;
@@ -635,7 +721,13 @@ export default function Unified3DCanvas({
                 camera={{ position: [40, 30, 50], fov: 45, near: 0.1, far: 2000 }}
                 onPointerMissed={() => { if (!isPlacing) { setSelectedId(null); setSelectedStructure(null); } }}
             >
-                <CameraRig preset={cameraPreset} radius={radius} fitNonce={fitNonce} controlsRef={controlsRef} />
+                <CameraRig
+                    preset={cameraPreset}
+                    radius={radius}
+                    azimuth={frontAzimuth}
+                    fitNonce={fitNonce}
+                    controlsRef={controlsRef}
+                />
 
                 <ambientLight intensity={0.55} />
                 <hemisphereLight args={["#dbeafe", "#0b1220", 0.5]} />
@@ -668,7 +760,14 @@ export default function Unified3DCanvas({
                     />
                 )}
 
-                {canBuild && <ParcelGround points={boundaryPoints} color={activeColor} />}
+                {canBuild && (
+                    <ParcelGround
+                        points={boundaryPoints}
+                        color={activeColor}
+                        onMove={isPlacing ? (x, z) => setHoverPoint(x == null ? null : [x, z]) : undefined}
+                        onPlace={isPlacing ? (x, z) => placeAt(x, z) : undefined}
+                    />
+                )}
 
                 {sections.map((sec, i) => (
                     <Section3DGround
@@ -714,25 +813,25 @@ export default function Unified3DCanvas({
 
                 {ghost && <GhostPreview obj={ghost} valid={ghostValid} />}
 
-                {isPlacing && canBuild && (
-                    <GroundCatcher
-                        size={radius * 6}
-                        onMove={(x, z) => setHoverPoint(x == null ? null : [x, z])}
-                        onClick={(x, z) => placeAt(x, z)}
-                    />
-                )}
-
                 {gizmoTarget && transformMode && (
                     <TransformControls
                         object={gizmoTarget}
                         mode={transformMode}
                         size={0.85}
-                        showX={!yOnly}
-                        showZ={!yOnly}
+                        showX={tool !== "rotate"}
+                        showZ={tool !== "rotate"}
                         translationSnap={SNAP_METERS}
                         rotationSnap={Math.PI / 12}
                         scaleSnap={0.05}
                         onMouseUp={handleGizmoCommit}
+                    />
+                )}
+
+                {tool === "extrude" && selected && (
+                    <TopExtrudeGizmo
+                        obj={selected}
+                        onLive={handleExtrudeLive}
+                        onCommit={handleExtrudeCommit}
                     />
                 )}
 
@@ -787,6 +886,12 @@ export default function Unified3DCanvas({
                             </button>
                         );
                     })}
+                    <button
+                        onClick={setFrontFromView}
+                        title="Set Front to the current view — the Front elevation then looks from here"
+                    >
+                        <Compass size={13} /> Set Front
+                    </button>
                     <button onClick={() => setFitNonce((n) => n + 1)} title="Frame the parcel  ·  F">
                         <Maximize2 size={13} /> Fit
                     </button>
@@ -870,7 +975,7 @@ export default function Unified3DCanvas({
                     <div className="u3d-inspector-empty">
                         {isPlacing
                             ? "Move over the parcel and click to place. The ghost turns green where the footprint fits."
-                            : "Select an object to edit its size, height, rotation and colour. Use the rail to place new blocks."}
+                            : "Select an object to edit its size, height, rotation and colour."}
                     </div>
                 ) : (
                     <>
@@ -934,6 +1039,29 @@ export default function Unified3DCanvas({
                             <button className="u3d-btn danger" onClick={() => handleDelete()}>
                                 <Trash2 size={12} /> Delete
                             </button>
+                        </div>
+                    </>
+                )}
+
+                {/* Objects are tiny on a large parcel, so a list beats hunting
+                    for them on the canvas. Shown while nothing is selected. */}
+                {!selected && !selectedStructure && objects.length > 0 && (
+                    <>
+                        <h3 style={{ marginTop: 14 }}>Objects ({objects.length})</h3>
+                        <div className="u3d-object-list">
+                            {objects.map((o) => (
+                                <button
+                                    key={o.id}
+                                    className="u3d-object-row"
+                                    onClick={() => selectObject(o.id)}
+                                    title="Select this object"
+                                >
+                                    <span className="u3d-object-name">{o.name || o.kind}</span>
+                                    <span className="u3d-object-meta">
+                                        {Math.round(metersToFeet(o.w))}×{Math.round(metersToFeet(o.d))}×{Math.round(metersToFeet(o.h))} ft
+                                    </span>
+                                </button>
+                            ))}
                         </div>
                     </>
                 )}
