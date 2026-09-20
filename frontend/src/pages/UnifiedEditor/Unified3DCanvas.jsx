@@ -103,7 +103,7 @@ function ParcelGround({ points, color = "#6366f1" }) {
         <group>
             {/* Buildable pad — the only surface that accepts objects. */}
             <mesh geometry={slab} position={[0, -FLOOR_DEPTH, 0]} receiveShadow>
-                <meshStandardMaterial color="#0b1220" roughness={0.95} metalness={0.02} />
+                <meshStandardMaterial color="#0e1a2e" roughness={0.95} metalness={0.02} />
             </mesh>
 
             {/* Bright boundary line (Line2, so lineWidth actually renders). */}
@@ -231,6 +231,9 @@ function StructureMass({ item, centerLng, centerLat, isSelected, onSelect }) {
         return { geometry: null, position: [0, 0, 0] };
     }, [item, centerLng, centerLat]);
 
+    const edges = useMemo(() => (geometry ? new THREE.EdgesGeometry(geometry) : null), [geometry]);
+    useEffect(() => () => { edges?.dispose(); }, [edges]);
+
     if (!geometry) return null;
     const color = isSelected ? "#6366f1" : (item.color || "#3b82f6");
 
@@ -239,9 +242,11 @@ function StructureMass({ item, centerLng, centerLat, isSelected, onSelect }) {
             <mesh geometry={geometry} castShadow receiveShadow>
                 <meshStandardMaterial color={color} roughness={0.4} metalness={0.1} transparent opacity={0.85} />
             </mesh>
-            <lineSegments geometry={new THREE.EdgesGeometry(geometry)}>
-                <lineBasicMaterial color={isSelected ? "#ffffff" : "#93c5fd"} transparent opacity={0.7} />
-            </lineSegments>
+            {edges && (
+                <lineSegments geometry={edges}>
+                    <lineBasicMaterial color={isSelected ? "#ffffff" : "#93c5fd"} transparent opacity={0.7} />
+                </lineSegments>
+            )}
         </group>
     );
 }
@@ -950,7 +955,7 @@ export default function Unified3DCanvas({
                     {notice || statusHint}
                 </span>
 
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+                <span className="u3d-kbd-hint">
                     <kbd>V</kbd><kbd>G</kbd><kbd>R</kbd><kbd>S</kbd><kbd>E</kbd>
                     <kbd>1</kbd>–<kbd>6</kbd>
                     <kbd>F</kbd>

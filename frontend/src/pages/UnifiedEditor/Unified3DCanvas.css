@@ -337,6 +337,19 @@
     color: #a5b4fc;
 }
 
+.u3d-kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+    .u3d-kbd-hint {
+        display: none;
+    }
+}
+
 .u3d-empty {
     position: absolute;
     inset: 0;
