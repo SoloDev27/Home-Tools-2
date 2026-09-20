@@ -227,3 +227,101 @@ li {
 textarea.no-drag {
   resize: none !important;
 }
+
+/* ── Popup forms ─────────────────────────────────────────────────────────────
+   The point-editor popup renders .manage-points-form but no stylesheet ever
+   defined it, so it fell back to raw browser controls inside the dialog. These
+   are scoped to that form and use theme tokens only. */
+.manage-points-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.manage-points-form.hidden {
+  display: none;
+}
+
+.manage-points-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.manage-points-form label {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.manage-points-form input,
+.manage-points-form select,
+.manage-points-form textarea {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border-emphasized);
+  border-radius: var(--radius-element);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.manage-points-form input:focus,
+.manage-points-form select:focus,
+.manage-points-form textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.manage-points-form input:disabled,
+.manage-points-form select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.manage-points-form .hint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.manage-points-form .error-msg {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
+
+.manage-points-form .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.manage-points-form .primary-btn {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: none;
+  border-radius: var(--radius-element);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.manage-points-form .primary-btn:hover {
+  background: var(--color-text-accent);
+}
+
+.manage-points-form .delete-btn {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-element);
+  background: transparent;
+  color: var(--color-error);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.manage-points-form .delete-btn:hover {
+  background: var(--color-error-muted);
+}

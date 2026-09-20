@@ -1,3 +1,8 @@
+/**
+ * Custom marker picker. Previously a hardcoded light sheet (#fff surfaces,
+ * #007bff accent) that rendered as a white slab in dark mode. Now every value
+ * is an Astryx theme token, so it follows the locked system in both modes.
+ */
 .custom-point-modal-container {
     display: flex;
     justify-content: center;
@@ -7,31 +12,32 @@
 }
 
 .custom-point-modal {
-    padding: 24px;
-    background: #ffffff;
-    border-radius: 12px;
-    width: 520px;
-    max-width: 90vw;
-    height: 650px;
-    max-height: 90vh;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    width: 520px;
+    max-width: 90vw;
+    max-height: 82vh;
+    padding: var(--spacing-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    background: var(--color-background-popover);
+    box-shadow: var(--shadow-high);
 }
 
 .custom-point-modal h2 {
-    margin: 0 0 20px;
-    color: #1a1a1a;
-    font-size: 1.5rem;
+    margin: 0 0 var(--spacing-4);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
     flex-shrink: 0;
     text-align: center;
 }
 
 .input-row {
     display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
     flex-shrink: 0;
 }
 
@@ -46,108 +52,103 @@
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-2);
 }
 
 .input-group label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #666;
+    /* Label-over-value: small, muted, letter-spaced. */
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.06em;
 }
 
-.input-group input, .input-group select {
-    padding: 10px 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s;
-    background: #fafafa;
+.input-group input,
+.input-group select {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-border-emphasized);
+    border-radius: var(--radius-element);
+    background: var(--color-background-surface);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
-.input-group input:focus, .input-group select:focus {
+.input-group input:focus,
+.input-group select:focus {
     outline: none;
-    border-color: #007bff;
-    background: #fff;
+    border-color: var(--color-accent);
 }
 
 .icon-selector-section {
-    border: 1px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 2px; /* Container padding */
-    background: #fff;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
     min-height: 0;
     overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-container);
+    background: var(--color-background-surface);
 }
 
 .search-box {
-    padding: 12px;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-background-surface);
     z-index: 2;
 }
 
 .search-box input {
     width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #eee;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    background: #f8f9fa;
-    transition: all 0.2s;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-border-emphasized);
+    border-radius: var(--radius-full);
+    background: var(--color-background-card);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
 .search-box input:focus {
     outline: none;
-    background: #fff;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    border-color: var(--color-accent);
 }
 
 .icon-grid-container {
     overflow-y: auto;
     overflow-x: hidden;
     flex-grow: 1;
-    padding: 16px;
-    background: #fff;
+    padding: var(--spacing-4);
+    background: var(--color-background-surface);
 }
 
-/* Custom scrollbar */
 .icon-grid-container::-webkit-scrollbar {
     width: 8px;
 }
-.icon-grid-container::-webkit-scrollbar-track {
-    background: #f8f9fa;
-}
+
 .icon-grid-container::-webkit-scrollbar-thumb {
-    background: #e0e0e0;
-    border-radius: 4px;
-}
-.icon-grid-container::-webkit-scrollbar-thumb:hover {
-    background: #d0d0d0;
+    background: var(--color-track);
+    border-radius: var(--radius-full);
 }
 
 .grid-section-title {
-    margin: 20px 0 12px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #aaa;
+    margin: var(--spacing-4) 0 var(--spacing-3);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.1em;
 }
 
 .grid-section-title:first-child {
-    margin-top: 5px;
+    margin-top: var(--spacing-1);
 }
 
 .icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 10px;
+    gap: var(--spacing-2);
 }
 
 .icon-option {
@@ -155,26 +156,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    border: 1.5px solid #eee;
-    border-radius: 10px;
+    background: var(--color-background-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
     cursor: pointer;
     font-size: 1.5rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color var(--duration-fast) var(--ease-standard),
+                transform var(--duration-fast) var(--ease-standard);
 }
 
 .icon-option:hover {
-    border-color: #ddd;
-    background: #fdfdfd;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-color: var(--color-border-emphasized);
+    transform: translateY(-1px);
 }
 
 .icon-option.selected {
-    border-color: #007bff;
-    background: #f0f7ff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
-    transform: scale(1.05);
+    border-color: var(--color-accent);
+    background: var(--color-accent-muted);
 }
 
 .icon-option img {
@@ -184,49 +182,53 @@
 }
 
 .modal-actions {
-    margin-top: 24px;
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-5);
     flex-shrink: 0;
 }
 
 .btn-cancel {
-    padding: 10px 20px;
-    border: none;
-    background: #f1f3f5;
-    color: #495057;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
 }
 
+.btn-cancel:hover {
+    background: var(--color-overlay-hover);
+}
+
 .btn-save {
-    padding: 10px 24px;
+    padding: var(--spacing-2) var(--spacing-5);
     border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: var(--radius-element);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
 }
 
 .btn-save:disabled {
-    /* background: #e9ecef;
-    color: #adb5bd; */
     cursor: not-allowed;
+    opacity: 0.5;
 }
 
-/* Fix for EditorPage Draw Menu button */
+/* Draw-menu button for adding a custom point. */
 li.tool-item.add-custom-point {
-    margin: 0 !important;
-    padding: 8px 12px !important;
-    border: 2px dashed #ddd;
-    /* background: #fafafa; */
-    transition: all 0.2s;
+    margin: 0;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px dashed var(--color-border-emphasized);
+    border-radius: var(--radius-element);
+    transition: border-color var(--duration-fast) var(--ease-standard),
+                background var(--duration-fast) var(--ease-standard);
 }
 
 li.tool-item.add-custom-point:hover {
-    border-color: #007bff;
-    background: #f0f7ff;
+    border-color: var(--color-accent);
+    background: var(--color-accent-muted);
 }
