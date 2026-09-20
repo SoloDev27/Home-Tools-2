@@ -1,0 +1,358 @@
+/* Unified 3D creation space — a dark CAD studio that matches the editor chrome. */
+
+.u3d-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(120% 120% at 50% 0%, #0f172a 0%, #090d16 55%, #05070c 100%);
+    overflow: hidden;
+}
+
+.u3d-canvas {
+    position: absolute;
+    inset: 0;
+}
+
+/* ---------- top bar ---------- */
+
+.u3d-topbar {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.u3d-chip {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(13, 19, 33, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.u3d-chip .u3d-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.u3d-chip .u3d-chip-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.2;
+}
+
+.u3d-chip .u3d-chip-sub {
+    font-size: 10px;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+.u3d-segmented {
+    pointer-events: auto;
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 10px;
+    background: rgba(13, 19, 33, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.u3d-segmented button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+}
+
+.u3d-segmented button:hover {
+    background: rgba(148, 163, 184, 0.12);
+    color: #e2e8f0;
+}
+
+.u3d-segmented button.active {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+/* ---------- left tool rail ---------- */
+
+.u3d-rail {
+    position: absolute;
+    top: 76px;
+    left: 16px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 12px;
+    background: rgba(13, 19, 33, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+    max-height: calc(100% - 150px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.u3d-rail-divider {
+    height: 1px;
+    margin: 4px 2px;
+    background: rgba(148, 163, 184, 0.16);
+}
+
+.u3d-tool {
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.u3d-tool:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.u3d-tool:hover {
+    background: rgba(148, 163, 184, 0.12);
+    color: #e2e8f0;
+}
+
+.u3d-tool.active {
+    background: rgba(79, 70, 229, 0.22);
+    border-color: rgba(99, 102, 241, 0.7);
+    color: #c7d2fe;
+}
+
+.u3d-tool.danger:hover {
+    background: rgba(248, 113, 113, 0.16);
+    color: #fca5a5;
+}
+
+/* ---------- inspector ---------- */
+
+.u3d-inspector {
+    position: absolute;
+    top: 76px;
+    right: 16px;
+    width: 244px;
+    max-height: calc(100% - 150px);
+    overflow-y: auto;
+    z-index: 20;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(13, 19, 33, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+    color: #cbd5e1;
+}
+
+.u3d-inspector h3 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.u3d-inspector-empty {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #64748b;
+}
+
+.u3d-field {
+    margin-bottom: 10px;
+}
+
+.u3d-field label {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.u3d-field input[type="text"],
+.u3d-field input[type="number"],
+.u3d-field select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(2, 6, 16, 0.6);
+    color: #f8fafc;
+    font-size: 12px;
+    outline: none;
+}
+
+.u3d-field input:focus,
+.u3d-field select:focus {
+    border-color: #6366f1;
+}
+
+.u3d-field input[type="range"] {
+    width: 100%;
+    accent-color: #6366f1;
+}
+
+.u3d-dim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.u3d-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.u3d-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+.u3d-swatch.active {
+    outline: 2px solid #ffffff;
+    outline-offset: 1px;
+}
+
+.u3d-inspector-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.u3d-btn {
+    flex: 1;
+    padding: 7px 8px;
+    border-radius: 7px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.1);
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.u3d-btn:hover {
+    background: rgba(148, 163, 184, 0.18);
+}
+
+.u3d-btn.danger {
+    border-color: rgba(248, 113, 113, 0.35);
+    color: #fca5a5;
+}
+
+.u3d-btn.primary {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    border-color: transparent;
+    color: #ffffff;
+}
+
+/* ---------- bottom status / hint ---------- */
+
+.u3d-statusbar {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 16px;
+    border-radius: 11px;
+    background: rgba(13, 19, 33, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+    color: #cbd5e1;
+    font-size: 11px;
+    max-width: 92%;
+}
+
+.u3d-statusbar kbd {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 4px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(148, 163, 184, 0.12);
+    font-size: 10px;
+    font-weight: 700;
+    color: #cbd5e1;
+}
+
+.u3d-status-hint {
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.u3d-status-hint.ready {
+    color: #a5b4fc;
+}
+
+.u3d-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 15;
+    color: #94a3b8;
+    text-align: center;
+    padding: 24px;
+    pointer-events: none;
+}
+
+.u3d-empty strong {
+    color: #e2e8f0;
+    font-size: 15px;
+}

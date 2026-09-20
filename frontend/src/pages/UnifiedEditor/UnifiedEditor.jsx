@@ -989,7 +989,8 @@ export default function UnifiedEditor() {
 
             {/* Main Content Layout */}
             <div className="unified-body">
-                {/* UNIFIED SIDEBAR (Icon Strip + Active Panel, borrowed from previous project) */}
+                {/* UNIFIED SIDEBAR - 2D site workspace only; the 3D studio owns the full width */}
+                {workspaceMode === "2d" && (
                 <aside className="unified-sidebar">
                     {/* 1. LEFT ICON MENU STRIP */}
                     <ul className="unified-icon-strip">
@@ -1524,6 +1525,7 @@ export default function UnifiedEditor() {
                         </div>
                     )}
                 </aside>
+                )}
 
                 {/* Main Canvas Area: 2D Site & Boundary Plan OR 3D Creation Space */}
                 <main className="unified-map-container">
@@ -1679,8 +1681,10 @@ export default function UnifiedEditor() {
                             structures={structures}
                             features={features}
                             selectedSectionId={selectedSectionId}
+                            onSelectArea={(area) => handleSelectArea(area, false)}
                             onNavigateStudio={(structId) => navigate(`/render/${structId}`)}
                             onAddStructureMass={handleAddStructureMass}
+                            onUpdateArea={handleAreaUpdate}
                         />
                     )}
                 </main>
