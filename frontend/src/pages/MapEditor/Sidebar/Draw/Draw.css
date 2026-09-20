@@ -82,7 +82,7 @@
     z-index: 999999;
     pointer-events: none;
     background-color: rgba(15, 23, 42, 0.96);
-    color: #f8fafc;
+    color: var(--color-text-primary);
     padding: 5px 9px;
     border-radius: 6px;
     font-size: 12px;

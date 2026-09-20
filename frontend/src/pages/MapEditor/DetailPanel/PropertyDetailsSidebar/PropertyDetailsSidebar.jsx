@@ -727,7 +727,7 @@ export default function PropertyDetailsSidebar({ point, onClose, onUpdate, onDel
                                             width: '100%',
                                             padding: '10px 14px',
                                             background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-                                            color: '#ffffff',
+                                            color: 'var(--color-on-accent)',
                                             border: 'none',
                                             borderRadius: '8px',
                                             fontWeight: 600,

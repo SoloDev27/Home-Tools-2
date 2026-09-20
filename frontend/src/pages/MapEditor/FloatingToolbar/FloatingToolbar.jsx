@@ -185,7 +185,7 @@ export default function FloatingToolbar({
         border: "none",
         cursor: "pointer",
         backgroundColor: active ? "var(--color-primary-default, #3b82f6)" : "transparent",
-        color: active ? "#ffffff" : "var(--color-text-secondary, #94a3b8)",
+        color: active ? "var(--color-on-accent)" : "var(--color-text-secondary, #94a3b8)",
         transition: "all 0.15s ease",
         position: "relative",
         outline: "none",
@@ -195,7 +195,7 @@ export default function FloatingToolbar({
     const dividerStyle = {
         width: "1px",
         height: "20px",
-        backgroundColor: "rgba(255, 255, 255, 0.12)",
+        backgroundColor: "var(--color-overlay-hover)",
         margin: "0 2px"
     };
 
@@ -226,7 +226,7 @@ export default function FloatingToolbar({
                     backgroundColor: "rgba(24, 24, 27, 0.92)",
                     backdropFilter: "blur(16px)",
                     WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid rgba(255, 255, 255, 0.14)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: "12px",
                     boxShadow: "0 12px 36px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35)",
                     userSelect: "none"
@@ -325,7 +325,7 @@ export default function FloatingToolbar({
                         })}
                         title={`Utility Run: ${utilitySubtype.name} (U)`}
                     >
-                        <Zap size={17} style={{ color: isToolActive("utility") ? "#fff" : utilitySubtype.color }} />
+                        <Zap size={17} style={{ color: isToolActive("utility") ? "var(--color-on-accent)" : utilitySubtype.color }} />
                     </button>
                     <button
                         type="button"
@@ -350,7 +350,7 @@ export default function FloatingToolbar({
                                 left: 0,
                                 width: "190px",
                                 backgroundColor: "rgba(24, 24, 27, 0.96)",
-                                border: "1px solid rgba(255, 255, 255, 0.15)",
+                                border: "1px solid var(--color-border)",
                                 borderRadius: "8px",
                                 padding: "4px",
                                 boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
@@ -373,8 +373,8 @@ export default function FloatingToolbar({
                                             fontSize: "12px",
                                             borderRadius: "6px",
                                             cursor: "pointer",
-                                            backgroundColor: selected ? "rgba(255, 255, 255, 0.12)" : "transparent",
-                                            color: "#f8fafc"
+                                            backgroundColor: selected ? "var(--color-overlay-hover)" : "transparent",
+                                            color: "var(--color-text-primary)"
                                         }}
                                         onClick={() => {
                                             setUtilitySubtype(u);
@@ -474,7 +474,7 @@ export default function FloatingToolbar({
                         })}
                         title={`Surface Material: ${materialSubtype.name} (G)`}
                     >
-                        <Palette size={17} style={{ color: isToolActive("material") ? "#fff" : materialSubtype.color }} />
+                        <Palette size={17} style={{ color: isToolActive("material") ? "var(--color-on-accent)" : materialSubtype.color }} />
                     </button>
                     <button
                         type="button"
@@ -499,7 +499,7 @@ export default function FloatingToolbar({
                                 right: 0,
                                 width: "180px",
                                 backgroundColor: "rgba(24, 24, 27, 0.96)",
-                                border: "1px solid rgba(255, 255, 255, 0.15)",
+                                border: "1px solid var(--color-border)",
                                 borderRadius: "8px",
                                 padding: "4px",
                                 boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
@@ -522,8 +522,8 @@ export default function FloatingToolbar({
                                             fontSize: "12px",
                                             borderRadius: "6px",
                                             cursor: "pointer",
-                                            backgroundColor: selected ? "rgba(255, 255, 255, 0.12)" : "transparent",
-                                            color: "#f8fafc"
+                                            backgroundColor: selected ? "var(--color-overlay-hover)" : "transparent",
+                                            color: "var(--color-text-primary)"
                                         }}
                                         onClick={() => {
                                             setMaterialSubtype(m);
@@ -563,7 +563,7 @@ export default function FloatingToolbar({
                         border: "1px solid rgba(59, 130, 246, 0.4)",
                         boxShadow: "0 4px 16px rgba(0, 0, 0, 0.4)",
                         fontSize: "12px",
-                        color: "#f8fafc"
+                        color: "var(--color-text-primary)"
                     }}
                 >
                     <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
@@ -591,7 +591,7 @@ export default function FloatingToolbar({
                                     padding: "3px 8px",
                                     borderRadius: "12px",
                                     backgroundColor: "#22c55e",
-                                    color: "#fff",
+                                    color: "var(--color-on-accent)",
                                     border: "none",
                                     fontSize: "11px",
                                     fontWeight: 600,

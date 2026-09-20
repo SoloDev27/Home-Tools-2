@@ -52,9 +52,9 @@
 
 .sidebar-group {
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--color-overlay);
     flex-shrink: 0;
 }
 
@@ -71,13 +71,13 @@
 }
 
 .split-divider:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
 }
 
 .divider-handle {
     width: 30px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--color-overlay-pressed);
     border-radius: 2px;
 }
 
@@ -90,7 +90,7 @@
     overflow-y: auto;
     padding-top: 8px;
     padding-right: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--color-border);
 }
 
 .flex-pane {
@@ -102,9 +102,9 @@
 
 .tree-scroll-container {
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--color-overlay);
     flex-shrink: 0;
 }
 
@@ -175,7 +175,7 @@
 .sidebar-readonly {
     opacity: 0.7;
     cursor: default;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--color-overlay-hover);
 }
 
 .sidebar-footer {
@@ -213,8 +213,8 @@
 
 .confirm-cancel-btn {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay-hover);
+    border: 1px solid var(--color-border);
     color: #e2e8f0;
     padding: 10px;
     border-radius: 8px;
@@ -224,8 +224,8 @@
 
 .tree-search {
     width: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     color: white;
     padding: 6px 10px;
@@ -281,7 +281,7 @@
 
 .cancel-btn {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
     border: 1px solid var(--border);
     color: var(--text-main);
     padding: 6px;
@@ -291,7 +291,7 @@
 }
 
 .cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay-hover);
 }
 
 /* Tabs Styling */
@@ -337,7 +337,7 @@
 }
 
 .node-container:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
 }
 
 .node-container.selected {
@@ -464,7 +464,7 @@
 }
 
 .tree-ctrl-btn {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
     border: 1px solid var(--border);
     color: var(--text-dim);
     padding: 4px 8px;
@@ -520,7 +520,7 @@
 
 /* Scrollbar for dropdown */
 .room-type-dropdown::-webkit-scrollbar { width: 4px; }
-.room-type-dropdown::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+.room-type-dropdown::-webkit-scrollbar-thumb { background: var(--color-overlay-hover); border-radius: 4px; }
 
 /* Icon Coloring */
 .type-svg.icon-property { filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(190deg) brightness(118%) contrast(119%); } /* Blue */
@@ -549,7 +549,7 @@
 }
 
 .room-type-option:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
 }
 
 .room-type-option img {
@@ -582,7 +582,7 @@
 .inspection-worksheet {
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--color-border);
 }
 
 .section-title {
@@ -598,7 +598,7 @@
 .worksheet-items {
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--color-overlay);
     border-radius: 6px;
     overflow-y: auto;
     max-height: 250px;
@@ -608,11 +608,11 @@
     display: flex;
     align-items: center;
     padding: 8px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .worksheet-item:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--color-overlay-hover);
 }
 
 .item-label {
@@ -627,8 +627,8 @@
     height: 28px;
     font-size: 11px;
     padding: 0 4px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay-hover);
+    border: 1px solid var(--color-border);
     color: white;
     border-radius: 4px;
 }
@@ -645,9 +645,9 @@
 }
 
 .portal-navigator {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--color-overlay);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
     max-height: 240px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -660,7 +660,7 @@
 
 .portal-group {
     background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
 }
@@ -670,7 +670,7 @@
 }
 
 .portal-group.is-open {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--color-overlay-hover);
 }
 
 .portal-group-header {
@@ -678,15 +678,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 12px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-overlay-hover);
     cursor: pointer;
     min-height: 44px;
     box-sizing: border-box;
 }
 
 .is-open .portal-group-header {
-    background: rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .portal-toggle-icon {
@@ -736,7 +736,7 @@
 }
 
 .portal-doc-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-overlay-hover);
     padding-left: 24px;
 }
 
@@ -798,7 +798,7 @@
     padding: 12px;
     cursor: pointer;
     transition: background 0.2s;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .persona-option:last-child {
@@ -806,7 +806,7 @@
 }
 
 .persona-option:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-overlay-hover);
 }
 
 .persona-icon {
@@ -838,7 +838,7 @@
 .editor-headline-area {
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .editor-headline-input {
@@ -896,7 +896,7 @@
     align-items: center;
     padding: 12px 16px;
     background: rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--color-border);
     flex-shrink: 0;
 }
 
@@ -955,7 +955,7 @@
 }
 
 .utility-opt:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
     color: var(--text-main);
 }
 
@@ -976,7 +976,7 @@
 }
 
 .editor-scroll-body::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay-hover);
     border-radius: 10px;
 }
 

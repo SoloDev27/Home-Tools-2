@@ -9,12 +9,12 @@
     display: flex;
     gap: 8px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .canvas-toolbar button {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-overlay-hover);
+    border: 1px solid var(--color-border);
     color: var(--text-dim);
     padding: 6px 12px;
     border-radius: 4px;
@@ -39,7 +39,7 @@
 
 .canvas-block-wrapper {
     position: relative;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-overlay-hover);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 12px;
@@ -48,7 +48,7 @@
 
 .canvas-block-wrapper:hover {
     border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-overlay-hover);
 }
 
 .block-controls {
